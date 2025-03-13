@@ -3,55 +3,87 @@
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
+const int SQUARE_SIZE = 100;
+const int MOVE_SPEED = 10;
 
-int main(int argc, char* args[]) {
-    // Inicializa a SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+int main(int argc, char *args[])
+{
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    {
         std::cerr << "Erro ao inicializar a SDL: " << SDL_GetError() << std::endl;
         return 1;
     }
 
-    // Cria a janela
-    SDL_Window* window = SDL_CreateWindow("Hello World", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (window == nullptr) {
+    SDL_Window *window = SDL_CreateWindow("Hello World", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (window == nullptr)
+    {
         std::cerr << "Erro ao criar a janela: " << SDL_GetError() << std::endl;
         SDL_Quit();
         return 1;
     }
 
-    // Cria o renderizador
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == nullptr) {
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == nullptr)
+    {
         std::cerr << "Erro ao criar o renderizador: " << SDL_GetError() << std::endl;
         SDL_DestroyWindow(window);
         SDL_Quit();
         return 1;
     }
 
-    // Define a cor de fundo (preto)
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    // Define a cor do quadrado (vermelho)
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
-    // Define o retângulo do quadrado
     SDL_Rect rect;
-    rect.x = (SCREEN_WIDTH / 2) - 50;
-    rect.y = (SCREEN_HEIGHT / 2) - 50;
-    rect.w = 100;
-    rect.h = 100;
-
-    // Renderiza o quadrado
+    rect.x = (SCREEN_WIDTH / 2) - (SQUARE_SIZE / 2);
+    rect.y = (SCREEN_HEIGHT / 2) - (SQUARE_SIZE / 2);
+    rect.w = SQUARE_SIZE;
+    rect.h = SQUARE_SIZE;
     SDL_RenderFillRect(renderer, &rect);
 
-    // Atualiza a tela
     SDL_RenderPresent(renderer);
 
-    // Espera 5 segundos
-    SDL_Delay(5000);
+    bool quit = false;
+    SDL_Event e;
+    while (!quit)
+    {
+        while (SDL_PollEvent(&e) != 0)
+        {
+            if (e.type == SDL_QUIT)
+            {
+                quit = true;
+            }
+            else if (e.type == SDL_KEYDOWN)
+            {
+                switch (e.key.keysym.sym)
+                {
+                case SDLK_w:
+                    rect.y -= MOVE_SPEED;
+                    break;
+                case SDLK_s:
+                    rect.y += MOVE_SPEED;
+                    break;
+                case SDLK_a:
+                    rect.x -= MOVE_SPEED;
+                    break;
+                case SDLK_d:
+                    rect.x += MOVE_SPEED;
+                    break;
+                }
+            }
+        }
 
-    // Limpa e finaliza a SDL
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_RenderFillRect(renderer, &rect);
+
+        SDL_RenderPresent(renderer);
+    }
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
