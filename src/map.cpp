@@ -24,25 +24,25 @@ namespace Game
     {
     }
 
-    void Map::render(SDL_Renderer *renderer, int cellWidth, int cellHeight)
+    void Map::render(SDL_Renderer *renderer, int tileWidth, int tileHeight)
     {
         for (int row = 0; row < height; ++row)
         {
             for (int col = 0; col < width; ++col)
             {
                 SDL_Rect cell;
-                cell.x = col * cellWidth;
-                cell.y = row * cellHeight;
-                cell.w = cellWidth;
-                cell.h = cellHeight;
+                cell.x = col * tileWidth;
+                cell.y = row * tileHeight;
+                cell.w = tileWidth;
+                cell.h = tileHeight;
 
                 if (terrain[row, col] == 0)
                 {
-                    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Verde
+                    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
                 }
                 else if (terrain[row, col] == 1)
                 {
-                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Vermelho
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
                 }
 
                 SDL_RenderFillRect(renderer, &cell);
@@ -50,4 +50,18 @@ namespace Game
         }
     }
 
+    void Game::Map::loadFromMatrix(const std::vector<std::vector<int>> &matrix)
+    {
+        for (std::vector<std::vector<int>>::size_type row = 0; row < matrix.size(); ++row)
+        {
+            for (std::vector<int>::size_type col = 0; col < matrix[row].size(); ++col)
+            {
+                if (row < static_cast<std::vector<std::vector<int>>::size_type>(height) &&
+                    col < static_cast<std::vector<int>::size_type>(width))
+                {
+                    terrain[row, col] = matrix[row][col];
+                }
+            }
+        }
+    }
 }

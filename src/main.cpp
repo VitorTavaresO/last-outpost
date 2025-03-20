@@ -1,24 +1,23 @@
 #include <SDL.h>
 #include <iostream>
 #include <last-outpost/map.h>
+#include <last-outpost/maps_data.h>
 
-const int SCREEN_WIDTH = 1500;
-const int SCREEN_HEIGHT = 800;
-const int MAP_WIDTH = 20;
-const int MAP_HEIGHT = 15;
+const int SCREEN_WIDTH = 850;
+const int SCREEN_HEIGHT = 850;
 
 int main(int argc, char *args[])
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        std::cerr << "Erro ao inicializar a SDL: " << SDL_GetError() << std::endl;
+        std::cerr << "Error on start SDL: " << SDL_GetError() << std::endl;
         return 1;
     }
 
-    SDL_Window *window = SDL_CreateWindow("Mapa Visual", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    SDL_Window *window = SDL_CreateWindow("View Map", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == nullptr)
     {
-        std::cerr << "Erro ao criar a janela: " << SDL_GetError() << std::endl;
+        std::cerr << "Error on Window Creation " << SDL_GetError() << std::endl;
         SDL_Quit();
         return 1;
     }
@@ -26,33 +25,21 @@ int main(int argc, char *args[])
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == nullptr)
     {
-        std::cerr << "Erro ao criar o renderizador: " << SDL_GetError() << std::endl;
+        std::cerr << "Error on render creation: " << SDL_GetError() << std::endl;
         SDL_DestroyWindow(window);
         SDL_Quit();
         return 1;
     }
 
-    int cellWidth = SCREEN_WIDTH / MAP_WIDTH;
-    int cellHeight = SCREEN_HEIGHT / MAP_HEIGHT;
+    const int MAP_WIDTH = 30;
+    const int MAP_HEIGHT = 30;
+    int tileWidth = SCREEN_WIDTH / MAP_WIDTH;
+    int tileHeight = SCREEN_HEIGHT / MAP_HEIGHT;
 
     Game::Map map(MAP_WIDTH, MAP_HEIGHT);
 
-    for (int row = 0; row < MAP_HEIGHT; ++row)
-    {
-        for (int col = 0; col < MAP_WIDTH; ++col)
-        {
-            if ((row + col) % 2 == 0)
-            {
-                map.setTerrainValue(row, col, 0);
-            }
-            else
-            {
-                map.setTerrainValue(row, col, 1);
-            }
-        }
-    }
+    map.loadFromMatrix(Game::MAP1);
 
-    // Loop principal
     bool running = true;
     SDL_Event event;
     while (running)
@@ -68,7 +55,7 @@ int main(int argc, char *args[])
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        map.render(renderer, cellWidth, cellHeight);
+        map.render(renderer, tileWidth, tileHeight);
 
         SDL_RenderPresent(renderer);
     }

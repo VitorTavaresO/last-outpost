@@ -4,6 +4,8 @@
 #include <my-lib/matrix.h>
 #include <last-outpost/object.h>
 #include <SDL.h>
+#include <string>
+#include <vector>
 
 namespace Game
 {
@@ -20,15 +22,15 @@ namespace Game
         ~Map() override = default;
 
         void update() override;
-
-        void render(SDL_Renderer *renderer, int cellWidth, int cellHeight) override;
+        void render(SDL_Renderer *renderer, int tileWidth, int tileHeight) override;
 
         int getWidth() const;
-
         int getHeight() const;
 
         void setTerrainValue(int row, int col, int value);
         int getTerrainValue(int row, int col) const;
+
+        void loadFromMatrix(const std::vector<std::vector<int>> &matrix);
     };
 
 }

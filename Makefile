@@ -6,7 +6,7 @@ CPP = g++
 
 BIN = last-outpost.exe
 
-CPPFLAGS = -std=c++23 -Wall -g -I./include  -I../my-lib/include -DMYGLIB_FP_TYPE=float
+CPPFLAGS = -std=c++23 -Wall -g -I./include  -I../my-lib/include
 LDFLAGS = -std=c++23
 
 # ----------------------------------
@@ -15,7 +15,7 @@ ifdef TARGET_LINUX
 	CPPFLAGS +=
 	LDFLAGS += -lm
 
-	CPPFLAGS += -DMYGLIB_SUPPORT_SDL=1 `pkg-config --cflags sdl2 SDL2_mixer SDL2_image`
+	CPPFLAGS += `pkg-config --cflags sdl2 SDL2_mixer SDL2_image`
 	LDFLAGS += `pkg-config --libs sdl2 SDL2_mixer SDL2_image`
 
 	BIN = last-outpost
