@@ -50,16 +50,15 @@ namespace Game
         }
     }
 
-    void Game::Map::loadFromMatrix(const std::vector<std::vector<int>> &matrix)
+    void Game::Map::loadFromMatrix(const Mylib::Matrix<int> &matrix)
     {
-        for (std::vector<std::vector<int>>::size_type row = 0; row < matrix.size(); ++row)
+        for (uint32_t row = 0; row < matrix.get_nrows(); ++row)
         {
-            for (std::vector<int>::size_type col = 0; col < matrix[row].size(); ++col)
+            for (uint32_t col = 0; col < matrix.get_ncols(); ++col)
             {
-                if (row < static_cast<std::vector<std::vector<int>>::size_type>(height) &&
-                    col < static_cast<std::vector<int>::size_type>(width))
+                if (row < static_cast<uint32_t>(height) && col < static_cast<uint32_t>(width))
                 {
-                    terrain[row, col] = matrix[row][col];
+                    terrain[row, col] = matrix[row, col];
                 }
             }
         }

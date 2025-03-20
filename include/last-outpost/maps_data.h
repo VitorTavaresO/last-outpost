@@ -1,11 +1,12 @@
 #ifndef __LAST_OUTPOST_MAPS_DATA_H__
 #define __LAST_OUTPOST_MAPS_DATA_H__
 
-#include <vector>
+#include <my-lib/matrix.h>
 
 namespace Game
 {
-    extern const std::vector<std::vector<int>> MAP1;
+    extern const Mylib::Matrix<int> MAP1;
+
 }
 
 #endif

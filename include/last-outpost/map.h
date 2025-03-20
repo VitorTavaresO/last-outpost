@@ -30,7 +30,7 @@ namespace Game
         void setTerrainValue(int row, int col, int value);
         int getTerrainValue(int row, int col) const;
 
-        void loadFromMatrix(const std::vector<std::vector<int>> &matrix);
+        void loadFromMatrix(const Mylib::Matrix<int> &matrix);
     };
 
 }
