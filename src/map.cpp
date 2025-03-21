@@ -24,28 +24,37 @@ namespace Game
     {
     }
 
-    void Map::render(SDL_Renderer *renderer, int tileWidth, int tileHeight)
+    void Game::Map::render(SDL_Renderer *renderer, int tileWidth, int tileHeight)
     {
         for (int row = 0; row < height; ++row)
         {
             for (int col = 0; col < width; ++col)
             {
-                SDL_Rect cell;
-                cell.x = col * tileWidth;
-                cell.y = row * tileHeight;
-                cell.w = tileWidth;
-                cell.h = tileHeight;
+                SDL_Rect tile;
+                tile.x = col * tileWidth;
+                tile.y = row * tileHeight;
+                tile.w = tileWidth;
+                tile.h = tileHeight;
 
-                if (terrain[row, col] == 0)
+                int terrainValue = terrain[row, col];
+                if (terrainValue == 0)
                 {
-                    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                    SDL_SetRenderDrawColor(renderer, 0, 100, 0, 255); // Verde escuro
                 }
-                else if (terrain[row, col] == 1)
+                else if (terrainValue == 1)
                 {
-                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                    SDL_SetRenderDrawColor(renderer, 194, 178, 128, 255); // Areia
+                }
+                else if (terrainValue == 2)
+                {
+                    SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255); // Marrom
+                }
+                else if (terrainValue == 3)
+                {
+                    SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255); // Cinza
                 }
 
-                SDL_RenderFillRect(renderer, &cell);
+                SDL_RenderFillRect(renderer, &tile);
             }
         }
     }

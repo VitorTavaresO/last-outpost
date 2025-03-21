@@ -22,7 +22,7 @@ ifdef TARGET_LINUX
 endif
 
 ifdef TARGET_WINDOWS
-	CPPFLAGS += -DMYGLIB_SUPPORT_SDL=1 -I"C:/Program Files/msys64/ucrt64/include/SDL2"
+	CPPFLAGS += -I"C:/Program Files/msys64/ucrt64/include/SDL2"
 	LDFLAGS += -L"C:/Program Files/msys64/ucrt64/lib" -lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_image -mwindows
 endif
 

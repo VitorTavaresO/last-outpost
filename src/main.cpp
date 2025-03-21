@@ -3,8 +3,8 @@
 #include <last-outpost/map.h>
 #include <last-outpost/maps_data.h>
 
-const int SCREEN_WIDTH = 850;
-const int SCREEN_HEIGHT = 850;
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 800;
 
 int main(int argc, char *args[])
 {
