@@ -22,7 +22,15 @@ namespace Game
         void update() override final;
         void render(Graphics &graphics) const override final;
 
-        const Mylib::Matrix<Object> &getTerrain() const;
+        inline Object &operator[](const uint32_t row, const uint32_t col)
+        {
+            return this->terrain[row, col];
+        }
+
+        inline const Object &operator[](const uint32_t row, const uint32_t col) const
+        {
+            return this->terrain[row, col];
+        }
     };
 
     extern const char rawStringMap[];

@@ -14,15 +14,19 @@ namespace Game
         SDL_Renderer *renderer;
 
     public:
-        Graphics();
+        Graphics(int screenWidth, int screenHeight, int tilesX, int tilesY, SDL_Renderer *renderer);
 
-        void setResolution(int screenWidth, int screenHeight, int tilesX, int tilesY);
-        void setRenderer(SDL_Renderer *renderer);
+        int getTileWidth() const
+        {
+            return tileWidth;
+        }
+
+        int getTileHeight() const
+        {
+            return tileHeight;
+        }
 
         void drawRect(const Vector &position, const Vector &size, const SDL_Color &color) const;
-
-        int getTileWidth() const;
-        int getTileHeight() const;
     };
 }
 
