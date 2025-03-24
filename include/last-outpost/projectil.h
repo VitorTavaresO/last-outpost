@@ -1,8 +1,8 @@
 #ifndef __LAST_OUTPOST_PROJECTIL_H__
 #define __LAST_OUTPOST_PROJECTIL_H__
 
-#include <SDL.h>
 #include <last-outpost/object.h>
+#include <my-lib/math-vector.h>
 
 namespace Game
 {
@@ -11,11 +11,11 @@ namespace Game
     private:
         int damage;
         float speed;
-        SDL_Point position;
-        SDL_Point direction;
+        MyLib::Vector2 position;
+        MyLib::Vector2 direction;
 
     public:
-        Projectil(int damage = 0, float speed = 0.0f, SDL_Point position = {0, 0}, SDL_Point direction = {0, 0});
+        Projectil(int damage = 0, float speed = 0.0f, MyLib::Vector2 position = {0, 0}, MyLib::Vector2 direction = {0, 0});
         ~Projectil() override = default;
 
         void setDamage(int damage);
@@ -24,14 +24,14 @@ namespace Game
         void setSpeed(float speed);
         float getSpeed() const;
 
-        void setPosition(int x, int y);
-        SDL_Point getPosition() const;
+        void setPosition(float x, float y);
+        MyLib::Vector2 getPosition() const;
 
-        void setDirection(int x, int y);
-        SDL_Point getDirection() const;
+        void setDirection(float x, float y);
+        MyLib::Vector2 getDirection() const;
 
         void update() override;
-        void render(SDL_Renderer *renderer, int x, int y, int width, int height) const override;
+        void render(Graphics &graphics) const override;
     };
 }
 

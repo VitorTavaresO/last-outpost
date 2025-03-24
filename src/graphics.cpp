@@ -1,4 +1,5 @@
 #include <last-outpost/graphics.h>
+#include <last-outpost/types.h>
 
 namespace Game
 {
@@ -19,7 +20,7 @@ namespace Game
         this->renderer = renderer;
     }
 
-    void Graphics::drawRect(const SDL_Point &position, const SDL_Point &size, const SDL_Color &color) const
+    void Graphics::drawRect(const Vector &position, const Vector &size, const SDL_Color &color) const
     {
         if (!renderer)
         {
@@ -30,10 +31,10 @@ namespace Game
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 
         SDL_Rect rect = {
-            position.x * tileWidth,
-            position.y * tileHeight,
-            size.x * tileWidth,
-            size.y * tileHeight};
+            static_cast<int>(position.x * tileWidth),
+            static_cast<int>(position.y * tileHeight),
+            static_cast<int>(size.x * tileWidth),
+            static_cast<int>(size.y * tileHeight)};
 
         SDL_RenderFillRect(renderer, &rect);
     }

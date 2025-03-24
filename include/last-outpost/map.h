@@ -21,7 +21,7 @@ namespace Game
         ~Map() override = default;
 
         void update() override;
-        void render(Graphics &graphics) const;
+        void render(Graphics &graphics) const override;
 
         void loadFromString(const std::string &mapString, int rows, int cols);
 
