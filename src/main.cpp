@@ -1,10 +1,8 @@
 #include <SDL.h>
 #include <iostream>
+#include <last-outpost/const.h>
 #include <last-outpost/map.h>
 #include <last-outpost/graphics.h>
-
-const int SCREEN_WIDTH = 1920;
-const int SCREEN_HEIGHT = 1080;
 
 int main(int argc, char *args[])
 {
@@ -13,6 +11,17 @@ int main(int argc, char *args[])
         std::cerr << "Error on start SDL: " << SDL_GetError() << std::endl;
         return 1;
     }
+
+    SDL_DisplayMode displayMode;
+    if (SDL_GetCurrentDisplayMode(0, &displayMode) != 0)
+    {
+        std::cerr << "Error getting display mode: " << SDL_GetError() << std::endl;
+        SDL_Quit();
+        return 1;
+    }
+
+    // SCREEN_WIDTH = displayMode.w;
+    // SCREEN_HEIGHT = displayMode.h;
 
     SDL_Window *window = SDL_CreateWindow("View Map", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == nullptr)
@@ -31,8 +40,8 @@ int main(int argc, char *args[])
         return 1;
     }
 
-    const int TILES_X = 30;
-    const int TILES_Y = 30;
+    const int TILES_X = 32;
+    const int TILES_Y = 18;
 
     Game::Map map(TILES_X, TILES_Y);
     map.loadFromString(Game::rawStringMap, TILES_Y, TILES_X);
