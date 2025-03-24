@@ -9,7 +9,6 @@
 
 namespace Game
 {
-
     class Map : public Object
     {
     private:
@@ -22,7 +21,6 @@ namespace Game
         ~Map() override = default;
 
         void update() override;
-        void render(SDL_Renderer *renderer, int tileWidth, int tileHeight) override;
 
         int getWidth() const;
         int getHeight() const;
@@ -30,9 +28,12 @@ namespace Game
         void setTerrainValue(int row, int col, int value);
         int getTerrainValue(int row, int col) const;
 
-        void loadFromMatrix(const Mylib::Matrix<int> &matrix);
+        void loadFromString(const std::string &mapString, int rows, int cols);
+
+        Mylib::Matrix<SDL_Color> getTileColors() const;
     };
 
+    extern const std::string rawStringMap;
 }
 
 #endif

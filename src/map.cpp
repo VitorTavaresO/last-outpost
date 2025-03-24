@@ -1,9 +1,8 @@
 #include <last-outpost/map.h>
-#include <SDL.h>
+#include <stdexcept>
 
 namespace Game
 {
-
     Map::Map(int width, int height)
         : width(width), height(height), terrain(width, height)
     {
@@ -24,52 +23,65 @@ namespace Game
     {
     }
 
-    void Game::Map::render(SDL_Renderer *renderer, int tileWidth, int tileHeight)
+    void Map::loadFromString(const std::string &mapString, int rows, int cols)
     {
+
+        terrain = Mylib::Matrix<int>(rows, cols);
+
+        for (int row = 0; row < rows; ++row)
+        {
+            for (int col = 0; col < cols; ++col)
+            {
+                char tile = mapString[row * cols + col];
+                terrain[row, col] = tile;
+            }
+        }
+    }
+
+    Mylib::Matrix<SDL_Color> Map::getTileColors() const
+    {
+        Mylib::Matrix<SDL_Color> colors(height, width);
+
         for (int row = 0; row < height; ++row)
         {
             for (int col = 0; col < width; ++col)
             {
-                SDL_Rect tile;
-                tile.x = col * tileWidth;
-                tile.y = row * tileHeight;
-                tile.w = tileWidth;
-                tile.h = tileHeight;
+                char tile = static_cast<char>(terrain[row, col]);
+                SDL_Color color;
 
-                int terrainValue = terrain[row, col];
-                if (terrainValue == 0)
+                switch (tile)
                 {
-                    SDL_SetRenderDrawColor(renderer, 0, 100, 0, 255); // Verde escuro
-                }
-                else if (terrainValue == 1)
-                {
-                    SDL_SetRenderDrawColor(renderer, 194, 178, 128, 255); // Areia
-                }
-                else if (terrainValue == 2)
-                {
-                    SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255); // Marrom
-                }
-                else if (terrainValue == 3)
-                {
-                    SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255); // Cinza
+                case ' ':
+                    color = {0, 100, 0, 255}; // Verde escuro
+                    break;
+                case 'P':
+                    color = {194, 178, 128, 255}; // Areia
+                    break;
+                case 'S':
+                    color = {139, 69, 19, 255}; // Marrom
+                    break;
+                case 'T':
+                    color = {128, 128, 128, 255}; // Cinza
+                    break;
+                default:
+                    color = {0, 0, 0, 255}; // Preto (valor padrão)
+                    break;
                 }
 
-                SDL_RenderFillRect(renderer, &tile);
+                colors[row, col] = color;
             }
         }
+
+        return colors;
     }
 
-    void Game::Map::loadFromMatrix(const Mylib::Matrix<int> &matrix)
-    {
-        for (uint32_t row = 0; row < matrix.get_nrows(); ++row)
-        {
-            for (uint32_t col = 0; col < matrix.get_ncols(); ++col)
-            {
-                if (row < static_cast<uint32_t>(height) && col < static_cast<uint32_t>(width))
-                {
-                    terrain[row, col] = matrix[row, col];
-                }
-            }
-        }
-    }
+    const std::string rawStringMap =
+        "                              "
+        "        P                     "
+        "        P                     "
+        "    S   P                     "
+        "        P                     "
+        "        P                     "
+        "        P                     "
+        "                              ";
 }

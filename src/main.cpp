@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include <iostream>
 #include <last-outpost/map.h>
-#include <last-outpost/maps_data.h>
+#include <last-outpost/graphics.h>
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 800;
@@ -31,14 +31,14 @@ int main(int argc, char *args[])
         return 1;
     }
 
-    const int MAP_WIDTH = 30;
-    const int MAP_HEIGHT = 30;
-    int tileWidth = SCREEN_WIDTH / MAP_WIDTH;
-    int tileHeight = SCREEN_HEIGHT / MAP_HEIGHT;
+    const int TILES_X = 30;
+    const int TILES_Y = 8;
 
-    Game::Map map(MAP_WIDTH, MAP_HEIGHT);
+    Game::Map map(TILES_X, TILES_Y);
+    map.loadFromString(Game::rawStringMap, TILES_Y, TILES_X);
 
-    map.loadFromMatrix(Game::MAP1);
+    Game::Graphics graphics;
+    graphics.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT, TILES_X, TILES_Y);
 
     bool running = true;
     SDL_Event event;
@@ -55,7 +55,7 @@ int main(int argc, char *args[])
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        map.render(renderer, tileWidth, tileHeight);
+        graphics.renderMap(renderer, map.getTileColors());
 
         SDL_RenderPresent(renderer);
     }
