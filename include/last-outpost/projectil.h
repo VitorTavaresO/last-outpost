@@ -30,7 +30,7 @@ namespace Game
         void setDirection(int x, int y);
         SDL_Point getDirection() const;
 
-        void update(float deltaTime) override;
+        void update() override;
         void render(SDL_Renderer *renderer, int x, int y, int width, int height) const override;
     };
 }

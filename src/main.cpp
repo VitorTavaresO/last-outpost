@@ -15,17 +15,6 @@ int main(int argc, char *args[])
         return 1;
     }
 
-    SDL_DisplayMode displayMode;
-    if (SDL_GetCurrentDisplayMode(0, &displayMode) != 0)
-    {
-        std::cerr << "Error getting display mode: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return 1;
-    }
-
-    // SCREEN_WIDTH = displayMode.w;
-    // SCREEN_HEIGHT = displayMode.h;
-
     SDL_Window *window = SDL_CreateWindow("View Map", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == nullptr)
     {
@@ -43,14 +32,15 @@ int main(int argc, char *args[])
         return 1;
     }
 
-    const int TILES_X = 16;
-    const int TILES_Y = 9;
+    constexpr int TILES_X = 16;
+    constexpr int TILES_Y = 9;
 
     Game::Map map(TILES_X, TILES_Y);
     map.loadFromString(Game::rawStringMap, TILES_Y, TILES_X);
 
     Game::Graphics graphics;
     graphics.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT, TILES_X, TILES_Y);
+    graphics.setRenderer(renderer);
 
     bool running = true;
     SDL_Event event;
@@ -67,7 +57,7 @@ int main(int argc, char *args[])
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        graphics.renderMap(renderer, map.getTerrain());
+        map.render(graphics);
 
         SDL_RenderPresent(renderer);
     }

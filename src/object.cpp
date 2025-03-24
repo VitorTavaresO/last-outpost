@@ -11,12 +11,9 @@ namespace Game
     {
     }
 
-    void Object::render(SDL_Renderer *renderer, int x, int y, int width, int height) const
+    void Object::render(Graphics &graphics, const SDL_Point &position, const SDL_Point &size) const
     {
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-
-        SDL_Rect rect = {x, y, width, height};
-        SDL_RenderFillRect(renderer, &rect);
+        graphics.drawRect(position, size, color);
     }
 
     void Object::setColor(const SDL_Color &color)

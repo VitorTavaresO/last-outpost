@@ -1,5 +1,4 @@
 #include <last-outpost/map.h>
-#include <stdexcept>
 
 namespace Game
 {
@@ -10,15 +9,28 @@ namespace Game
 
     void Map::update()
     {
+        for (uint32_t row = 0; row < terrain.get_nrows(); ++row)
+        {
+            for (uint32_t col = 0; col < terrain.get_ncols(); ++col)
+            {
+                terrain[row, col].update();
+            }
+        }
+    }
+
+    void Map::render(Graphics &graphics) const
+    {
+        for (uint32_t row = 0; row < terrain.get_nrows(); ++row)
+        {
+            for (uint32_t col = 0; col < terrain.get_ncols(); ++col)
+            {
+                terrain[row, col].render(graphics, {static_cast<int>(col), static_cast<int>(row)}, {1, 1});
+            }
+        }
     }
 
     void Map::loadFromString(const std::string &mapString, int rows, int cols)
     {
-        if (rows * cols != static_cast<int>(mapString.size()))
-        {
-            throw std::invalid_argument("Map string size does not match dimensions.");
-        }
-
         terrain = Mylib::Matrix<Object>(rows, cols);
 
         for (int row = 0; row < rows; ++row)
@@ -26,27 +38,34 @@ namespace Game
             for (int col = 0; col < cols; ++col)
             {
                 char tile = mapString[row * cols + col];
-                SDL_Color color;
+
                 switch (tile)
                 {
                 case ' ':
-                    color = {0, 100, 0, 255}; // Verde escuro
+                    terrain[row, col] = Object();
+                    terrain[row, col].setColor({0, 100, 0, 255}); // Verde escuro
                     break;
+
                 case 'P':
-                    color = {194, 178, 128, 255}; // Areia
+                    terrain[row, col] = Object();
+                    terrain[row, col].setColor({194, 178, 128, 255}); // Areia
                     break;
+
                 case 'S':
-                    color = {139, 69, 19, 255}; // Marrom
+                    terrain[row, col] = Object();
+                    terrain[row, col].setColor({139, 69, 19, 255}); // Marrom
                     break;
+
                 case 'T':
-                    color = {64, 64, 64, 255}; // Cinza
+                    terrain[row, col] = Object();
+                    terrain[row, col].setColor({64, 64, 64, 255}); // Cinza
                     break;
+
                 default:
-                    color = {0, 0, 0, 255}; // Preto (valor padrão)
+                    terrain[row, col] = Object();
+                    terrain[row, col].setColor({0, 0, 0, 255}); // Preto
                     break;
                 }
-
-                terrain[row, col].setColor(color);
             }
         }
     }
@@ -57,8 +76,8 @@ namespace Game
     }
 
     const std::string rawStringMap =
-        "        P       "
-        "        P       "
+        "PPPPPPPPPPPPPPPP"
+        "PPPPPPPPPPPPPPPP"
         "        P       "
         "    T   P       "
         "        P       "

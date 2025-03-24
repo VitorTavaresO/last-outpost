@@ -3,9 +3,9 @@
 
 #include <my-lib/matrix.h>
 #include <last-outpost/object.h>
+#include <last-outpost/graphics.h>
 #include <SDL.h>
 #include <string>
-#include <vector>
 
 namespace Game
 {
@@ -21,9 +21,7 @@ namespace Game
         ~Map() override = default;
 
         void update() override;
-
-        int getWidth() const;
-        int getHeight() const;
+        void render(Graphics &graphics) const;
 
         void loadFromString(const std::string &mapString, int rows, int cols);
 

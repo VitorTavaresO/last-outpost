@@ -2,8 +2,6 @@
 #define __LAST_OUTPOST_GRAPHICS_H__
 
 #include <SDL.h>
-#include <my-lib/matrix.h>
-#include <last-outpost/object.h>
 
 namespace Game
 {
@@ -12,14 +10,19 @@ namespace Game
     private:
         int tileWidth;
         int tileHeight;
+        SDL_Renderer *renderer;
 
     public:
         Graphics();
         ~Graphics() = default;
 
         void setResolution(int screenWidth, int screenHeight, int tilesX, int tilesY);
+        void setRenderer(SDL_Renderer *renderer);
 
-        void renderMap(SDL_Renderer *renderer, const Mylib::Matrix<Object> &terrain);
+        void drawRect(const SDL_Point &position, const SDL_Point &size, const SDL_Color &color) const;
+
+        int getTileWidth() const;
+        int getTileHeight() const;
     };
 }
 
