@@ -10,8 +10,6 @@ namespace Game
     {
     private:
         int damage;
-        float speed;
-        MyLib::Vector2 position;
         MyLib::Vector2 direction;
 
     public:

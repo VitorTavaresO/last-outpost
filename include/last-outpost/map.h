@@ -18,17 +18,16 @@ namespace Game
 
     public:
         Map(int width, int height);
-        ~Map() override = default;
 
-        void update() override;
-        void render(Graphics &graphics) const override;
+        void update() override final;
+        void render(Graphics &graphics) const override final;
 
         void loadFromString(const std::string &mapString, int rows, int cols);
 
-        const Mylib::Matrix<Object> &getTerrain() const;
+        const Mylib::Matrix<Object> &getTerrain() const; // Sobrecarga do operador []
     };
 
-    extern const std::string rawStringMap;
+    extern const char rawStringMap[];
 }
 
 #endif

@@ -1,11 +1,8 @@
 #include <SDL.h>
 #include <iostream>
-#include <last-outpost/const.h>
+#include <last-outpost/globals.h>
 #include <last-outpost/map.h>
 #include <last-outpost/graphics.h>
-
-int SCREEN_WIDTH = 1280;
-int SCREEN_HEIGHT = 720;
 
 int main(int argc, char *args[])
 {
@@ -15,7 +12,7 @@ int main(int argc, char *args[])
         return 1;
     }
 
-    SDL_Window *window = SDL_CreateWindow("View Map", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    SDL_Window *window = SDL_CreateWindow("View Map", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Game::SCREEN_WIDTH, Game::SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == nullptr)
     {
         std::cerr << "Error on Window Creation " << SDL_GetError() << std::endl;
@@ -36,10 +33,10 @@ int main(int argc, char *args[])
     constexpr int TILES_Y = 9;
 
     Game::Map map(TILES_X, TILES_Y);
-    map.loadFromString(Game::rawStringMap, TILES_Y, TILES_X);
+    map.loadFromString(Game::rawStringMap, TILES_Y, TILES_X); // TRANSFORMAR EM CONSTRUTOR
 
     Game::Graphics graphics;
-    graphics.setResolution(SCREEN_WIDTH, SCREEN_HEIGHT, TILES_X, TILES_Y);
+    graphics.setResolution(Game::SCREEN_WIDTH, Game::SCREEN_HEIGHT, TILES_X, TILES_Y);
     graphics.setRenderer(renderer);
 
     bool running = true;

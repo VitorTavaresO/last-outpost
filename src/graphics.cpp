@@ -22,13 +22,13 @@ namespace Game
 
     void Graphics::drawRect(const Vector &position, const Vector &size, const SDL_Color &color) const
     {
-        if (!renderer)
+        if (!this->renderer)
         {
             SDL_Log("Renderer not set in Graphics!");
             return;
         }
 
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+        SDL_SetRenderDrawColor(this->renderer, color.r, color.g, color.b, color.a);
 
         SDL_Rect rect = {
             static_cast<int>(position.x * tileWidth),

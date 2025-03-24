@@ -21,14 +21,35 @@ namespace Game
         virtual void update();
         virtual void render(Graphics &graphics) const;
 
-        void setColor(const SDL_Color &color);
-        SDL_Color getColor() const;
+        void setColor(const SDL_Color &color)
+        {
+            this->color = color;
+        }
 
-        void setPosition(float x, float y);
-        Vector getPosition() const;
+        SDL_Color getColor() const
+        {
+            return color;
+        }
 
-        void setSize(float width, float height);
-        Vector getSize() const;
+        void setPosition(float x, float y)
+        {
+            position = {x, y};
+        }
+
+        Vector getPosition() const
+        {
+            return position;
+        }
+
+        void setSize(float width, float height)
+        {
+            size = {width, height};
+        }
+
+        Vector getSize() const
+        {
+            return size;
+        }
     };
 }
 

@@ -17,33 +17,4 @@ namespace Game
         graphics.drawRect(position, size, color);
     }
 
-    void Object::setColor(const SDL_Color &color)
-    {
-        this->color = color;
-    }
-
-    SDL_Color Object::getColor() const
-    {
-        return color;
-    }
-
-    void Object::setPosition(float x, float y)
-    {
-        position = {x, y};
-    }
-
-    Vector Object::getPosition() const
-    {
-        return position;
-    }
-
-    void Object::setSize(float width, float height)
-    {
-        size = {width, height};
-    }
-
-    Vector Object::getSize() const
-    {
-        return size;
-    }
 }

@@ -15,7 +15,6 @@ namespace Game
 
     public:
         Graphics();
-        ~Graphics() = default;
 
         void setResolution(int screenWidth, int screenHeight, int tilesX, int tilesY);
         void setRenderer(SDL_Renderer *renderer);

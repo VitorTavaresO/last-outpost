@@ -63,7 +63,7 @@ namespace Game
     {
     }
 
-    const std::string rawStringMap =
+    const char rawStringMap[] =
         "        P       "
         "        P       "
         "        P       "

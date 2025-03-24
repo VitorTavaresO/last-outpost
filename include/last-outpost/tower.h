@@ -17,7 +17,6 @@ namespace Game
 
     public:
         Tower();
-        ~Tower() override = default;
 
         void update() override;
         void render(SDL_Renderer *renderer, int x, int y, int width, int height) const override;
