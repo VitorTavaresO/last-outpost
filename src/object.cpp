@@ -1,21 +1,31 @@
 #include <last-outpost/object.h>
-#include <iostream>
 
 namespace Game
 {
-
     Object::Object()
+        : color({0, 0, 0, 255})
     {
     }
 
     void Object::update()
     {
-        std::cout << "Object::update() chamado" << std::endl;
     }
 
-    void Object::render(SDL_Renderer *renderer, int cellWidth, int cellHeight)
+    void Object::render(SDL_Renderer *renderer, int x, int y, int width, int height) const
     {
-        std::cout << "Object::render() chamado" << std::endl;
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+        SDL_Rect rect = {x, y, width, height};
+        SDL_RenderFillRect(renderer, &rect);
     }
 
+    void Object::setColor(const SDL_Color &color)
+    {
+        this->color = color;
+    }
+
+    SDL_Color Object::getColor() const
+    {
+        return color;
+    }
 }

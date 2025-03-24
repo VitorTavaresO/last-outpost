@@ -13,22 +13,16 @@ namespace Game
         tileHeight = screenHeight / tilesY;
     }
 
-    void Graphics::renderMap(SDL_Renderer *renderer, const Mylib::Matrix<SDL_Color> &colors)
+    void Graphics::renderMap(SDL_Renderer *renderer, const Mylib::Matrix<Object> &terrain)
     {
-        for (uint32_t row = 0; row < colors.get_nrows(); ++row)
+        for (uint32_t row = 0; row < terrain.get_nrows(); ++row)
         {
-            for (uint32_t col = 0; col < colors.get_ncols(); ++col)
+            for (uint32_t col = 0; col < terrain.get_ncols(); ++col)
             {
-                SDL_Rect tile;
-                tile.x = col * tileWidth;
-                tile.y = row * tileHeight;
-                tile.w = tileWidth;
-                tile.h = tileHeight;
+                int x = col * tileWidth;
+                int y = row * tileHeight;
 
-                SDL_Color color = colors[row, col];
-                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-
-                SDL_RenderFillRect(renderer, &tile);
+                terrain[row, col].render(renderer, x, y, tileWidth, tileHeight);
             }
         }
     }

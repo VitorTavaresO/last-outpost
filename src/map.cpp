@@ -6,49 +6,37 @@ namespace Game
     Map::Map(int width, int height)
         : width(width), height(height), terrain(width, height)
     {
-        terrain.set_all(0);
-    }
-
-    void Map::setTerrainValue(int row, int col, int value)
-    {
-        terrain[row, col] = value;
-    }
-
-    int Map::getTerrainValue(int row, int col) const
-    {
-        return terrain[row, col];
     }
 
     void Map::update()
     {
     }
 
+    int Map::getWidth() const
+    {
+        return width;
+    }
+
+    int Map::getHeight() const
+    {
+        return height;
+    }
+
     void Map::loadFromString(const std::string &mapString, int rows, int cols)
     {
+        if (rows * cols != static_cast<int>(mapString.size()))
+        {
+            throw std::invalid_argument("Map string size does not match dimensions.");
+        }
 
-        terrain = Mylib::Matrix<int>(rows, cols);
+        terrain = Mylib::Matrix<Object>(rows, cols);
 
         for (int row = 0; row < rows; ++row)
         {
             for (int col = 0; col < cols; ++col)
             {
                 char tile = mapString[row * cols + col];
-                terrain[row, col] = tile;
-            }
-        }
-    }
-
-    Mylib::Matrix<SDL_Color> Map::getTileColors() const
-    {
-        Mylib::Matrix<SDL_Color> colors(height, width);
-
-        for (int row = 0; row < height; ++row)
-        {
-            for (int col = 0; col < width; ++col)
-            {
-                char tile = static_cast<char>(terrain[row, col]);
                 SDL_Color color;
-
                 switch (tile)
                 {
                 case ' ':
@@ -68,11 +56,14 @@ namespace Game
                     break;
                 }
 
-                colors[row, col] = color;
+                terrain[row, col].setColor(color);
             }
         }
+    }
 
-        return colors;
+    const Mylib::Matrix<Object> &Map::getTerrain() const
+    {
+        return terrain;
     }
 
     const std::string rawStringMap =

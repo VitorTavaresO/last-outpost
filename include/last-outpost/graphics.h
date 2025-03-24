@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <my-lib/matrix.h>
+#include <last-outpost/object.h>
 
 namespace Game
 {
@@ -18,7 +19,7 @@ namespace Game
 
         void setResolution(int screenWidth, int screenHeight, int tilesX, int tilesY);
 
-        void renderMap(SDL_Renderer *renderer, const Mylib::Matrix<SDL_Color> &colors);
+        void renderMap(SDL_Renderer *renderer, const Mylib::Matrix<Object> &terrain);
     };
 }
 

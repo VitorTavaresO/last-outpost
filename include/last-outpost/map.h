@@ -14,7 +14,7 @@ namespace Game
     private:
         int width;
         int height;
-        Mylib::Matrix<int> terrain;
+        Mylib::Matrix<Object> terrain;
 
     public:
         Map(int width, int height);
@@ -25,12 +25,9 @@ namespace Game
         int getWidth() const;
         int getHeight() const;
 
-        void setTerrainValue(int row, int col, int value);
-        int getTerrainValue(int row, int col) const;
-
         void loadFromString(const std::string &mapString, int rows, int cols);
 
-        Mylib::Matrix<SDL_Color> getTileColors() const;
+        const Mylib::Matrix<Object> &getTerrain() const;
     };
 
     extern const std::string rawStringMap;
