@@ -4,6 +4,9 @@
 #include <last-outpost/map.h>
 #include <last-outpost/graphics.h>
 
+int SCREEN_WIDTH = 1280;
+int SCREEN_HEIGHT = 720;
+
 int main(int argc, char *args[])
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -40,8 +43,8 @@ int main(int argc, char *args[])
         return 1;
     }
 
-    const int TILES_X = 32;
-    const int TILES_Y = 18;
+    const int TILES_X = 16;
+    const int TILES_Y = 9;
 
     Game::Map map(TILES_X, TILES_Y);
     map.loadFromString(Game::rawStringMap, TILES_Y, TILES_X);

@@ -39,7 +39,7 @@ namespace Game
                     color = {139, 69, 19, 255}; // Marrom
                     break;
                 case 'T':
-                    color = {128, 128, 128, 255}; // Cinza
+                    color = {64, 64, 64, 255}; // Cinza
                     break;
                 default:
                     color = {0, 0, 0, 255}; // Preto (valor padrão)
@@ -57,22 +57,13 @@ namespace Game
     }
 
     const std::string rawStringMap =
-        "        P                       "
-        "        P                       "
-        "        P                       "
-        "    S   P                       "
-        "        P                       "
-        "        P                       "
-        "        P                       "
-        "        P                       "
-        "        P   S                   "
-        "        P                       "
-        "        P                       "
-        "        P                       "
-        "        P                       "
-        "    S   P                       "
-        "        P                       "
-        "        P                       "
-        "        P                       "
-        "        P                       ";
+        "        P       "
+        "        P       "
+        "        P       "
+        "    T   P       "
+        "        P       "
+        "        P       "
+        "        P   S   "
+        "        P       "
+        "        P       ";
 }
