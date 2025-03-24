@@ -32,8 +32,7 @@ int main(int argc, char *args[])
     constexpr int TILES_X = 16;
     constexpr int TILES_Y = 9;
 
-    Game::Map map(TILES_X, TILES_Y);
-    map.loadFromString(Game::rawStringMap, TILES_Y, TILES_X); // TRANSFORMAR EM CONSTRUTOR
+    Game::Map map(TILES_X, TILES_Y, Game::rawStringMap);
 
     Game::Graphics graphics;
     graphics.setResolution(Game::SCREEN_WIDTH, Game::SCREEN_HEIGHT, TILES_X, TILES_Y);

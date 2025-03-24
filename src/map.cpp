@@ -2,19 +2,14 @@
 
 namespace Game
 {
-    Map::Map(int width, int height)
+    Map::Map(int width, int height, const std::string &mapString)
         : width(width), height(height), terrain(height, width)
     {
-    }
-    void Map::loadFromString(const std::string &mapString, int rows, int cols)
-    {
-        terrain = Mylib::Matrix<Object>(rows, cols);
-
-        for (int row = 0; row < rows; ++row)
+        for (int row = 0; row < height; ++row)
         {
-            for (int col = 0; col < cols; ++col)
+            for (int col = 0; col < width; ++col)
             {
-                char tile = mapString[row * cols + col];
+                char tile = mapString[row * width + col];
 
                 Object obj;
                 obj.setPosition(col, row);

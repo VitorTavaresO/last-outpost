@@ -17,14 +17,12 @@ namespace Game
         Mylib::Matrix<Object> terrain;
 
     public:
-        Map(int width, int height);
+        Map(int width, int height, const std::string &mapString);
 
         void update() override final;
         void render(Graphics &graphics) const override final;
 
-        void loadFromString(const std::string &mapString, int rows, int cols);
-
-        const Mylib::Matrix<Object> &getTerrain() const; // Sobrecarga do operador []
+        const Mylib::Matrix<Object> &getTerrain() const;
     };
 
     extern const char rawStringMap[];
