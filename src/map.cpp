@@ -12,16 +12,6 @@ namespace Game
     {
     }
 
-    int Map::getWidth() const
-    {
-        return width;
-    }
-
-    int Map::getHeight() const
-    {
-        return height;
-    }
-
     void Map::loadFromString(const std::string &mapString, int rows, int cols)
     {
         if (rows * cols != static_cast<int>(mapString.size()))
