@@ -9,10 +9,11 @@ namespace Game
 
     void Graphics::setResolution(int screenWidth, int screenHeight, int tilesX, int tilesY)
     {
-        tileWidth = screenWidth / tilesX;
-        tileHeight = screenHeight / tilesY;
-    }
+        int tileSize = std::min(screenWidth / tilesX, screenHeight / tilesY);
 
+        tileWidth = tileSize;
+        tileHeight = tileSize;
+    }
     void Graphics::renderMap(SDL_Renderer *renderer, const Mylib::Matrix<Object> &terrain)
     {
         for (uint32_t row = 0; row < terrain.get_nrows(); ++row)

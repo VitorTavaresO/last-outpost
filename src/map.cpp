@@ -57,12 +57,34 @@ namespace Game
     }
 
     const std::string rawStringMap =
-        "                              "
+        "        P                     "
         "        P                     "
         "        P                     "
         "    S   P                     "
         "        P                     "
         "        P                     "
         "        P                     "
-        "                              ";
+        "        P                     "
+        "        P   S                 "
+        "        P                     "
+        "        P                     "
+        "        P                     "
+        "        P                     "
+        "    S   P                     "
+        "        P                     "
+        "        P                     "
+        "        P                     "
+        "        P                     "
+        "        P   S                 "
+        "        P                     "
+        "        P                     "
+        "        P                     "
+        "        P                     "
+        "    S   P                     "
+        "        P                     "
+        "        P                     "
+        "        P                     "
+        "        P                     "
+        "        P   S                 "
+        "        P                     ";
 }

@@ -3,8 +3,8 @@
 #include <last-outpost/map.h>
 #include <last-outpost/graphics.h>
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 800;
+const int SCREEN_WIDTH = 1920;
+const int SCREEN_HEIGHT = 1080;
 
 int main(int argc, char *args[])
 {
@@ -32,7 +32,7 @@ int main(int argc, char *args[])
     }
 
     const int TILES_X = 30;
-    const int TILES_Y = 8;
+    const int TILES_Y = 30;
 
     Game::Map map(TILES_X, TILES_Y);
     map.loadFromString(Game::rawStringMap, TILES_Y, TILES_X);
