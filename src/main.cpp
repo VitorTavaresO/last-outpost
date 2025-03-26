@@ -3,6 +3,7 @@
 #include <last-outpost/globals.h>
 #include <last-outpost/map.h>
 #include <last-outpost/graphics.h>
+#include <last-outpost/enemy.h>
 
 namespace Game
 {
@@ -14,7 +15,7 @@ namespace Game
             return 1;
         }
 
-        SDL_Window *window = SDL_CreateWindow("View Map", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Game::SCREEN_WIDTH, Game::SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+        SDL_Window *window = SDL_CreateWindow("View Map", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
         if (window == nullptr)
         {
             std::cerr << "Error on Window Creation " << SDL_GetError() << std::endl;
@@ -34,9 +35,9 @@ namespace Game
         constexpr int TILES_X = 16;
         constexpr int TILES_Y = 9;
 
-        Game::Map map(TILES_X, TILES_Y, Game::rawStringMap);
+        Map map(TILES_X, TILES_Y, rawStringMap);
 
-        Game::Graphics graphics(Game::SCREEN_WIDTH, Game::SCREEN_HEIGHT, TILES_X, TILES_Y, renderer);
+        Graphics graphics(SCREEN_WIDTH, SCREEN_HEIGHT, TILES_X, TILES_Y, renderer);
 
         bool running = true;
         SDL_Event event;
@@ -54,6 +55,13 @@ namespace Game
             SDL_RenderClear(renderer);
 
             map.render(graphics);
+
+            Enemy enemy(100, 20, 0.5f, "Fireball");
+            enemy.setPosition(0, 4);
+            enemy.setSize(1, 1);
+
+            enemy.update();
+            enemy.render(graphics);
 
             SDL_RenderPresent(renderer);
         }
