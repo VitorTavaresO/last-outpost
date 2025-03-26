@@ -33,7 +33,7 @@ namespace Game
 
         void setPosition(float x, float y)
         {
-            position = {x, y};
+            this->position = {x, y};
         }
 
         Vector getPosition() const
@@ -43,7 +43,7 @@ namespace Game
 
         void setSize(float width, float height)
         {
-            size = {width, height};
+            this->size = {width, height};
         }
 
         Vector getSize() const

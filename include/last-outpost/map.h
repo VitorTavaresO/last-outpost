@@ -11,12 +11,19 @@
 
 namespace Game
 {
+    struct Tile
+    {
+        int id;
+        char type;
+        Object object;
+    };
+
     class Map : public Object
     {
     private:
         int width;
         int height;
-        Mylib::Matrix<Object> terrain;
+        Mylib::Matrix<Tile> terrain;
 
     public:
         Map(int width, int height, const std::string &mapString);
@@ -24,12 +31,12 @@ namespace Game
         void update() override final;
         void render(Graphics &graphics) const override final;
 
-        inline Object &operator[](const uint32_t row, const uint32_t col)
+        inline Tile &operator()(const uint32_t row, const uint32_t col)
         {
             return this->terrain[row, col];
         }
 
-        inline const Object &operator[](const uint32_t row, const uint32_t col) const
+        inline const Tile &operator()(const uint32_t row, const uint32_t col) const
         {
             return this->terrain[row, col];
         }

@@ -32,8 +32,8 @@ namespace Game
             return 1;
         }
 
-        constexpr int TILES_X = 16;
-        constexpr int TILES_Y = 9;
+        constexpr int TILES_X = 32;
+        constexpr int TILES_Y = 18;
 
         Map map(TILES_X, TILES_Y, rawStringMap);
 

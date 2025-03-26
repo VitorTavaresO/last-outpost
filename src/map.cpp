@@ -5,40 +5,44 @@ namespace Game
     Map::Map(int width, int height, const std::string &mapString)
         : width(width), height(height), terrain(height, width)
     {
+        int idCounter = 0;
+
         for (int row = 0; row < height; ++row)
         {
             for (int col = 0; col < width; ++col)
             {
-                char tile = mapString[row * width + col];
+                char tileChar = mapString[row * width + col];
 
-                Object obj;
-                obj.setPosition(col, row);
-                obj.setSize(1, 1);
+                Tile tile;
+                tile.id = idCounter++;
+                tile.type = tileChar;
+                tile.object.setPosition(col, row);
+                tile.object.setSize(1, 1);
 
-                switch (tile)
+                switch (tileChar)
                 {
                 case ' ':
-                    obj.setColor({0, 100, 0, 255}); // Verde escuro
+                    tile.object.setColor({0, 100, 0, 255}); // Verde escuro
                     break;
 
                 case 'P':
-                    obj.setColor({194, 178, 128, 255}); // Areia
+                    tile.object.setColor({194, 178, 128, 255}); // Areia
                     break;
 
                 case 'S':
-                    obj.setColor({139, 69, 19, 255}); // Marrom
+                    tile.object.setColor({139, 69, 19, 255}); // Marrom
                     break;
 
                 case 'T':
-                    obj.setColor({64, 64, 64, 255}); // Cinza
+                    tile.object.setColor({64, 64, 64, 255}); // Cinza
                     break;
 
                 default:
-                    obj.setColor({0, 0, 0, 255}); // Preto
+                    tile.object.setColor({0, 0, 0, 255}); // Preto
                     break;
                 }
 
-                terrain[row, col] = obj;
+                terrain[row, col] = tile;
             }
         }
     }
@@ -49,7 +53,7 @@ namespace Game
         {
             for (uint32_t col = 0; col < terrain.get_ncols(); ++col)
             {
-                terrain[row, col].render(graphics);
+                terrain[row, col].object.render(graphics);
             }
         }
     }
@@ -66,7 +70,7 @@ namespace Game
         {
             for (int col = 0; col < width; ++col)
             {
-                if (terrain[row, col].getColor().r == 194)
+                if (terrain[row, col].type == 'P')
                 {
                     path.emplace_back(col, row);
                 }
@@ -77,13 +81,22 @@ namespace Game
     }
 
     const char rawStringMap[] =
-        "        P       "
-        "        P       "
-        "        P       "
-        "    T   P       "
-        "        P       "
-        "        P       "
-        "        P   S   "
-        "        P       "
-        "        P       ";
+        "        P                       "
+        "        P                       "
+        "        P                       "
+        "    T   P                       "
+        "        P                       "
+        "        P                       "
+        "        P   S                   "
+        "        P                       "
+        "        P                       "
+        "        P                       "
+        "        P                       "
+        "        P                       "
+        "    T   P                       "
+        "        P                       "
+        "        P                       "
+        "        P   S                   "
+        "        P                       "
+        "        P                       ";
 }
