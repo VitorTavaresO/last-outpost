@@ -58,6 +58,24 @@ namespace Game
     {
     }
 
+    std::vector<std::pair<int, int>> Map::extractPath() const
+    {
+        std::vector<std::pair<int, int>> path;
+
+        for (int row = 0; row < height; ++row)
+        {
+            for (int col = 0; col < width; ++col)
+            {
+                if (terrain[row, col].getColor().r == 194)
+                {
+                    path.emplace_back(col, row);
+                }
+            }
+        }
+
+        return path;
+    }
+
     const char rawStringMap[] =
         "        P       "
         "        P       "

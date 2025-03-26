@@ -41,6 +41,13 @@ namespace Game
 
         bool running = true;
         SDL_Event event;
+
+        Enemy enemy(100, 20, 2.0f, "Fireball");
+        enemy.setSize(1, 1);
+
+        auto path = map.extractPath();
+        bool initialized = false;
+
         while (running)
         {
             while (SDL_PollEvent(&event))
@@ -56,12 +63,16 @@ namespace Game
 
             map.render(graphics);
 
-            Enemy enemy(100, 20, 0.5f, "Fireball");
-            enemy.setPosition(0, 4);
-            enemy.setSize(1, 1);
+            if (!initialized && !path.empty())
+            {
+                enemy.setPosition(path[0].first, path[0].second);
+                initialized = true;
+            }
 
-            enemy.update();
-            enemy.render(graphics);
+            if (enemy.followPath(path))
+            {
+                enemy.render(graphics);
+            }
 
             SDL_RenderPresent(renderer);
         }

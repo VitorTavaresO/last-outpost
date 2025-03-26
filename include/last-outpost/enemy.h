@@ -3,6 +3,8 @@
 
 #include <last-outpost/object.h>
 #include <string>
+#include <vector>
+#include <utility>
 
 namespace Game
 {
@@ -59,6 +61,7 @@ namespace Game
 
         void update() override;
         void render(Graphics &graphics) const override;
+        bool followPath(const std::vector<std::pair<int, int>> &path);
     };
 }
 

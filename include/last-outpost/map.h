@@ -6,6 +6,8 @@
 #include <last-outpost/graphics.h>
 #include <SDL.h>
 #include <string>
+#include <vector>
+#include <utility>
 
 namespace Game
 {
@@ -31,6 +33,8 @@ namespace Game
         {
             return this->terrain[row, col];
         }
+
+        std::vector<std::pair<int, int>> extractPath() const;
     };
 
     extern const char rawStringMap[];
