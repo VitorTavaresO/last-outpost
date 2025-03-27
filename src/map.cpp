@@ -58,7 +58,7 @@ namespace Game
 
         int currentRow = -1, currentCol = -1;
 
-        // Find the starting point 'F'
+        // Encontrar o ponto inicial 'F'
         for (int row = 0; row < height; ++row)
         {
             for (int col = 0; col < width; ++col)
@@ -77,15 +77,36 @@ namespace Game
 
         if (currentRow == -1 || currentCol == -1)
         {
-            return path;
+            return path; // Retorna caminho vazio se 'F' não for encontrado
         }
 
-        if (currentRow + 1 < height && terrain[currentRow + 1, currentCol].type == 'D')
+        // Verificar as quatro direções ao redor do 'F'
+        const std::vector<std::pair<int, int>> directions = {
+            {0, 1},  // Direita
+            {0, -1}, // Esquerda
+            {1, 0},  // Abaixo
+            {-1, 0}  // Acima
+        };
+
+        for (const auto &[dRow, dCol] : directions)
         {
-            ++currentRow;
-            path.emplace_back(currentCol, currentRow);
+            int newRow = currentRow + dRow;
+            int newCol = currentCol + dCol;
+
+            if (newRow >= 0 && newRow < height && newCol >= 0 && newCol < width)
+            {
+                char neighborType = terrain[newRow, newCol].type;
+                if (neighborType == 'R' || neighborType == 'L' || neighborType == 'D' || neighborType == 'U')
+                {
+                    currentRow = newRow;
+                    currentCol = newCol;
+                    path.emplace_back(currentCol, currentRow);
+                    break;
+                }
+            }
         }
 
+        // Continuar o caminho a partir do ponto encontrado
         while (true)
         {
             char currentType = terrain[currentRow, currentCol].type;
@@ -138,12 +159,12 @@ namespace Game
     }
 
     const char rawStringMap[] =
-        "        F                       "
-        "        D                       "
-        "        D                       "
-        "    T   D                       "
-        "        D                       "
-        "        RRRRRRRRRRRD            "
+        "                                "
+        "                                "
+        "                                "
+        "    T   RRRD                    "
+        "        U  D                    "
+        "FRRRRRRRU  RRRRRRRRD            "
         "            S      D            "
         "        DLLLLLLLLLLL            "
         "        D                       "
