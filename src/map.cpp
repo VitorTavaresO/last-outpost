@@ -58,7 +58,6 @@ namespace Game
 
         int currentRow = -1, currentCol = -1;
 
-        // Encontrar o ponto inicial 'F'
         for (int row = 0; row < height; ++row)
         {
             for (int col = 0; col < width; ++col)
@@ -77,16 +76,14 @@ namespace Game
 
         if (currentRow == -1 || currentCol == -1)
         {
-            return path; // Retorna caminho vazio se 'F' não for encontrado
+            return path;
         }
 
-        // Verificar as quatro direções ao redor do 'F'
         const std::vector<std::pair<int, int>> directions = {
-            {0, 1},  // Direita
-            {0, -1}, // Esquerda
-            {1, 0},  // Abaixo
-            {-1, 0}  // Acima
-        };
+            {0, 1},
+            {0, -1},
+            {1, 0},
+            {-1, 0}};
 
         for (const auto &[dRow, dCol] : directions)
         {
@@ -106,7 +103,6 @@ namespace Game
             }
         }
 
-        // Continuar o caminho a partir do ponto encontrado
         while (true)
         {
             char currentType = terrain[currentRow, currentCol].type;
