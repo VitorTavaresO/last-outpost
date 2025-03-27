@@ -15,6 +15,8 @@ namespace Game
         int damage;
         float speed;
         std::string spell;
+        size_t currentStep;
+        Uint32 lastMoveTime;
 
     public:
         Enemy(int life = 100, int damage = 10, float speed = 1.0f, const std::string &spell = "");
@@ -59,9 +61,8 @@ namespace Game
             return spell;
         }
 
-        void update() override;
+        void update(const std::vector<std::pair<int, int>> &path);
         void render(Graphics &graphics) const override;
-        bool followPath(const std::vector<std::pair<int, int>> &path);
     };
 }
 

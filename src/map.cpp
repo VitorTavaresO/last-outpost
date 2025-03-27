@@ -25,7 +25,12 @@ namespace Game
                     tile.object.setColor({0, 100, 0, 255}); // Verde escuro
                     break;
 
-                case 'P':
+                case 'F':
+                case 'R':
+                case 'L':
+                case 'D':
+                case 'U':
+                case 'E':
                     tile.object.setColor({194, 178, 128, 255}); // Areia
                     break;
 
@@ -47,6 +52,76 @@ namespace Game
         }
     }
 
+    std::vector<std::pair<int, int>> Map::extractPath() const
+    {
+        std::vector<std::pair<int, int>> path;
+
+        int currentRow = -1, currentCol = -1;
+
+        // Find the starting point 'F'
+        for (int row = 0; row < height; ++row)
+        {
+            for (int col = 0; col < width; ++col)
+            {
+                if (terrain[row, col].type == 'F')
+                {
+                    currentRow = row;
+                    currentCol = col;
+                    path.emplace_back(currentCol, currentRow);
+                    break;
+                }
+            }
+            if (currentRow != -1)
+                break;
+        }
+
+        if (currentRow == -1 || currentCol == -1)
+        {
+            return path;
+        }
+
+        if (currentRow + 1 < height && terrain[currentRow + 1, currentCol].type == 'D')
+        {
+            ++currentRow;
+            path.emplace_back(currentCol, currentRow);
+        }
+
+        while (true)
+        {
+            char currentType = terrain[currentRow, currentCol].type;
+
+            if (currentType == 'E')
+            {
+                break;
+            }
+
+            if (currentType == 'R')
+            {
+                ++currentCol;
+            }
+            else if (currentType == 'L')
+            {
+                --currentCol;
+            }
+            else if (currentType == 'D')
+            {
+                ++currentRow;
+            }
+            else if (currentType == 'U')
+            {
+                --currentRow;
+            }
+            else
+            {
+                break;
+            }
+
+            path.emplace_back(currentCol, currentRow);
+        }
+
+        return path;
+    }
+
     void Map::render(Graphics &graphics) const
     {
         for (uint32_t row = 0; row < terrain.get_nrows(); ++row)
@@ -62,41 +137,23 @@ namespace Game
     {
     }
 
-    std::vector<std::pair<int, int>> Map::extractPath() const
-    {
-        std::vector<std::pair<int, int>> path;
-
-        for (int row = 0; row < height; ++row)
-        {
-            for (int col = 0; col < width; ++col)
-            {
-                if (terrain[row, col].type == 'P')
-                {
-                    path.emplace_back(col, row);
-                }
-            }
-        }
-
-        return path;
-    }
-
     const char rawStringMap[] =
-        "        P                       "
-        "        P                       "
-        "        P                       "
-        "    T   P                       "
-        "        P                       "
-        "        P                       "
-        "        P   S                   "
-        "        P                       "
-        "        P                       "
-        "        P                       "
-        "        P                       "
-        "        P                       "
-        "    T   P                       "
-        "        P                       "
-        "        P                       "
-        "        P   S                   "
-        "        P                       "
-        "        P                       ";
+        "        F                       "
+        "        D                       "
+        "        D                       "
+        "    T   D                       "
+        "        D                       "
+        "        RRRRRRRRRRRD            "
+        "            S      D            "
+        "        DLLLLLLLLLLL            "
+        "        D                       "
+        "        D                       "
+        "        D                       "
+        "        D                       "
+        "    T   D                       "
+        "        D                       "
+        "        D                       "
+        "        D   S                   "
+        "        D                       "
+        "        E                       ";
 }

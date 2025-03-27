@@ -46,7 +46,10 @@ namespace Game
         enemy.setSize(1, 1);
 
         auto path = map.extractPath();
-        bool initialized = false;
+        if (!path.empty())
+        {
+            enemy.setPosition(path[0].first, path[0].second);
+        }
 
         while (running)
         {
@@ -63,16 +66,8 @@ namespace Game
 
             map.render(graphics);
 
-            if (!initialized && !path.empty())
-            {
-                enemy.setPosition(path[0].first, path[0].second);
-                initialized = true;
-            }
-
-            if (enemy.followPath(path))
-            {
-                enemy.render(graphics);
-            }
+            enemy.update(path);
+            enemy.render(graphics);
 
             SDL_RenderPresent(renderer);
         }
