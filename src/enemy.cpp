@@ -37,6 +37,6 @@ namespace Game
 
     void Enemy::render(Graphics &graphics) const
     {
-        graphics.drawRect(getPosition(), getSize(), {255, 0, 0, 255});
+        graphics.drawRect(getPosition(), {1, 1}, {255, 0, 0, 255});
     }
 }

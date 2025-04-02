@@ -4,19 +4,15 @@ namespace Game
 {
     constexpr int TILES_X = 32;
     constexpr int TILES_Y = 18;
+
     GameControl::GameControl(SDL_Renderer *renderer, int screenWidth, int screenHeight)
         : renderer(renderer),
           graphics(screenWidth, screenHeight, TILES_X, TILES_Y, renderer),
           map(TILES_X, TILES_Y, rawStringMap),
-          enemy(100, 20, 1.0f, "Fireball"),
-          running(true)
+          running(true),
+          lastSpawnTime(0),
+          spawnedEnemyCount(0.0)
     {
-        enemy.setSize(1, 1);
-        auto path = map.extractPath();
-        if (!path.empty())
-        {
-            enemy.setPosition(path[0].first, path[0].second);
-        }
     }
 
     void GameControl::run()
@@ -43,8 +39,12 @@ namespace Game
 
     void GameControl::update()
     {
+        spawnEnemies();
         auto path = map.extractPath();
-        enemy.update(path);
+        for (auto &enemy : activeEnemies)
+        {
+            enemy.update(path);
+        }
     }
 
     void GameControl::render()
@@ -53,8 +53,32 @@ namespace Game
         SDL_RenderClear(renderer);
 
         map.render(graphics);
-        enemy.render(graphics);
+        for (const auto &enemy : activeEnemies)
+        {
+            enemy.render(graphics);
+        }
 
         SDL_RenderPresent(renderer);
+    }
+
+    void GameControl::spawnEnemies()
+    {
+        uint32_t currentTime = SDL_GetTicks();
+        const uint32_t spawnInterval = 2000;
+
+        if (spawnedEnemyCount < 100 && currentTime - lastSpawnTime >= spawnInterval)
+        {
+            Enemy enemy(100, 20, 1.0f, "Fireball");
+
+            auto path = map.extractPath();
+            if (!path.empty())
+            {
+                enemy.setPosition(path[0].first, path[0].second);
+            }
+
+            activeEnemies.push_back(enemy);
+            ++spawnedEnemyCount;
+            lastSpawnTime = currentTime;
+        }
     }
 }

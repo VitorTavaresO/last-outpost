@@ -5,6 +5,7 @@
 #include <last-outpost/map.h>
 #include <last-outpost/graphics.h>
 #include <last-outpost/enemy.h>
+#include <vector>
 
 namespace Game
 {
@@ -18,12 +19,15 @@ namespace Game
         SDL_Renderer *renderer;
         Graphics graphics;
         Map map;
-        Enemy enemy;
         bool running;
+        std::vector<Enemy> activeEnemies;
+        uint32_t lastSpawnTime;
+        float spawnedEnemyCount;
 
         void handleEvents();
         void update();
         void render();
+        void spawnEnemies();
     };
 }
 
