@@ -1,9 +1,7 @@
 #include <SDL.h>
 #include <iostream>
 #include <last-outpost/globals.h>
-#include <last-outpost/map.h>
-#include <last-outpost/graphics.h>
-#include <last-outpost/enemy.h>
+#include <last-outpost/game_control.h>
 
 namespace Game
 {
@@ -32,45 +30,8 @@ namespace Game
             return 1;
         }
 
-        constexpr int TILES_X = 32;
-        constexpr int TILES_Y = 18;
-
-        Map map(TILES_X, TILES_Y, rawStringMap);
-
-        Graphics graphics(SCREEN_WIDTH, SCREEN_HEIGHT, TILES_X, TILES_Y, renderer);
-
-        bool running = true;
-        SDL_Event event;
-
-        Enemy enemy(100, 20, 2.0f, "Fireball");
-        enemy.setSize(1, 1);
-
-        auto path = map.extractPath();
-        if (!path.empty())
-        {
-            enemy.setPosition(path[0].first, path[0].second);
-        }
-
-        while (running)
-        {
-            while (SDL_PollEvent(&event))
-            {
-                if (event.type == SDL_QUIT)
-                {
-                    running = false;
-                }
-            }
-
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            SDL_RenderClear(renderer);
-
-            map.render(graphics);
-
-            enemy.update(path);
-            enemy.render(graphics);
-
-            SDL_RenderPresent(renderer);
-        }
+        GameControl gameControl(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+        gameControl.run();
 
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
