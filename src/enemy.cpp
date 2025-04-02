@@ -9,7 +9,7 @@ namespace Game
 
     void Enemy::update(const std::vector<std::pair<int, int>> &path)
     {
-        if (path.empty() || currentStep >= path.size())
+        if (path.empty() || currentStep >= path.size() - 1)
         {
             return;
         }
@@ -17,12 +17,22 @@ namespace Game
         Uint32 currentTime = SDL_GetTicks();
         Uint32 moveInterval = static_cast<Uint32>(1000 / speed);
 
-        if (currentTime - lastMoveTime >= moveInterval)
+        float t = static_cast<float>(currentTime - lastMoveTime) / moveInterval;
+
+        if (t >= 1.0f)
         {
-            setPosition(path[currentStep].first, path[currentStep].second);
-            ++currentStep;
             lastMoveTime = currentTime;
+            ++currentStep;
+            t = 0.0f;
         }
+
+        auto [currentX, currentY] = path[currentStep];
+        auto [nextX, nextY] = path[currentStep + 1];
+
+        float interpolatedX = currentX + t * (nextX - currentX);
+        float interpolatedY = currentY + t * (nextY - currentY);
+
+        setPosition(interpolatedX, interpolatedY);
     }
 
     void Enemy::render(Graphics &graphics) const
