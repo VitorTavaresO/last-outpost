@@ -2,10 +2,12 @@
 
 namespace Game
 {
+    constexpr int TILES_X = 32;
+    constexpr int TILES_Y = 18;
     GameControl::GameControl(SDL_Renderer *renderer, int screenWidth, int screenHeight)
         : renderer(renderer),
-          graphics(screenWidth, screenHeight, 32, 18, renderer),
-          map(32, 18, rawStringMap),
+          graphics(screenWidth, screenHeight, TILES_X, TILES_Y, renderer),
+          map(TILES_X, TILES_Y, rawStringMap),
           enemy(100, 20, 1.0f, "Fireball"),
           running(true)
     {

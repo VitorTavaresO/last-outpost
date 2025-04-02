@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __LAST_OUTPOST_GAME_CONTROL_H__
+#define __LAST_OUTPOST_GAME_CONTROL_H__
 
 #include <SDL.h>
 #include <last-outpost/map.h>
@@ -25,3 +26,5 @@ namespace Game
         void render();
     };
 }
+
+#endif
