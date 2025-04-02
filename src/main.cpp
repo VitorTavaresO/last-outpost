@@ -31,7 +31,9 @@ namespace Game
             return 1;
         }
 
-        std::vector<Enemy> enemyTypes = {Enemy(100, 20, 5.0f, "Fireball")};
+        std::vector<Enemy> enemyTypes = {Enemy(100, 20, 1.0f, "Fireball"),
+                                         Enemy(150, 30, 5.0f, "Ice Spike"),
+                                         Enemy(200, 40, 10.0f, "Lightning Bolt")};
 
         Level LEVEL_1(rawStringMap, enemyTypes, 100);
 

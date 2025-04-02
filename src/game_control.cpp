@@ -67,11 +67,13 @@ namespace Game
         uint32_t currentTime = SDL_GetTicks();
         const uint32_t spawnInterval = 2000;
 
+        static size_t enemyTypeIndex = 0;
+
         if (spawnedEnemyCount < level.getEnemyCount() && currentTime - lastSpawnTime >= spawnInterval)
         {
             if (!level.getEnemyTypes().empty())
             {
-                Enemy enemy = level.getEnemyTypes()[0];
+                Enemy enemy = level.getEnemyTypes()[enemyTypeIndex];
 
                 auto path = map.extractPath();
                 if (!path.empty())
@@ -82,6 +84,8 @@ namespace Game
                 activeEnemies.push_back(enemy);
                 ++spawnedEnemyCount;
                 lastSpawnTime = currentTime;
+
+                enemyTypeIndex = (enemyTypeIndex + 1) % level.getEnemyTypes().size();
             }
         }
     }
