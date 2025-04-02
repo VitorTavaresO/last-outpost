@@ -5,6 +5,7 @@
 #include <last-outpost/map.h>
 #include <last-outpost/graphics.h>
 #include <last-outpost/enemy.h>
+#include <last-outpost/level.h>
 #include <vector>
 
 namespace Game
@@ -12,17 +13,18 @@ namespace Game
     class GameControl
     {
     public:
-        GameControl(SDL_Renderer *renderer, int screenWidth, int screenHeight);
+        GameControl(SDL_Renderer *renderer, int screenWidth, int screenHeight, const Level &level);
         void run();
 
     private:
         SDL_Renderer *renderer;
         Graphics graphics;
         Map map;
-        bool running;
         std::vector<Enemy> activeEnemies;
-        uint32_t lastSpawnTime;
-        float spawnedEnemyCount;
+        const Level &level;
+        bool running;
+        Uint32 lastSpawnTime;
+        int spawnedEnemyCount;
 
         void handleEvents();
         void update();

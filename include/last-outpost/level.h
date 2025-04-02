@@ -11,21 +11,25 @@ namespace Game
     {
     private:
         std::string mapData;
-        std::vector<Enemy> enemies;
+        std::vector<Enemy> enemyTypes;
         float enemyCount;
 
     public:
-        Level(const std::string &mapData, const std::vector<Enemy> &enemies, float enemyCount)
-            : mapData(mapData), enemies(enemies) {}
+        Level(const std::string &mapData, const std::vector<Enemy> &enemyTypes, float enemyCount)
+            : mapData(mapData), enemyTypes(enemyTypes), enemyCount(enemyCount)
+        {
+        }
 
-        const std::string &getMapData() const
+        const std::string getMapData() const
         {
             return mapData;
         }
-        const std::vector<Enemy> &getEnemies() const
+
+        const std::vector<Enemy> getEnemyTypes() const
         {
-            return enemies;
+            return enemyTypes;
         }
+
         float getEnemyCount() const
         {
             return enemyCount;

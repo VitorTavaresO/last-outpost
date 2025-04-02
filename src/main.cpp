@@ -2,6 +2,7 @@
 #include <iostream>
 #include <last-outpost/globals.h>
 #include <last-outpost/game_control.h>
+#include <last-outpost/level.h>
 
 namespace Game
 {
@@ -30,7 +31,11 @@ namespace Game
             return 1;
         }
 
-        GameControl gameControl(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+        std::vector<Enemy> enemyTypes = {Enemy(100, 20, 5.0f, "Fireball")};
+
+        Level LEVEL_1(rawStringMap, enemyTypes, 100);
+
+        GameControl gameControl(renderer, SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_1);
         gameControl.run();
 
         SDL_DestroyRenderer(renderer);
