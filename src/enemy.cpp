@@ -7,32 +7,42 @@ namespace Game
     {
     }
 
-    void Enemy::update(const std::vector<std::pair<int, int>> &path)
+    void Enemy::update(const std::vector<std::pair<int, int>> &path, float deltaTime)
     {
         if (path.empty() || currentStep >= path.size() - 1)
         {
             return;
         }
 
-        Uint32 currentTime = SDL_GetTicks();
-        Uint32 moveInterval = static_cast<Uint32>(1000 / speed);
-
-        float t = static_cast<float>(currentTime - lastMoveTime) / moveInterval;
-
-        if (t >= 1.0f)
-        {
-            lastMoveTime = currentTime;
-            ++currentStep;
-            t = 0.0f;
-        }
-
         auto [currentX, currentY] = path[currentStep];
         auto [nextX, nextY] = path[currentStep + 1];
 
-        float interpolatedX = currentX + t * (nextX - currentX);
-        float interpolatedY = currentY + t * (nextY - currentY);
+        float directionX = nextX - currentX;
+        float directionY = nextY - currentY;
 
-        setPosition(interpolatedX, interpolatedY);
+        float distance = std::sqrt(directionX * directionX + directionY * directionY);
+
+        if (distance > 0.0f)
+        {
+            directionX /= distance;
+            directionY /= distance;
+        }
+
+        float distanceTraveled = speed * deltaTime;
+
+        float newX = getPosition().x + directionX * distanceTraveled;
+        float newY = getPosition().y + directionY * distanceTraveled;
+
+        float remainingDistance = std::sqrt((nextX - newX) * (nextX - newX) + (nextY - newY) * (nextY - newY));
+        if (remainingDistance < distanceTraveled)
+        {
+            ++currentStep;
+            setPosition(nextX, nextY);
+        }
+        else
+        {
+            setPosition(newX, newY);
+        }
     }
 
     void Enemy::render(Graphics &graphics) const

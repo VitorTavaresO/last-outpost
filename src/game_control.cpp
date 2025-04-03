@@ -40,12 +40,19 @@ namespace Game
 
     void GameControl::update()
     {
-        spawnEnemies();
+        static uint32_t lastUpdateTime = SDL_GetTicks();
+        uint32_t currentTime = SDL_GetTicks();
+
+        float deltaTime = (currentTime - lastUpdateTime) / 1000.0f;
+        lastUpdateTime = currentTime;
+
         auto path = map.extractPath();
         for (auto &enemy : activeEnemies)
         {
-            enemy.update(path);
+            enemy.update(path, deltaTime);
         }
+
+        spawnEnemies();
     }
 
     void GameControl::render()

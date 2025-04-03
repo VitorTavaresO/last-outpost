@@ -61,7 +61,7 @@ namespace Game
             return spell;
         }
 
-        void update(const std::vector<std::pair<int, int>> &path);
+        void update(const std::vector<std::pair<int, int>> &path, float deltaTime);
         void render(Graphics &graphics) const override;
     };
 }
