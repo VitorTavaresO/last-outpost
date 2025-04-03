@@ -2,51 +2,41 @@
 
 namespace Game
 {
-    Enemy::Enemy(int life, int damage, float speed, const std::string &spell)
-        : life(life), damage(damage), speed(speed), spell(spell), currentStep(0), lastMoveTime(0)
-    {
-    }
+	Enemy::Enemy(int life, int damage, float speed, const std::string &spell)
+		: life(life), damage(damage), speed(speed), spell(spell), currentStep(0), lastMoveTime(0)
+	{
+	}
 
-    void Enemy::update(const std::vector<std::pair<int, int>> &path, float deltaTime)
-    {
-        if (path.empty() || currentStep >= path.size() - 1)
-        {
-            return;
-        }
+	void Enemy::update(const std::vector<std::pair<int, int>> &path, float deltaTime)
+	{
+		if (path.empty() || currentStep >= path.size() - 1)
+		{
+			return;
+		}
 
-        auto [currentX, currentY] = path[currentStep];
-        auto [nextX, nextY] = path[currentStep + 1];
+		const auto currentPos = Point(path[currentStep].first, path[currentStep].second);
+		const auto nextPos = Point(path[currentStep + 1].first, path[currentStep + 1].second);
+		const auto direction = nextPos - getPosition();
+		const float distance = direction.length();
 
-        float directionX = nextX - currentX;
-        float directionY = nextY - currentY;
+		const float distanceTraveled = speed * deltaTime;
 
-        float distance = std::sqrt(directionX * directionX + directionY * directionY);
+		const auto newPos = getPosition() + Mylib::Math::normalize(direction) * distanceTraveled;
 
-        if (distance > 0.0f)
-        {
-            directionX /= distance;
-            directionY /= distance;
-        }
+		if (distanceTraveled >= distance)
+		{
+			currentStep++;
+			if (currentStep >= path.size())
+			{
+				return;
+			}
+		}
 
-        float distanceTraveled = speed * deltaTime;
+		setPosition(newPos.x, newPos.y);
+	}
 
-        float newX = getPosition().x + directionX * distanceTraveled;
-        float newY = getPosition().y + directionY * distanceTraveled;
-
-        float remainingDistance = std::sqrt((nextX - newX) * (nextX - newX) + (nextY - newY) * (nextY - newY));
-        if (remainingDistance < distanceTraveled)
-        {
-            ++currentStep;
-            setPosition(nextX, nextY);
-        }
-        else
-        {
-            setPosition(newX, newY);
-        }
-    }
-
-    void Enemy::render(Graphics &graphics) const
-    {
-        graphics.drawRect(getPosition(), {1, 1}, {255, 0, 0, 255});
-    }
+	void Enemy::render(Graphics &graphics) const
+	{
+		graphics.drawRect(getPosition(), {1, 1}, {255, 0, 0, 255});
+	}
 }

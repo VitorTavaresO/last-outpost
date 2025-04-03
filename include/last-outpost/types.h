@@ -6,6 +6,7 @@
 namespace Game
 {
     using Vector = Mylib::Math::Vector<float, 2>;
+    using Point = Vector;
 }
 
 #endif
