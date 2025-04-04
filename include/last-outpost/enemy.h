@@ -16,11 +16,12 @@ namespace Game
 		int damage;
 		float speed;
 		std::string spell;
-		size_t currentStep;
+		std::vector<PathPoint> path;
 		uint32_t lastMoveTime;
+		size_t currentStep;
 
 	public:
-		Enemy(int life = 100, int damage = 10, float speed = 1.0f, const std::string &spell = "");
+		Enemy(int life = 100, int damage = 10, float speed = 1.0f, const std::string &spell = "", const std::vector<PathPoint> &path = {});
 
 		using Object::setPosition;
 
@@ -69,8 +70,8 @@ namespace Game
 			return spell;
 		}
 
-		void update(const std::vector<PathPoint> &path, float deltaTime);
-		void render(Graphics &graphics) const override;
+		void update(float deltaTime);
+		void render(Graphics &graphics, float deltaTime) const override;
 	};
 }
 

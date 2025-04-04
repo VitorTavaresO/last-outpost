@@ -139,18 +139,18 @@ namespace Game
 		return path;
 	}
 
-	void Map::render(Graphics &graphics) const
+	void Map::render(Graphics &graphics, float deltaTime) const
 	{
 		for (uint32_t row = 0; row < terrain.get_nrows(); ++row)
 		{
 			for (uint32_t col = 0; col < terrain.get_ncols(); ++col)
 			{
-				terrain[row, col].object.render(graphics);
+				terrain[row, col].object.render(graphics, deltaTime);
 			}
 		}
 	}
 
-	void Map::update()
+	void Map::update(float deltaTime)
 	{
 	}
 

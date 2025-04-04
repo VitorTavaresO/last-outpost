@@ -29,8 +29,8 @@ namespace Game
 	public:
 		Map(int width, int height, const std::string &mapString);
 
-		void update() override final;
-		void render(Graphics &graphics) const override final;
+		void update(float deltaTime) override final;
+		void render(Graphics &graphics, float deltaTime) const override final;
 
 		inline Tile &operator()(const uint32_t row, const uint32_t col)
 		{

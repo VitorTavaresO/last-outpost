@@ -3,12 +3,12 @@
 
 namespace Game
 {
-	Enemy::Enemy(int life, int damage, float speed, const std::string &spell)
-		: life(life), damage(damage), speed(speed), spell(spell), currentStep(0), lastMoveTime(0)
+	Enemy::Enemy(int life, int damage, float speed, const std::string &spell, const std::vector<PathPoint> &path)
+		: life(life), damage(damage), speed(speed), spell(spell), path(path), lastMoveTime(0), currentStep(0)
 	{
 	}
 
-	void Enemy::update(const std::vector<PathPoint> &path, float deltaTime)
+	void Enemy::update(float deltaTime)
 	{
 		if (path.empty() || currentStep >= path.size() - 1)
 		{
@@ -38,7 +38,7 @@ namespace Game
 		setPosition(position);
 	}
 
-	void Enemy::render(Graphics &graphics) const
+	void Enemy::render(Graphics &graphics, float deltaTime) const
 	{
 		graphics.drawRect(getPosition(), {1, 1}, {255, 0, 0, 255});
 	}

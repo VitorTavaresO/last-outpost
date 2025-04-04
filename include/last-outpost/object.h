@@ -7,50 +7,50 @@
 
 namespace Game
 {
-    class Object
-    {
-    private:
-        SDL_Color color;
-        Vector position;
-        Vector size;
+	class Object
+	{
+	private:
+		SDL_Color color;
+		Vector position;
+		Vector size;
 
-    public:
-        Object();
-        virtual ~Object() = default;
+	public:
+		Object();
+		virtual ~Object() = default;
 
-        virtual void update();
-        virtual void render(Graphics &graphics) const;
+		virtual void update(float deltaTime);
+		virtual void render(Graphics &graphics, float deltaTime) const;
 
-        void setColor(const SDL_Color &color)
-        {
-            this->color = color;
-        }
+		void setColor(const SDL_Color &color)
+		{
+			this->color = color;
+		}
 
-        SDL_Color getColor() const
-        {
-            return color;
-        }
+		SDL_Color getColor() const
+		{
+			return this->color;
+		}
 
-        void setPosition(float x, float y)
-        {
-            this->position = {x, y};
-        }
+		void setPosition(float x, float y)
+		{
+			this->position = {x, y};
+		}
 
-        Vector getPosition() const
-        {
-            return position;
-        }
+		Vector getPosition() const
+		{
+			return this->position;
+		}
 
-        void setSize(float width, float height)
-        {
-            this->size = {width, height};
-        }
+		void setSize(float width, float height)
+		{
+			this->size = {width, height};
+		}
 
-        Vector getSize() const
-        {
-            return size;
-        }
-    };
+		Vector getSize() const
+		{
+			return this->size;
+		}
+	};
 }
 
 #endif

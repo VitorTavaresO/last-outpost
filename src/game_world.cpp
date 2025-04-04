@@ -1,3 +1,4 @@
+#include <utility>
 #include <last-outpost/game_world.h>
 
 namespace Game
@@ -5,11 +6,11 @@ namespace Game
 	constexpr int TILES_X = 32;
 	constexpr int TILES_Y = 18;
 
-	GameWorld::GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, const Level &level)
+	GameWorld::GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, Level &&level)
 		: renderer(renderer),
 		  graphics(screenWidth, screenHeight, TILES_X, TILES_Y, renderer),
 		  map(TILES_X, TILES_Y, level.getMapData()),
-		  level(level),
+		  level(std::move(level)),
 		  running(true),
 		  lastSpawnTime(0),
 		  lastUpdateTime(SDL_GetTicks()),
@@ -49,7 +50,7 @@ namespace Game
 		auto path = map.extractPath();
 		for (auto &enemy : activeEnemies)
 		{
-			enemy.update(path, deltaTime);
+			enemy.update(deltaTime);
 		}
 
 		spawnEnemies();
@@ -60,10 +61,13 @@ namespace Game
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
 
-		map.render(graphics);
+		uint32_t currentTime = SDL_GetTicks();
+		float deltaTime = (currentTime - lastUpdateTime) / 1000.0f;
+
+		map.render(graphics, deltaTime);
 		for (const auto &enemy : activeEnemies)
 		{
-			enemy.render(graphics);
+			enemy.render(graphics, deltaTime);
 		}
 
 		SDL_RenderPresent(renderer);

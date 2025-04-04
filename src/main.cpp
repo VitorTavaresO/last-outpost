@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <iostream>
+#include <utility>
 #include <last-outpost/globals.h>
 #include <last-outpost/game_world.h>
 #include <last-outpost/level.h>
@@ -31,13 +32,15 @@ namespace Game
 			return 1;
 		}
 
-		std::vector<Enemy> enemyTypes = {Enemy(100, 20, 1.0f, "Fireball"),
-										 Enemy(150, 30, 5.0f, "Ice Spike"),
-										 Enemy(200, 40, 10.0f, "Lightning Bolt")};
+		Map map(32, 18, rawStringMap);
+		auto path = map.extractPath();
 
-		Level LEVEL_1(rawStringMap, enemyTypes, 100);
+		std::vector<Enemy> enemyTypes = {Enemy(100, 20, 1.0f, "Fireball", path),
+										 Enemy(150, 30, 5.0f, "Ice Spike", path),
+										 Enemy(200, 40, 10.0f, "Lightning Bolt", path)};
 
-		GameWorld gameWorld(renderer, SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_1);
+		Level LEVEL_1(rawStringMap, std::move(enemyTypes), 100);
+		GameWorld gameWorld(renderer, SCREEN_WIDTH, SCREEN_HEIGHT, std::move(LEVEL_1));
 		gameWorld.run();
 
 		SDL_DestroyRenderer(renderer);

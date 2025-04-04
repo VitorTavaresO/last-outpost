@@ -13,7 +13,7 @@ namespace Game
 	class GameWorld
 	{
 	public:
-		GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, const Level &level);
+		GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, Level &&level);
 		void run();
 
 	private:
@@ -21,7 +21,7 @@ namespace Game
 		Graphics graphics;
 		Map map;
 		std::vector<Enemy> activeEnemies;
-		const Level &level;
+		Level level;
 		bool running;
 		uint32_t lastSpawnTime;
 		uint32_t lastUpdateTime;
