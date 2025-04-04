@@ -21,7 +21,7 @@ namespace Game
 		size_t currentStep;
 
 	public:
-		Enemy(int life = 100, int damage = 10, float speed = 1.0f, const std::string &spell = "", const std::vector<PathPoint> &path = {});
+		Enemy(int life = 100, int damage = 10, float speed = 1.0f, const std::string &spell = "", std::vector<PathPoint> path = {});
 
 		using Object::setPosition;
 

@@ -1,11 +1,9 @@
 #include <utility>
 #include <last-outpost/game_world.h>
+#include <last-outpost/globals.h>
 
 namespace Game
 {
-	constexpr int TILES_X = 32;
-	constexpr int TILES_Y = 18;
-
 	GameWorld::GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, Level &&level)
 		: renderer(renderer),
 		  graphics(screenWidth, screenHeight, TILES_X, TILES_Y, renderer),
@@ -47,7 +45,6 @@ namespace Game
 		float deltaTime = (currentTime - lastUpdateTime) / 1000.0f;
 		lastUpdateTime = currentTime;
 
-		auto path = map.extractPath();
 		for (auto &enemy : activeEnemies)
 		{
 			enemy.update(deltaTime);
@@ -76,7 +73,7 @@ namespace Game
 	void GameWorld::spawnEnemies()
 	{
 		uint32_t currentTime = SDL_GetTicks();
-		const uint32_t spawnInterval = 2000;
+		constexpr uint32_t spawnInterval = 2000;
 
 		static size_t enemyTypeIndex = 0;
 
@@ -84,15 +81,8 @@ namespace Game
 		{
 			if (!level.getEnemyTypes().empty())
 			{
-				Enemy enemy = level.getEnemyTypes()[enemyTypeIndex];
 
-				auto path = map.extractPath();
-				if (!path.empty())
-				{
-					enemy.setPosition(path[0].x, path[0].y);
-				}
-
-				activeEnemies.push_back(enemy);
+				activeEnemies.push_back(level.getEnemyTypes()[enemyTypeIndex]);
 				++spawnedEnemyCount;
 				lastSpawnTime = currentTime;
 

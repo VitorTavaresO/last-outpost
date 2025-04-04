@@ -4,6 +4,7 @@
 #include <last-outpost/globals.h>
 #include <last-outpost/game_world.h>
 #include <last-outpost/level.h>
+#include <last-outpost/globals.h>
 
 namespace Game
 {
@@ -32,7 +33,7 @@ namespace Game
 			return 1;
 		}
 
-		Map map(32, 18, rawStringMap);
+		Map map(TILES_X, TILES_Y, rawStringMap);
 		auto path = map.extractPath();
 
 		std::vector<Enemy> enemyTypes = {Enemy(100, 20, 1.0f, "Fireball", path),
