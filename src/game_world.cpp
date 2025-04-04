@@ -12,9 +12,9 @@ namespace Game
 		  level(std::move(level)),
 		  running(true),
 		  lastSpawnTime(0),
-		  lastUpdateTime(SDL_GetTicks()),
+		  lastUpdateTime(getTimeInSeconds()),
 		  spawnedEnemyCount(0),
-		  enemyTypeIndex(0) // Initialize enemyTypeIndex
+		  enemyTypeIndex(0)
 	{
 	}
 
@@ -42,7 +42,7 @@ namespace Game
 
 	void GameWorld::update()
 	{
-		uint32_t currentTime = SDL_GetTicks();
+		float currentTime = SDL_GetTicks();
 
 		float deltaTime = (currentTime - lastUpdateTime) / 1000.0f;
 		lastUpdateTime = currentTime;
@@ -74,8 +74,8 @@ namespace Game
 
 	void GameWorld::spawnEnemies()
 	{
-		uint32_t currentTime = SDL_GetTicks();
-		constexpr uint32_t spawnInterval = 2000;
+		float currentTime = getTimeInSeconds();
+		constexpr float spawnInterval = 2.0f;
 
 		if (spawnedEnemyCount < level.getEnemyCount() && currentTime - lastSpawnTime >= spawnInterval)
 		{
