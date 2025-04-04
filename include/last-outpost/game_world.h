@@ -23,7 +23,8 @@ namespace Game
 		std::vector<Enemy> activeEnemies;
 		const Level &level;
 		bool running;
-		Uint32 lastSpawnTime;
+		uint32_t lastSpawnTime;
+		uint32_t lastUpdateTime;
 		int spawnedEnemyCount;
 
 		void handleEvents();

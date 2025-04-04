@@ -12,6 +12,7 @@ namespace Game
 		  level(level),
 		  running(true),
 		  lastSpawnTime(0),
+		  lastUpdateTime(SDL_GetTicks()), // Inicializa lastUpdateTime aqui
 		  spawnedEnemyCount(0)
 	{
 	}
@@ -40,7 +41,6 @@ namespace Game
 
 	void GameWorld::update()
 	{
-		static uint32_t lastUpdateTime = SDL_GetTicks();
 		uint32_t currentTime = SDL_GetTicks();
 
 		float deltaTime = (currentTime - lastUpdateTime) / 1000.0f;
