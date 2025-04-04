@@ -22,9 +22,12 @@ namespace Game
 	{
 		while (running)
 		{
+			float currentTime = SDL_GetTicks();
+			float deltaTime = (currentTime - lastUpdateTime) / 1000.0f;
+
 			handleEvents();
-			update();
-			render();
+			update(deltaTime);
+			render(deltaTime);
 		}
 	}
 
@@ -40,11 +43,9 @@ namespace Game
 		}
 	}
 
-	void GameWorld::update()
+	void GameWorld::update(float deltaTime)
 	{
 		float currentTime = SDL_GetTicks();
-
-		float deltaTime = (currentTime - lastUpdateTime) / 1000.0f;
 		lastUpdateTime = currentTime;
 
 		for (auto &enemy : activeEnemies)
@@ -55,14 +56,10 @@ namespace Game
 		spawnEnemies();
 	}
 
-	void GameWorld::render()
+	void GameWorld::render(float deltaTime)
 	{
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
-
-		uint32_t currentTime = SDL_GetTicks();
-		float deltaTime = (currentTime - lastUpdateTime) / 1000.0f;
-
 		map.render(graphics, deltaTime);
 		for (const auto &enemy : activeEnemies)
 		{
