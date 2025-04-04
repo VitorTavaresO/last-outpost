@@ -1,12 +1,13 @@
 #ifndef __LAST_OUTPOST_GAME_WORLD_H__
 #define __LAST_OUTPOST_GAME_WORLD_H__
 
+#include <vector>
+#include <memory>
 #include <SDL.h>
 #include <last-outpost/map.h>
 #include <last-outpost/graphics.h>
 #include <last-outpost/enemy.h>
 #include <last-outpost/level.h>
-#include <vector>
 
 namespace Game
 {
@@ -20,7 +21,7 @@ namespace Game
 		SDL_Renderer *renderer;
 		Graphics graphics;
 		Map map;
-		std::vector<Enemy> activeEnemies;
+		std::vector<std::unique_ptr<Enemy>> activeEnemies;
 		Level level;
 		bool running;
 		uint32_t lastSpawnTime;

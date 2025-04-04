@@ -1,4 +1,5 @@
 #include <utility>
+#include <memory>
 #include <last-outpost/game_world.h>
 #include <last-outpost/globals.h>
 
@@ -47,7 +48,7 @@ namespace Game
 
 		for (auto &enemy : activeEnemies)
 		{
-			enemy.update(deltaTime);
+			enemy->update(deltaTime);
 		}
 
 		spawnEnemies();
@@ -64,7 +65,7 @@ namespace Game
 		map.render(graphics, deltaTime);
 		for (const auto &enemy : activeEnemies)
 		{
-			enemy.render(graphics, deltaTime);
+			enemy->render(graphics, deltaTime);
 		}
 
 		SDL_RenderPresent(renderer);
@@ -81,9 +82,9 @@ namespace Game
 		{
 			if (!level.getEnemyTypes().empty())
 			{
-				const Enemy &enemy = level.getEnemyTypes()[enemyTypeIndex];
+				auto enemy = std::make_unique<Enemy>(level.getEnemyTypes()[enemyTypeIndex]);
 
-				activeEnemies.push_back(enemy);
+				activeEnemies.push_back(std::move(enemy));
 				++spawnedEnemyCount;
 				lastSpawnTime = currentTime;
 
