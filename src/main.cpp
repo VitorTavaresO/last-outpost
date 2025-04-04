@@ -1,56 +1,56 @@
 #include <SDL.h>
 #include <iostream>
 #include <last-outpost/globals.h>
-#include <last-outpost/game_control.h>
+#include <last-outpost/game_world.h>
 #include <last-outpost/level.h>
 
 namespace Game
 {
-    int main(int argc, char **argv)
-    {
-        if (SDL_Init(SDL_INIT_VIDEO) < 0)
-        {
-            std::cerr << "Error on start SDL: " << SDL_GetError() << std::endl;
-            return 1;
-        }
+	int main(int argc, char **argv)
+	{
+		if (SDL_Init(SDL_INIT_VIDEO) < 0)
+		{
+			std::cerr << "Error on start SDL: " << SDL_GetError() << std::endl;
+			return 1;
+		}
 
-        SDL_Window *window = SDL_CreateWindow("View Map", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-        if (window == nullptr)
-        {
-            std::cerr << "Error on Window Creation " << SDL_GetError() << std::endl;
-            SDL_Quit();
-            return 1;
-        }
+		SDL_Window *window = SDL_CreateWindow("View Map", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		if (window == nullptr)
+		{
+			std::cerr << "Error on Window Creation " << SDL_GetError() << std::endl;
+			SDL_Quit();
+			return 1;
+		}
 
-        SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-        if (renderer == nullptr)
-        {
-            std::cerr << "Error on render creation: " << SDL_GetError() << std::endl;
-            SDL_DestroyWindow(window);
-            SDL_Quit();
-            return 1;
-        }
+		SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+		if (renderer == nullptr)
+		{
+			std::cerr << "Error on render creation: " << SDL_GetError() << std::endl;
+			SDL_DestroyWindow(window);
+			SDL_Quit();
+			return 1;
+		}
 
-        std::vector<Enemy> enemyTypes = {Enemy(100, 20, 1.0f, "Fireball"),
-                                         Enemy(150, 30, 5.0f, "Ice Spike"),
-                                         Enemy(200, 40, 10.0f, "Lightning Bolt")};
+		std::vector<Enemy> enemyTypes = {Enemy(100, 20, 1.0f, "Fireball"),
+										 Enemy(150, 30, 5.0f, "Ice Spike"),
+										 Enemy(200, 40, 10.0f, "Lightning Bolt")};
 
-        Level LEVEL_1(rawStringMap, enemyTypes, 100);
+		Level LEVEL_1(rawStringMap, enemyTypes, 100);
 
-        GameControl gameControl(renderer, SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_1);
-        gameControl.run();
+		GameWorld gameWorld(renderer, SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_1);
+		gameWorld.run();
 
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        SDL_Quit();
+		SDL_DestroyRenderer(renderer);
+		SDL_DestroyWindow(window);
+		SDL_Quit();
 
-        return 0;
-    }
+		return 0;
+	}
 }
 
 //--------------------- end namespace Game ---------------------
 
 int main(int argc, char **argv)
 {
-    return Game::main(argc, argv);
+	return Game::main(argc, argv);
 }

@@ -8,62 +8,62 @@
 
 namespace Game
 {
-    class Enemy : public Object
-    {
-    private:
-        int life;
-        int damage;
-        float speed;
-        std::string spell;
-        size_t currentStep;
-        Uint32 lastMoveTime;
+	class Enemy : public Object
+	{
+	private:
+		int life;
+		int damage;
+		float speed;
+		std::string spell;
+		size_t currentStep;
+		uint32_t lastMoveTime;
 
-    public:
-        Enemy(int life = 100, int damage = 10, float speed = 1.0f, const std::string &spell = "");
+	public:
+		Enemy(int life = 100, int damage = 10, float speed = 1.0f, const std::string &spell = "");
 
-        void setLife(int life)
-        {
-            this->life = life;
-        }
+		void setLife(int life)
+		{
+			this->life = life;
+		}
 
-        int getLife() const
-        {
-            return life;
-        }
+		int getLife() const
+		{
+			return life;
+		}
 
-        void setDamage(int damage)
-        {
-            this->damage = damage;
-        }
+		void setDamage(int damage)
+		{
+			this->damage = damage;
+		}
 
-        int getDamage() const
-        {
-            return damage;
-        }
+		int getDamage() const
+		{
+			return damage;
+		}
 
-        void setSpeed(float speed)
-        {
-            this->speed = speed;
-        }
+		void setSpeed(float speed)
+		{
+			this->speed = speed;
+		}
 
-        float getSpeed() const
-        {
-            return speed;
-        }
+		float getSpeed() const
+		{
+			return speed;
+		}
 
-        void setSpell(const std::string &spell)
-        {
-            this->spell = spell;
-        }
+		void setSpell(const std::string &spell)
+		{
+			this->spell = spell;
+		}
 
-        const std::string &getSpell() const
-        {
-            return spell;
-        }
+		const std::string &getSpell() const
+		{
+			return spell;
+		}
 
-        void update(const std::vector<std::pair<int, int>> &path, float deltaTime);
-        void render(Graphics &graphics) const override;
-    };
+		void update(const std::vector<std::pair<int, int>> &path, float deltaTime);
+		void render(Graphics &graphics) const override;
+	};
 }
 
 #endif

@@ -14,14 +14,14 @@ namespace Game
 			return;
 		}
 
-		const auto currentPos = Point(path[currentStep].first, path[currentStep].second);
+		const auto currentPos = getPosition();
 		const auto nextPos = Point(path[currentStep + 1].first, path[currentStep + 1].second);
-		const auto direction = nextPos - getPosition();
+		const auto direction = nextPos - currentPos;
 		const float distance = direction.length();
 
 		const float distanceTraveled = speed * deltaTime;
 
-		const auto newPos = getPosition() + Mylib::Math::normalize(direction) * distanceTraveled;
+		const auto newPos = currentPos + Mylib::Math::normalize(direction) * distanceTraveled;
 
 		if (distanceTraveled >= distance)
 		{
