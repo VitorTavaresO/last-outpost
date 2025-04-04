@@ -1,4 +1,5 @@
 #include <last-outpost/enemy.h>
+#include <last-outpost/types.h>
 
 namespace Game
 {
@@ -7,7 +8,7 @@ namespace Game
 	{
 	}
 
-	void Enemy::update(const std::vector<std::pair<int, int>> &path, float deltaTime)
+	void Enemy::update(const std::vector<PathPoint> &path, float deltaTime)
 	{
 		if (path.empty() || currentStep >= path.size() - 1)
 		{
@@ -15,13 +16,15 @@ namespace Game
 		}
 
 		const auto currentPos = getPosition();
-		const auto nextPos = Point(path[currentStep + 1].first, path[currentStep + 1].second);
+		const auto nextPos = Point(path[currentStep + 1].x, path[currentStep + 1].y);
 		const auto direction = nextPos - currentPos;
 		const float distance = direction.length();
 
 		const float distanceTraveled = speed * deltaTime;
 
 		const auto newPos = currentPos + Mylib::Math::normalize(direction) * distanceTraveled;
+
+		Point position(newPos.x, newPos.y);
 
 		if (distanceTraveled >= distance)
 		{
@@ -32,7 +35,7 @@ namespace Game
 			}
 		}
 
-		setPosition(newPos.x, newPos.y);
+		setPosition(position);
 	}
 
 	void Enemy::render(Graphics &graphics) const

@@ -5,8 +5,16 @@
 
 namespace Game
 {
-    using Vector = Mylib::Math::Vector<float, 2>;
-    using Point = Vector;
+	using Vector = Mylib::Math::Vector<float, 2>;
+	using Point = Vector;
+
+	struct PathPoint
+	{
+		int x;
+		int y;
+
+		PathPoint(int x = 0, int y = 0) : x(x), y(y) {}
+	};
 }
 
 #endif

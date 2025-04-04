@@ -2,6 +2,7 @@
 #define __LAST_OUTPOST_ENEMY_H__
 
 #include <last-outpost/object.h>
+#include <last-outpost/types.h>
 #include <string>
 #include <vector>
 #include <utility>
@@ -20,6 +21,13 @@ namespace Game
 
 	public:
 		Enemy(int life = 100, int damage = 10, float speed = 1.0f, const std::string &spell = "");
+
+		using Object::setPosition;
+
+		void setPosition(const Point &position)
+		{
+			setPosition(position.x, position.y);
+		}
 
 		void setLife(int life)
 		{
@@ -61,7 +69,7 @@ namespace Game
 			return spell;
 		}
 
-		void update(const std::vector<std::pair<int, int>> &path, float deltaTime);
+		void update(const std::vector<PathPoint> &path, float deltaTime);
 		void render(Graphics &graphics) const override;
 	};
 }

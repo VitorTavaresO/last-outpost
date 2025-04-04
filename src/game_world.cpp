@@ -12,7 +12,7 @@ namespace Game
 		  level(level),
 		  running(true),
 		  lastSpawnTime(0),
-		  lastUpdateTime(SDL_GetTicks()), // Inicializa lastUpdateTime aqui
+		  lastUpdateTime(SDL_GetTicks()),
 		  spawnedEnemyCount(0)
 	{
 	}
@@ -85,7 +85,7 @@ namespace Game
 				auto path = map.extractPath();
 				if (!path.empty())
 				{
-					enemy.setPosition(path[0].first, path[0].second);
+					enemy.setPosition(path[0].x, path[0].y);
 				}
 
 				activeEnemies.push_back(enemy);
