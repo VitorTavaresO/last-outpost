@@ -13,7 +13,8 @@ namespace Game
 		  running(true),
 		  lastSpawnTime(0),
 		  lastUpdateTime(SDL_GetTicks()),
-		  spawnedEnemyCount(0)
+		  spawnedEnemyCount(0),
+		  enemyTypeIndex(0) // Initialize enemyTypeIndex
 	{
 	}
 
@@ -75,8 +76,6 @@ namespace Game
 	{
 		uint32_t currentTime = SDL_GetTicks();
 		constexpr uint32_t spawnInterval = 2000;
-
-		static size_t enemyTypeIndex = 0;
 
 		if (spawnedEnemyCount < level.getEnemyCount() && currentTime - lastSpawnTime >= spawnInterval)
 		{

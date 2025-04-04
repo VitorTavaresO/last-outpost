@@ -27,6 +27,7 @@ namespace Game
 		uint32_t lastSpawnTime;
 		uint32_t lastUpdateTime;
 		int spawnedEnemyCount;
+		size_t enemyTypeIndex; // Added as a private attribute
 
 		void handleEvents();
 		void update();
