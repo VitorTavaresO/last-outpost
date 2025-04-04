@@ -36,9 +36,9 @@ namespace Game
 		Map map(TILES_X, TILES_Y, rawStringMap);
 		auto path = map.extractPath();
 
-		std::vector<Enemy> enemyTypes = {Enemy(100, 20, 1.0f, "Fireball", path),
-										 Enemy(150, 30, 5.0f, "Ice Spike", path),
-										 Enemy(200, 40, 10.0f, "Lightning Bolt", path)};
+		std::vector<Enemy> enemyTypes = {Enemy(100, 20, 0.1f, "Fireball", path),
+										 Enemy(150, 30, .5f, "Ice Spike", path),
+										 Enemy(200, 40, 1.0f, "Lightning Bolt", path)};
 
 		Level LEVEL_1(rawStringMap, std::move(enemyTypes), 100);
 		GameWorld gameWorld(renderer, SCREEN_WIDTH, SCREEN_HEIGHT, std::move(LEVEL_1));

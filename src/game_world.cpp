@@ -22,12 +22,14 @@ namespace Game
 	{
 		while (running)
 		{
-			float currentTime = SDL_GetTicks();
-			float deltaTime = (currentTime - lastUpdateTime) / 1000.0f;
+			float currentTime = getTimeInSeconds();
+			float deltaTime = std::min(currentTime - lastUpdateTime, 0.016f);
 
 			handleEvents();
 			update(deltaTime);
 			render(deltaTime);
+
+			lastUpdateTime = currentTime;
 		}
 	}
 
@@ -45,7 +47,7 @@ namespace Game
 
 	void GameWorld::update(float deltaTime)
 	{
-		float currentTime = SDL_GetTicks();
+		float currentTime = getTimeInSeconds();
 		lastUpdateTime = currentTime;
 
 		for (auto &enemy : activeEnemies)

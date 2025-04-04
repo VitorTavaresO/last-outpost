@@ -12,7 +12,7 @@ namespace Game
 
 	inline float getTimeInSeconds()
 	{
-		return SDL_GetTicks() / 1000.0f;
+		return static_cast<float>(SDL_GetTicks()) / 1000.0f;
 	}
 }
 
