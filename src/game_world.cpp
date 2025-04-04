@@ -81,8 +81,9 @@ namespace Game
 		{
 			if (!level.getEnemyTypes().empty())
 			{
+				const Enemy &enemy = level.getEnemyTypes()[enemyTypeIndex];
 
-				activeEnemies.push_back(level.getEnemyTypes()[enemyTypeIndex]);
+				activeEnemies.push_back(enemy);
 				++spawnedEnemyCount;
 				lastSpawnTime = currentTime;
 

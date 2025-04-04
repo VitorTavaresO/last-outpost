@@ -26,7 +26,7 @@ namespace Game
 			return mapData;
 		}
 
-		const std::vector<Enemy> getEnemyTypes() const
+		const std::vector<Enemy> &getEnemyTypes() const
 		{
 			return enemyTypes;
 		}
