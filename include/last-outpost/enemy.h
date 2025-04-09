@@ -37,7 +37,7 @@ namespace Game
 
 		int getLife() const
 		{
-			return life;
+			return this->life;
 		}
 
 		void setDamage(int damage)
@@ -47,7 +47,7 @@ namespace Game
 
 		int getDamage() const
 		{
-			return damage;
+			return this->damage;
 		}
 
 		void setSpeed(float speed)
@@ -57,7 +57,7 @@ namespace Game
 
 		float getSpeed() const
 		{
-			return speed;
+			return this->speed;
 		}
 
 		void setSpell(const std::string &spell)
@@ -67,7 +67,7 @@ namespace Game
 
 		const std::string &getSpell() const
 		{
-			return spell;
+			return this->spell;
 		}
 
 		void update(float deltaTime) override;

@@ -23,17 +23,17 @@ namespace Game
 
 		const std::string getMapData() const
 		{
-			return mapData;
+			return this->mapData;
 		}
 
 		const std::vector<Enemy> &getEnemyTypes() const
 		{
-			return enemyTypes;
+			return this->enemyTypes;
 		}
 
 		float getEnemyCount() const
 		{
-			return enemyCount;
+			return this->enemyCount;
 		}
 	};
 }
