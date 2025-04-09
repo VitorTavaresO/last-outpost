@@ -1,5 +1,5 @@
-#ifndef __LAST_OUTPOST_TOWER_H__
-#define __LAST_OUTPOST_TOWER_H__
+#ifndef _LAST_OUTPOST_TOWER_H_
+#define _LAST_OUTPOST_TOWER_H_
 
 #include <my-lib/matrix.h>
 #include <last-outpost/object.h>
@@ -8,29 +8,49 @@
 
 namespace Game
 {
-    class Tower : public Object
-    {
-    private:
-        int range;
-        Projectil projectile;
-        Collision collision;
+	class Tower : public Object
+	{
+	private:
+		float range;
+		float damage;
+		Projectil projectile;
 
-    public:
-        Tower();
+	public:
+		Tower(float range = 0.0f, float damage = 0.0f, const Projectil &projectile = Projectil())
+			: range(range), damage(damage), projectile(projectile) {}
 
-        void update() override;
-        void render(SDL_Renderer *renderer, int x, int y, int width, int height) const override;
+		void setRange(int range)
+		{
+			this->range = range;
+		}
 
-        void setRange(int range);
-        int getRange() const;
+		float getRange() const
+		{
+			return this->range;
+		}
 
-        void setProjectile(const Projectil &projectile);
-        const Projectil &getProjectile() const;
+		void setDamage(float damage)
+		{
+			this->damage = damage;
+		}
 
-        // void setCollision(const Collision &collision);
-        // const Collision &getCollision() const;
-        // bool checkCollision(const SDL_Rect &other) const;
-    };
+		float getDamage() const
+		{
+			return this->damage;
+		}
+
+		void setProjectile(const Projectil &projectile) const
+		{
+			this->projectile = projectile;
+		}
+		const Projectil &getProjectile() const;
+		{
+			return projectile;
+		}
+
+		void update(float deltaTime) override;
+		void render(Graphics &graphics, float deltaTime) const override;
+	};
 }
 
 #endif
