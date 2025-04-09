@@ -70,7 +70,7 @@ namespace Game
 			return spell;
 		}
 
-		void update(float deltaTime);
+		void update(float deltaTime) override;
 		void render(Graphics &graphics, float deltaTime) const override;
 	};
 }
