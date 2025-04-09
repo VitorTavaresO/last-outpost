@@ -11,7 +11,7 @@ namespace Game
 		  map(TILES_X, TILES_Y, level.getMapData()),
 		  level(std::move(level)),
 		  running(true),
-		  lastSpawnTime(0),
+		  lastSpawnTime(getTimeInSeconds()),
 		  lastUpdateTime(getTimeInSeconds()),
 		  spawnedEnemyCount(0),
 		  enemyTypeIndex(0)
@@ -20,16 +20,18 @@ namespace Game
 
 	void GameWorld::run()
 	{
+		lastUpdateTime = getTimeInSeconds();
+
 		while (running)
 		{
 			float currentTime = getTimeInSeconds();
-			float deltaTime = std::min(currentTime - lastUpdateTime, 0.016f);
+			float deltaTime = currentTime - lastUpdateTime;
+
+			lastUpdateTime = currentTime;
 
 			handleEvents();
 			update(deltaTime);
 			render(deltaTime);
-
-			lastUpdateTime = currentTime;
 		}
 	}
 
@@ -47,8 +49,6 @@ namespace Game
 
 	void GameWorld::update(float deltaTime)
 	{
-		float currentTime = getTimeInSeconds();
-		lastUpdateTime = currentTime;
 
 		for (auto &enemy : activeEnemies)
 		{

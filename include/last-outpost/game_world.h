@@ -24,8 +24,8 @@ namespace Game
 		std::vector<std::unique_ptr<Enemy>> activeEnemies;
 		Level level;
 		bool running;
-		uint32_t lastSpawnTime;
-		uint32_t lastUpdateTime;
+		float lastSpawnTime;
+		float lastUpdateTime;
 		int spawnedEnemyCount;
 		size_t enemyTypeIndex;
 

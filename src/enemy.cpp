@@ -33,7 +33,7 @@ namespace Game
 
 		const float distanceTraveled = speed * deltaTime;
 
-		const auto newPos = currentPos + Mylib::Math::normalize(direction) * distanceTraveled;
+		const auto newPos = currentPos + Mylib::Math::with_length(direction, distanceTraveled);
 
 		if (distanceTraveled >= distance)
 		{
