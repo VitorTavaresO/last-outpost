@@ -7,6 +7,7 @@ namespace Game
 	Enemy::Enemy(int life, int damage, float speed, const std::string &spell, std::vector<PathPoint> path)
 		: life(life), damage(damage), speed(speed), spell(spell), path(std::move(path)), lastMoveTime(0), currentStep(0)
 	{
+		this->setType(ObjectType::Enemy);
 		if (this->path.empty())
 		{
 			currentStep = 0;

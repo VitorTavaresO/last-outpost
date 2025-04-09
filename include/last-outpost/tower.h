@@ -5,6 +5,7 @@
 #include <last-outpost/object.h>
 #include <last-outpost/projectil.h>
 #include <last-outpost/collision.h>
+#include <last-outpost/types.h>
 
 namespace Game
 {
@@ -17,7 +18,10 @@ namespace Game
 
 	public:
 		Tower(float range = 0.0f, float damage = 0.0f, const Projectil &projectile = Projectil())
-			: range(range), damage(damage), projectile(projectile) {}
+			: range(range), damage(damage), projectile(projectile)
+		{
+			this->setType(ObjectType::Tower);
+		}
 
 		void setRange(int range)
 		{

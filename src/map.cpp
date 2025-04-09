@@ -23,27 +23,40 @@ namespace Game
 				{
 				case ' ':
 					tile.object.setColor({0, 100, 0, 255}); // Verde escuro
+					tile.object.setType(ObjectType::Space);
 					break;
 
 				case 'F':
+					tile.object.setColor({194, 178, 128, 255}); // Areia
+					tile.object.setType(ObjectType::First);
+					break;
+
 				case 'R':
 				case 'L':
 				case 'D':
 				case 'U':
+					tile.object.setColor({194, 178, 128, 255}); // Areia
+					tile.object.setType(ObjectType::Path);
+					break;
+
 				case 'E':
 					tile.object.setColor({194, 178, 128, 255}); // Areia
+					tile.object.setType(ObjectType::End);
 					break;
 
 				case 'S':
 					tile.object.setColor({139, 69, 19, 255}); // Marrom
+					tile.object.setType(ObjectType::Space);
 					break;
 
 				case 'T':
 					tile.object.setColor({64, 64, 64, 255}); // Cinza
+					tile.object.setType(ObjectType::Tower);
 					break;
 
 				default:
 					tile.object.setColor({0, 0, 0, 255}); // Preto
+					tile.object.setType(ObjectType::Unknown);
 					break;
 				}
 
@@ -158,16 +171,16 @@ namespace Game
 		"                                "
 		"                                "
 		"                                "
-		"    T   RRRD                    "
+		"    S   RRRD                    "
 		"        U  D                    "
 		"FRRRRRRRU  RRRRRRRRRRRRRRRD     "
 		"            S             D     "
-		"        DLLLLLLLLLLLLLLLLLL     "
-		"   S    D                       "
+		"                          D     "
+		"   S    DLLLLLLLLLLLLLLLLLL     "
 		"        D                       "
 		"        D              S        "
 		"        D                       "
-		"    T   D                       "
+		"    S   D                       "
 		"        D                       "
 		"        D                       "
 		"        D                       "

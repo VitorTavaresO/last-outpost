@@ -3,11 +3,6 @@
 
 namespace Game
 {
-	Object::Object()
-		: color({0, 0, 0, 255}), position({0, 0}), size({1, 1})
-	{
-	}
-
 	void Object::update(float deltaTime)
 	{
 	}
@@ -16,5 +11,4 @@ namespace Game
 	{
 		graphics.drawRect(position, size, color);
 	}
-
 }

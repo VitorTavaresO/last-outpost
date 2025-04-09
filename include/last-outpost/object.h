@@ -1,5 +1,5 @@
-#ifndef __LAST_OUTPOST_OBJECT_H__
-#define __LAST_OUTPOST_OBJECT_H__
+#ifndef _LAST_OUTPOST_OBJECT_H_
+#define _LAST_OUTPOST_OBJECT_H_
 
 #include <SDL.h>
 #include <last-outpost/graphics.h>
@@ -13,9 +13,10 @@ namespace Game
 		SDL_Color color;
 		Vector position;
 		Vector size;
+		ObjectType type;
 
 	public:
-		Object();
+		Object() : type(ObjectType::Unknown) {}
 		virtual ~Object() = default;
 
 		virtual void update(float deltaTime);
@@ -49,6 +50,16 @@ namespace Game
 		Vector getSize() const
 		{
 			return this->size;
+		}
+
+		void setType(ObjectType type)
+		{
+			this->type = type;
+		}
+
+		ObjectType getType() const
+		{
+			return this->type;
 		}
 	};
 }
