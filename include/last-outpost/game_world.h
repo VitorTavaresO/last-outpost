@@ -1,5 +1,5 @@
-#ifndef __LAST_OUTPOST_GAME_WORLD_H__
-#define __LAST_OUTPOST_GAME_WORLD_H__
+#ifndef _LAST_OUTPOST_GAME_WORLD_H_
+#define _LAST_OUTPOST_GAME_WORLD_H_
 
 #include <vector>
 #include <memory>
@@ -33,6 +33,7 @@ namespace Game
 		void update(float deltaTime);
 		void render(float deltaTime);
 		void spawnEnemies();
+		void replaceSpacesWithTowers();
 	};
 }
 

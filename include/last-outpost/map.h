@@ -1,5 +1,5 @@
-#ifndef __LAST_OUTPOST_MAP_H__
-#define __LAST_OUTPOST_MAP_H__
+#ifndef _LAST_OUTPOST_MAP_H_
+#define _LAST_OUTPOST_MAP_H_
 
 #include <my-lib/matrix.h>
 #include <last-outpost/object.h>
@@ -28,6 +28,16 @@ namespace Game
 
 	public:
 		Map(int width, int height, const std::string &mapString);
+
+		int getWidth() const
+		{
+			return this->width;
+		}
+
+		int getHeight() const
+		{
+			return this->height;
+		}
 
 		void update(float deltaTime) override final;
 		void render(Graphics &graphics, float deltaTime) const override final;

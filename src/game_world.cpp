@@ -1,6 +1,7 @@
 #include <utility>
 #include <memory>
 #include <last-outpost/game_world.h>
+#include <last-outpost/tower.h>
 #include <last-outpost/globals.h>
 
 namespace Game
@@ -16,6 +17,7 @@ namespace Game
 		  spawnedEnemyCount(0),
 		  enemyTypeIndex(0)
 	{
+		replaceSpacesWithTowers();
 	}
 
 	void GameWorld::run()
@@ -87,6 +89,22 @@ namespace Game
 				lastSpawnTime = currentTime;
 
 				enemyTypeIndex = (enemyTypeIndex + 1) % level.getEnemyTypes().size();
+			}
+		}
+	}
+
+	void GameWorld::replaceSpacesWithTowers()
+	{
+		for (int row = 0; row < map.getHeight(); ++row)
+		{
+			for (int col = 0; col < map.getWidth(); ++col)
+			{
+				Tile &tile = map(row, col);
+				if (tile.object.getType() == ObjectType::Space)
+				{
+					tile.object = Tower(5.0f, 10.0f, {128, 0, 128, 255});
+					tile.object.setPosition(col, row);
+				}
 			}
 		}
 	}

@@ -23,7 +23,7 @@ namespace Game
 				{
 				case ' ':
 					tile.object.setColor({0, 100, 0, 255}); // Verde escuro
-					tile.object.setType(ObjectType::Space);
+					tile.object.setType(ObjectType::Unknown);
 					break;
 
 				case 'F':
@@ -47,11 +47,6 @@ namespace Game
 				case 'S':
 					tile.object.setColor({139, 69, 19, 255}); // Marrom
 					tile.object.setType(ObjectType::Space);
-					break;
-
-				case 'T':
-					tile.object.setColor({64, 64, 64, 255}); // Cinza
-					tile.object.setType(ObjectType::Tower);
 					break;
 
 				default:
