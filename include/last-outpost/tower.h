@@ -14,10 +14,12 @@ namespace Game
 		float damage;
 
 	public:
-		Tower(float range = 0.0f, float damage = 0.0f)
+		Tower(float range = 0.0f, float damage = 0.0f, SDL_Color color = {0, 0, 255, 255})
 			: range(range), damage(damage)
 		{
 			this->setType(ObjectType::Tower);
+			this->setColor(color);
+			this->setSize(1, 1);
 		}
 
 		void setRange(int range)
