@@ -7,6 +7,7 @@
 #include <last-outpost/map.h>
 #include <last-outpost/graphics.h>
 #include <last-outpost/enemy.h>
+#include <last-outpost/tower.h>
 #include <last-outpost/level.h>
 
 namespace Game
@@ -28,6 +29,7 @@ namespace Game
 		float lastUpdateTime;
 		int spawnedEnemyCount;
 		size_t enemyTypeIndex;
+		std::vector<Tower> towers;
 
 		void handleEvents();
 		void update(float deltaTime);

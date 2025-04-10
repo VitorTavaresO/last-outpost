@@ -70,6 +70,11 @@ namespace Game
 			enemy->render(graphics, deltaTime);
 		}
 
+		for (const auto &tower : towers)
+		{
+			tower.render(graphics, deltaTime);
+		}
+
 		SDL_RenderPresent(renderer);
 	}
 
@@ -102,8 +107,9 @@ namespace Game
 				Tile &tile = map(row, col);
 				if (tile.object.getType() == ObjectType::Space)
 				{
-					tile.object = Tower(5.0f, 10.0f, {128, 0, 128, 255});
-					tile.object.setPosition(col, row);
+					Tower tower(5.0f, 10.0f, {0, 0, 255, 255});
+					tower.setPosition(col, row);
+					towers.push_back(tower);
 				}
 			}
 		}

@@ -3,36 +3,80 @@
 
 namespace Game
 {
-    Graphics::Graphics(int screenWidth, int screenHeight, int tilesX, int tilesY, SDL_Renderer *renderer)
-        : renderer(renderer)
-    {
-        if (!renderer)
-        {
-            SDL_Log("Renderer not provided to Graphics constructor!");
-            throw std::runtime_error("Renderer is null");
-        }
+	Graphics::Graphics(int screenWidth, int screenHeight, int tilesX, int tilesY, SDL_Renderer *renderer)
+		: renderer(renderer)
+	{
+		if (!renderer)
+		{
+			SDL_Log("Renderer not provided to Graphics constructor!");
+			throw std::runtime_error("Renderer is null");
+		}
 
-        int tileSize = std::min(screenWidth / tilesX, screenHeight / tilesY);
-        tileWidth = tileSize;
-        tileHeight = tileSize;
-    }
+		int tileSize = std::min(screenWidth / tilesX, screenHeight / tilesY);
+		tileWidth = tileSize;
+		tileHeight = tileSize;
+	}
 
-    void Graphics::drawRect(const Vector &position, const Vector &size, const SDL_Color &color) const
-    {
-        if (!renderer)
-        {
-            SDL_Log("Renderer not set in Graphics!");
-            return;
-        }
+	void Graphics::drawRect(const Vector &position, const Vector &size, const SDL_Color &color) const
+	{
+		if (!renderer)
+		{
+			SDL_Log("Renderer not set in Graphics!");
+			return;
+		}
 
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 
-        SDL_Rect rect = {
-            static_cast<int>(position.x * tileWidth),
-            static_cast<int>(position.y * tileHeight),
-            static_cast<int>(size.x * tileWidth),
-            static_cast<int>(size.y * tileHeight)};
+		SDL_Rect rect = {
+			static_cast<int>(position.x * tileWidth),
+			static_cast<int>(position.y * tileHeight),
+			static_cast<int>(size.x * tileWidth),
+			static_cast<int>(size.y * tileHeight)};
 
-        SDL_RenderFillRect(renderer, &rect);
-    }
+		SDL_RenderFillRect(renderer, &rect);
+	}
+
+	void Graphics::drawCircle(const Vector &center, float radius, const SDL_Color &color) const
+	{
+		if (!renderer)
+		{
+			SDL_Log("Renderer not set in Graphics!");
+			return;
+		}
+
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+		int centerX = static_cast<int>(center.x * tileWidth);
+		int centerY = static_cast<int>(center.y * tileHeight);
+		int pixelRadius = static_cast<int>(radius * tileWidth);
+
+		int x = 0;
+		int y = pixelRadius;
+		int d = 1 - pixelRadius;
+
+		while (x <= y)
+		{
+			SDL_RenderDrawPoint(renderer, centerX + x, centerY + y);
+			SDL_RenderDrawPoint(renderer, centerX - x, centerY + y);
+			SDL_RenderDrawPoint(renderer, centerX + x, centerY - y);
+			SDL_RenderDrawPoint(renderer, centerX - x, centerY - y);
+			SDL_RenderDrawPoint(renderer, centerX + y, centerY + x);
+			SDL_RenderDrawPoint(renderer, centerX - y, centerY + x);
+			SDL_RenderDrawPoint(renderer, centerX + y, centerY - x);
+			SDL_RenderDrawPoint(renderer, centerX - y, centerY - x);
+
+			if (d < 0)
+			{
+				d += 2 * x + 3;
+			}
+			else
+			{
+				d += 2 * (x - y) + 5;
+				y--;
+			}
+			x++;
+		}
+	}
 }

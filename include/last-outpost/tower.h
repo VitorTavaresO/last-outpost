@@ -22,7 +22,7 @@ namespace Game
 			this->setSize(1, 1);
 		}
 
-		void setRange(int range)
+		void setRange(float range)
 		{
 			this->range = range;
 		}
@@ -44,6 +44,7 @@ namespace Game
 
 		void update(float deltaTime) override;
 		void render(Graphics &graphics, float deltaTime) const override;
+		bool isWithinRange(const Vector &targetPosition) const;
 	};
 }
 
