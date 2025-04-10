@@ -1,10 +1,8 @@
-#ifndef _LAST_OUTPOST_TOWER_H_
-#define _LAST_OUTPOST_TOWER_H_
+#ifndef LAST_OUTPOST_TOWER_H
+#define LAST_OUTPOST_TOWER_H
 
 #include <my-lib/matrix.h>
 #include <last-outpost/object.h>
-#include <last-outpost/projectil.h>
-#include <last-outpost/collision.h>
 #include <last-outpost/types.h>
 
 namespace Game
@@ -14,11 +12,10 @@ namespace Game
 	private:
 		float range;
 		float damage;
-		Projectil projectile;
 
 	public:
-		Tower(float range = 0.0f, float damage = 0.0f, const Projectil &projectile = Projectil())
-			: range(range), damage(damage), projectile(projectile)
+		Tower(float range = 0.0f, float damage = 0.0f)
+			: range(range), damage(damage)
 		{
 			this->setType(ObjectType::Tower);
 		}
@@ -41,15 +38,6 @@ namespace Game
 		float getDamage() const
 		{
 			return this->damage;
-		}
-
-		void setProjectile(const Projectil &projectile) const
-		{
-			this->projectile = projectile;
-		}
-		const Projectil &getProjectile() const;
-		{
-			return projectile;
 		}
 
 		void update(float deltaTime) override;
