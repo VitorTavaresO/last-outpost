@@ -96,6 +96,6 @@ namespace Game
 	{
 		Vector targetPos = getTargetPosition();
 		Vector toTarget = targetPos - getPosition();
-		return toTarget.length_squared() < 0.01f;
+		return toTarget.length_squared() < 0.01f;
 	}
 }

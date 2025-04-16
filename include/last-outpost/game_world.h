@@ -1,5 +1,5 @@
-#ifndef _LAST_OUTPOST_GAME_WORLD_H_
-#define _LAST_OUTPOST_GAME_WORLD_H_
+#ifndef LAST_OUTPOST_GAME_WORLD_H
+#define LAST_OUTPOST_GAME_WORLD_H
 
 #include <vector>
 #include <memory>
@@ -8,6 +8,7 @@
 #include <last-outpost/graphics.h>
 #include <last-outpost/enemy.h>
 #include <last-outpost/tower.h>
+#include <last-outpost/projectil.h>
 #include <last-outpost/level.h>
 
 namespace Game
@@ -23,6 +24,7 @@ namespace Game
 		Graphics graphics;
 		Map map;
 		std::vector<std::unique_ptr<Enemy>> activeEnemies;
+		std::vector<std::unique_ptr<Projectil>> activeProjectils;
 		Level level;
 		bool running;
 		float lastSpawnTime;
@@ -36,6 +38,8 @@ namespace Game
 		void render(float deltaTime);
 		void spawnEnemies();
 		void replaceSpacesWithTowers();
+		void updateTowers(float currentTime);
+		void checkProjectilCollisions();
 	};
 }
 

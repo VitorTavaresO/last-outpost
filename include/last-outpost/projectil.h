@@ -14,7 +14,7 @@ namespace Game
 	{
 	private:
 		int damage;
-		float speed; // Reordenado para combinar com a ordem de inicialização
+		float speed;
 		Vector direction;
 		Vector targetPosition;
 		Enemy *targetEnemy;
