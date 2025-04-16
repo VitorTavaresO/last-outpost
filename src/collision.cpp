@@ -10,7 +10,7 @@ namespace Game
 
 	void Collision::setCollision(float x, float y, float radius)
 	{
-		center = {x, y};
+		this->center = {x, y};
 		this->radius = radius;
 	}
 
@@ -22,10 +22,10 @@ namespace Game
 
 	bool Collision::checkCollision(const Collision &other) const
 	{
-		Vector distanceVector = center - other.center;
+		Vector distanceVector = this->center - other.center;
 		float distanceSquared = distanceVector.length_squared();
 
-		float radiusSum = radius + other.radius;
+		float radiusSum = this->radius + other.radius;
 
 		return distanceSquared < (radiusSum * radiusSum);
 	}

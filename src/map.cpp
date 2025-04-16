@@ -7,11 +7,11 @@ namespace Game
 	{
 		int idCounter = 0;
 
-		for (int row = 0; row < height; ++row)
+		for (int row = 0; row < this->height; ++row)
 		{
-			for (int col = 0; col < width; ++col)
+			for (int col = 0; col < this->width; ++col)
 			{
-				char tileChar = mapString[row * width + col];
+				char tileChar = mapString[row * this->width + col];
 
 				Tile tile;
 				tile.id = idCounter++;
@@ -55,7 +55,7 @@ namespace Game
 					break;
 				}
 
-				terrain[row, col] = tile;
+				this->terrain[row, col] = tile;
 			}
 		}
 	}
@@ -66,11 +66,11 @@ namespace Game
 
 		int currentRow = -1, currentCol = -1;
 
-		for (int row = 0; row < height; ++row)
+		for (int row = 0; row < this->height; ++row)
 		{
-			for (int col = 0; col < width; ++col)
+			for (int col = 0; col < this->width; ++col)
 			{
-				if (terrain[row, col].type == 'F')
+				if (this->terrain[row, col].type == 'F')
 				{
 					currentRow = row;
 					currentCol = col;
@@ -98,9 +98,9 @@ namespace Game
 			int newRow = currentRow + dRow;
 			int newCol = currentCol + dCol;
 
-			if (newRow >= 0 && newRow < height && newCol >= 0 && newCol < width)
+			if (newRow >= 0 && newRow < this->height && newCol >= 0 && newCol < this->width)
 			{
-				char neighborType = terrain[newRow, newCol].type;
+				char neighborType = this->terrain[newRow, newCol].type;
 				if (neighborType == 'R' || neighborType == 'L' || neighborType == 'D' || neighborType == 'U')
 				{
 					currentRow = newRow;
@@ -113,7 +113,7 @@ namespace Game
 
 		while (true)
 		{
-			char currentType = terrain[currentRow, currentCol].type;
+			char currentType = this->terrain[currentRow, currentCol].type;
 
 			if (currentType == 'E')
 			{
@@ -149,11 +149,11 @@ namespace Game
 
 	void Map::render(Graphics &graphics, float deltaTime) const
 	{
-		for (uint32_t row = 0; row < terrain.get_nrows(); ++row)
+		for (uint32_t row = 0; row < this->terrain.get_nrows(); ++row)
 		{
-			for (uint32_t col = 0; col < terrain.get_ncols(); ++col)
+			for (uint32_t col = 0; col < this->terrain.get_ncols(); ++col)
 			{
-				terrain[row, col].object.render(graphics, deltaTime);
+				this->terrain[row, col].object.render(graphics, deltaTime);
 			}
 		}
 	}

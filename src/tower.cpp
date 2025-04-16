@@ -11,8 +11,8 @@ namespace Game
 
 	void Tower::render(Graphics &graphics, float deltaTime) const
 	{
-		graphics.drawCircle(getPosition(), range, {0, 0, 255, 40});
-		graphics.drawRect(getPosition(), getSize(), getColor());
+		graphics.drawCircle(this->getPosition(), this->range, {0, 0, 255, 40});
+		graphics.drawRect(this->getPosition(), this->getSize(), this->getColor());
 	}
 
 	bool Tower::isWithinRange(const Vector &targetPosition) const
@@ -25,7 +25,7 @@ namespace Game
 	{
 		for (const auto &enemy : enemies)
 		{
-			auto projectil = tryFireAt(enemy.get(), currentTime);
+			auto projectil = this->tryFireAt(enemy.get(), currentTime);
 			if (projectil)
 			{
 				return projectil;
@@ -39,18 +39,18 @@ namespace Game
 		if (!enemy)
 			return nullptr;
 
-		if (currentTime - lastFireTime < fireRate)
+		if (currentTime - this->lastFireTime < this->fireRate)
 			return nullptr;
 
-		if (!isWithinRange(enemy->getPosition()))
+		if (!this->isWithinRange(enemy->getPosition()))
 			return nullptr;
 
-		lastFireTime = currentTime;
+		this->lastFireTime = currentTime;
 
 		auto newProjectil = std::make_unique<Projectil>(
 			this->projectil.getDamage(),
 			this->projectil.getSpeed(),
-			getPosition());
+			this->getPosition());
 
 		newProjectil->setColor(this->projectil.getColor());
 		newProjectil->setSize(this->projectil.getSize().x, this->projectil.getSize().y);

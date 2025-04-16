@@ -15,59 +15,59 @@ namespace Game
 
 	void Projectil::setTargetEnemy(Enemy *enemy)
 	{
-		targetEnemy = enemy;
-		if (targetEnemy)
+		this->targetEnemy = enemy;
+		if (this->targetEnemy)
 		{
-			updateTargetPosition();
+			this->updateTargetPosition();
 		}
 	}
 
 	void Projectil::updateTargetPosition()
 	{
-		if (!targetEnemy)
+		if (!this->targetEnemy)
 			return;
 
-		targetPosition = targetEnemy->getPosition();
+		this->targetPosition = this->targetEnemy->getPosition();
 
-		Vector currentPos = getPosition();
-		Vector directionVector = targetPosition - currentPos;
+		Vector currentPos = this->getPosition();
+		Vector directionVector = this->targetPosition - currentPos;
 
 		float length = directionVector.length();
 		if (length > 0.0001f)
-			direction = Mylib::Math::with_length(directionVector, speed);
+			this->direction = Mylib::Math::with_length(directionVector, this->speed);
 	}
 
 	void Projectil::setTargetPosition(const Vector &target)
 	{
-		targetEnemy = nullptr;
-		targetPosition = target;
+		this->targetEnemy = nullptr;
+		this->targetPosition = target;
 
-		Vector currentPos = getPosition();
-		Vector directionVector = targetPosition - currentPos;
+		Vector currentPos = this->getPosition();
+		Vector directionVector = this->targetPosition - currentPos;
 
 		float length = directionVector.length();
 		if (length > 0.0001f)
-			direction = Mylib::Math::with_length(directionVector, speed);
+			this->direction = Mylib::Math::with_length(directionVector, this->speed);
 	}
 
 	Vector Projectil::getTargetPosition() const
 	{
-		if (targetEnemy)
+		if (this->targetEnemy)
 		{
-			return targetEnemy->getPosition();
+			return this->targetEnemy->getPosition();
 		}
-		return targetPosition;
+		return this->targetPosition;
 	}
 
 	void Projectil::update(float deltaTime)
 	{
-		if (targetEnemy)
+		if (this->targetEnemy)
 		{
-			updateTargetPosition();
+			this->updateTargetPosition();
 		}
 
-		Vector currentPos = getPosition();
-		Vector targetPos = getTargetPosition();
+		Vector currentPos = this->getPosition();
+		Vector targetPos = this->getTargetPosition();
 
 		Vector toTarget = targetPos - currentPos;
 		float distanceSquared = toTarget.length_squared();
@@ -77,21 +77,21 @@ namespace Game
 			return;
 		}
 
-		currentPos.x += direction.x * speed * deltaTime;
-		currentPos.y += direction.y * speed * deltaTime;
+		currentPos.x += this->direction.x * this->speed * deltaTime;
+		currentPos.y += this->direction.y * this->speed * deltaTime;
 
-		setPosition(currentPos.x, currentPos.y);
+		this->setPosition(currentPos.x, currentPos.y);
 	}
 
 	void Projectil::render(Graphics &graphics, float deltaTime) const
 	{
-		graphics.drawRect(getPosition(), getSize(), getColor());
+		graphics.drawRect(this->getPosition(), this->getSize(), this->getColor());
 	}
 
 	bool Projectil::hasReachedTarget() const
 	{
-		Vector targetPos = getTargetPosition();
-		Vector toTarget = targetPos - getPosition();
+		Vector targetPos = this->getTargetPosition();
+		Vector toTarget = targetPos - this->getPosition();
 		return toTarget.length_squared() < 0.01f;
 	}
 }

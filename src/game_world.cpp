@@ -17,23 +17,23 @@ namespace Game
 		  spawnedEnemyCount(0),
 		  enemyTypeIndex(0)
 	{
-		replaceSpacesWithTowers();
+		this->replaceSpacesWithTowers();
 	}
 
 	void GameWorld::run()
 	{
-		lastUpdateTime = getTimeInSeconds();
+		this->lastUpdateTime = getTimeInSeconds();
 
-		while (running)
+		while (this->running)
 		{
 			float currentTime = getTimeInSeconds();
-			float deltaTime = currentTime - lastUpdateTime;
+			float deltaTime = currentTime - this->lastUpdateTime;
 
-			lastUpdateTime = currentTime;
+			this->lastUpdateTime = currentTime;
 
-			handleEvents();
-			update(deltaTime);
-			render(deltaTime);
+			this->handleEvents();
+			this->update(deltaTime);
+			this->render(deltaTime);
 		}
 	}
 
@@ -44,25 +44,25 @@ namespace Game
 		{
 			if (event.type == SDL_QUIT)
 			{
-				running = false;
+				this->running = false;
 			}
 		}
 	}
 
 	void GameWorld::update(float deltaTime)
 	{
-		for (auto &enemy : activeEnemies)
+		for (auto &enemy : this->activeEnemies)
 		{
 			enemy->update(deltaTime);
 		}
 
-		for (auto it = activeProjectils.begin(); it != activeProjectils.end();)
+		for (auto it = this->activeProjectils.begin(); it != this->activeProjectils.end();)
 		{
 			(*it)->update(deltaTime);
 
 			if ((*it)->hasReachedTarget())
 			{
-				it = activeProjectils.erase(it);
+				it = this->activeProjectils.erase(it);
 			}
 			else
 			{
@@ -70,36 +70,36 @@ namespace Game
 			}
 		}
 
-		updateTowers(getTimeInSeconds());
+		this->updateTowers(getTimeInSeconds());
 
-		checkProjectilCollisions();
+		this->checkProjectilCollisions();
 
-		spawnEnemies();
+		this->spawnEnemies();
 	}
 
 	void GameWorld::render(float deltaTime)
 	{
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-		SDL_RenderClear(renderer);
+		SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
+		SDL_RenderClear(this->renderer);
 
-		map.render(graphics, deltaTime);
+		this->map.render(this->graphics, deltaTime);
 
-		for (const auto &enemy : activeEnemies)
+		for (const auto &enemy : this->activeEnemies)
 		{
-			enemy->render(graphics, deltaTime);
+			enemy->render(this->graphics, deltaTime);
 		}
 
-		for (const auto &tower : towers)
+		for (const auto &tower : this->towers)
 		{
-			tower.render(graphics, deltaTime);
+			tower.render(this->graphics, deltaTime);
 		}
 
-		for (const auto &projectil : activeProjectils)
+		for (const auto &projectil : this->activeProjectils)
 		{
-			projectil->render(graphics, deltaTime);
+			projectil->render(this->graphics, deltaTime);
 		}
 
-		SDL_RenderPresent(renderer);
+		SDL_RenderPresent(this->renderer);
 	}
 
 	void GameWorld::spawnEnemies()
@@ -107,30 +107,30 @@ namespace Game
 		float currentTime = getTimeInSeconds();
 		constexpr float spawnInterval = 2.0f;
 
-		if (spawnedEnemyCount < level.getEnemyCount() && currentTime - lastSpawnTime >= spawnInterval)
+		if (this->spawnedEnemyCount < this->level.getEnemyCount() && currentTime - this->lastSpawnTime >= spawnInterval)
 		{
-			if (!level.getEnemyTypes().empty())
+			if (!this->level.getEnemyTypes().empty())
 			{
-				auto enemy = std::make_unique<Enemy>(level.getEnemyTypes()[enemyTypeIndex]);
+				auto enemy = std::make_unique<Enemy>(this->level.getEnemyTypes()[this->enemyTypeIndex]);
 
-				activeEnemies.push_back(std::move(enemy));
-				++spawnedEnemyCount;
-				lastSpawnTime = currentTime;
+				this->activeEnemies.push_back(std::move(enemy));
+				++this->spawnedEnemyCount;
+				this->lastSpawnTime = currentTime;
 
-				enemyTypeIndex = (enemyTypeIndex + 1) % level.getEnemyTypes().size();
+				this->enemyTypeIndex = (this->enemyTypeIndex + 1) % this->level.getEnemyTypes().size();
 			}
 		}
 	}
 
 	void GameWorld::updateTowers(float currentTime)
 	{
-		for (auto &tower : towers)
+		for (auto &tower : this->towers)
 		{
-			auto projectil = tower.findTargetAndTryFireAt(activeEnemies, currentTime);
+			auto projectil = tower.findTargetAndTryFireAt(this->activeEnemies, currentTime);
 
 			if (projectil)
 			{
-				activeProjectils.push_back(std::move(projectil));
+				this->activeProjectils.push_back(std::move(projectil));
 			}
 		}
 	}
@@ -138,16 +138,16 @@ namespace Game
 	void GameWorld::replaceSpacesWithTowers()
 	{
 
-		for (int row = 0; row < map.getHeight(); ++row)
+		for (int row = 0; row < this->map.getHeight(); ++row)
 		{
-			for (int col = 0; col < map.getWidth(); ++col)
+			for (int col = 0; col < this->map.getWidth(); ++col)
 			{
-				Tile &tile = map(row, col);
+				Tile &tile = this->map(row, col);
 				if (tile.object.getType() == ObjectType::Space)
 				{
 					Tower tower(5.0f, Projectil(50, 2.0f), {0, 0, 255, 255});
 					tower.setPosition(col, row);
-					towers.push_back(tower);
+					this->towers.push_back(tower);
 				}
 			}
 		}
@@ -155,15 +155,15 @@ namespace Game
 
 	void GameWorld::checkProjectilCollisions()
 	{
-		for (auto projIt = activeProjectils.begin(); projIt != activeProjectils.end();)
+		for (auto projIt = this->activeProjectils.begin(); projIt != this->activeProjectils.end();)
 		{
 			bool hit = false;
 			Enemy *targetEnemy = (*projIt)->getTargetEnemy();
 
 			if (targetEnemy)
 			{
-				auto enemyIt = activeEnemies.begin();
-				for (; enemyIt != activeEnemies.end(); ++enemyIt)
+				auto enemyIt = this->activeEnemies.begin();
+				for (; enemyIt != this->activeEnemies.end(); ++enemyIt)
 				{
 					if ((*enemyIt).get() == targetEnemy)
 					{
@@ -171,7 +171,7 @@ namespace Game
 					}
 				}
 
-				if (enemyIt != activeEnemies.end())
+				if (enemyIt != this->activeEnemies.end())
 				{
 					if ((*projIt)->isColliding(**enemyIt))
 					{
@@ -181,7 +181,7 @@ namespace Game
 
 						if (currentLife <= 0)
 						{
-							enemyIt = activeEnemies.erase(enemyIt);
+							enemyIt = this->activeEnemies.erase(enemyIt);
 						}
 
 						hit = true;
@@ -195,7 +195,7 @@ namespace Game
 
 			if (hit)
 			{
-				projIt = activeProjectils.erase(projIt);
+				projIt = this->activeProjectils.erase(projIt);
 			}
 			else
 			{
