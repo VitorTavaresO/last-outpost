@@ -1,23 +1,34 @@
 #ifndef __LAST_OUTPOST_COLLISION_H__
 #define __LAST_OUTPOST_COLLISION_H__
 
-#include <my-lib/math-vector.h>
+#include <last-outpost/types.h>
 
 namespace Game
 {
-    class Collision
-    {
-    private:
-        MyLib::Vector2 boundsPosition;
-        MyLib::Vector2 boundsSize;
+	class Collision
+	{
+	private:
+		Vector center;
+		float radius;
 
-    public:
-        Collision(float x = 0, float y = 0, float width = 0, float height = 0);
-        ~Collision() = default;
+	public:
+		Collision(float x = 0, float y = 0, float radius = 0.5f);
+		~Collision() = default;
 
-        void setBounds(float x, float y, float width, float height);
-        bool checkCollision(const Collision &other) const;
-    };
+		void setCollision(float x, float y, float radius);
+		void setCollision(const Vector &center, float radius);
+
+		Vector getCenter() const
+		{
+			return this->center;
+		}
+		float getRadius() const
+		{
+			return this->radius;
+		}
+
+		bool checkCollision(const Collision &other) const;
+	};
 }
 
 #endif

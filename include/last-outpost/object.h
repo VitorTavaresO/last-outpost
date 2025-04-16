@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <last-outpost/graphics.h>
 #include <last-outpost/types.h>
+#include <last-outpost/collision.h>
 
 namespace Game
 {
@@ -14,9 +15,15 @@ namespace Game
 		Vector position;
 		Vector size;
 		ObjectType type;
+		Collision collider;
+		float collisionRadius;
 
 	public:
-		Object() : type(ObjectType::Unknown) {}
+		Object() : type(ObjectType::Unknown), collisionRadius(0.5f)
+		{
+			updateCollider();
+		}
+
 		virtual ~Object() = default;
 
 		virtual void update(float deltaTime);
@@ -35,6 +42,7 @@ namespace Game
 		void setPosition(float x, float y)
 		{
 			this->position = {x, y};
+			updateCollider();
 		}
 
 		Vector getPosition() const
@@ -45,11 +53,24 @@ namespace Game
 		void setSize(float width, float height)
 		{
 			this->size = {width, height};
+			collisionRadius = (width + height) / 4.0f;
+			updateCollider();
 		}
 
 		Vector getSize() const
 		{
 			return this->size;
+		}
+
+		void setCollisionRadius(float radius)
+		{
+			this->collisionRadius = radius;
+			updateCollider();
+		}
+
+		float getCollisionRadius() const
+		{
+			return this->collisionRadius;
 		}
 
 		void setType(ObjectType type)
@@ -60,6 +81,21 @@ namespace Game
 		ObjectType getType() const
 		{
 			return this->type;
+		}
+
+		void updateCollider()
+		{
+			collider.setCollision(position.x, position.y, collisionRadius);
+		}
+
+		const Collision &getCollider() const
+		{
+			return collider;
+		}
+
+		bool isColliding(const Object &other) const
+		{
+			return collider.checkCollision(other.getCollider());
 		}
 	};
 }
