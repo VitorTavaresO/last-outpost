@@ -126,7 +126,7 @@ namespace Game
 	{
 		for (auto &tower : towers)
 		{
-			auto projectil = tower.findTargetAndFire(activeEnemies, currentTime);
+			auto projectil = tower.findTargetAndTryFireAt(activeEnemies, currentTime);
 
 			if (projectil)
 			{
@@ -145,7 +145,7 @@ namespace Game
 				Tile &tile = map(row, col);
 				if (tile.object.getType() == ObjectType::Space)
 				{
-					Tower tower(10.0f, Projectil(1, 1.0f), {0, 0, 255, 255});
+					Tower tower(5.0f, Projectil(50, 5.0f), {0, 0, 255, 255});
 					tower.setPosition(col, row);
 					towers.push_back(tower);
 				}
@@ -158,22 +158,22 @@ namespace Game
 		for (auto projIt = activeProjectils.begin(); projIt != activeProjectils.end();)
 		{
 			bool hit = false;
-
 			Enemy *targetEnemy = (*projIt)->getTargetEnemy();
 
 			if (targetEnemy)
 			{
-				auto enemyIt = std::find_if(activeEnemies.begin(), activeEnemies.end(),
-											[targetEnemy](const std::unique_ptr<Enemy> &e)
-											{ return e.get() == targetEnemy; });
+				auto enemyIt = activeEnemies.begin();
+				for (; enemyIt != activeEnemies.end(); ++enemyIt)
+				{
+					if ((*enemyIt).get() == targetEnemy)
+					{
+						break;
+					}
+				}
 
 				if (enemyIt != activeEnemies.end())
 				{
-					Vector projPos = (*projIt)->getPosition();
-					Vector enemyPos = (*enemyIt)->getPosition();
-					float distSq = (projPos - enemyPos).length_squared();
-
-					if (distSq < 0.5f)
+					if ((*projIt)->isColliding(**enemyIt))
 					{
 						int currentLife = (*enemyIt)->getLife();
 						currentLife -= (*projIt)->getDamage();
@@ -190,38 +190,6 @@ namespace Game
 				else
 				{
 					hit = true;
-				}
-			}
-			else
-			{
-				for (auto enemyIt = activeEnemies.begin(); enemyIt != activeEnemies.end();)
-				{
-					Vector projPos = (*projIt)->getPosition();
-					Vector enemyPos = (*enemyIt)->getPosition();
-					float distSq = (projPos - enemyPos).length_squared();
-
-					if (distSq < 0.5f)
-					{
-						int currentLife = (*enemyIt)->getLife();
-						currentLife -= (*projIt)->getDamage();
-						(*enemyIt)->setLife(currentLife);
-
-						if (currentLife <= 0)
-						{
-							enemyIt = activeEnemies.erase(enemyIt);
-						}
-						else
-						{
-							++enemyIt;
-						}
-
-						hit = true;
-						break;
-					}
-					else
-					{
-						++enemyIt;
-					}
 				}
 			}
 

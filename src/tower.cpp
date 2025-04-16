@@ -21,7 +21,7 @@ namespace Game
 		return distanceSquared <= (this->range * this->range);
 	}
 
-	std::unique_ptr<Projectil> Tower::findTargetAndFire(const std::vector<std::unique_ptr<Enemy>> &enemies, float currentTime)
+	std::unique_ptr<Projectil> Tower::findTargetAndTryFireAt(const std::vector<std::unique_ptr<Enemy>> &enemies, float currentTime)
 	{
 		for (const auto &enemy : enemies)
 		{

@@ -60,7 +60,7 @@ namespace Game
 			return this->projectil;
 		}
 
-		std::unique_ptr<Projectil> findTargetAndFire(const std::vector<std::unique_ptr<Enemy>> &enemies, float currentTime);
+		std::unique_ptr<Projectil> findTargetAndTryFireAt(const std::vector<std::unique_ptr<Enemy>> &enemies, float currentTime);
 		bool isWithinRange(const Vector &targetPosition) const;
 		std::unique_ptr<Projectil> tryFireAt(Enemy *enemy, float currentTime);
 
