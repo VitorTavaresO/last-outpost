@@ -1,5 +1,6 @@
 #include <last-outpost/graphics.h>
 #include <algorithm>
+#include <SDL2/SDL2_gfxPrimitives.h>
 
 namespace Game
 {
@@ -44,39 +45,17 @@ namespace Game
 			return;
 		}
 
-		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-
-		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-
 		int centerX = static_cast<int>(center.x * tileWidth);
 		int centerY = static_cast<int>(center.y * tileHeight);
 		int pixelRadius = static_cast<int>(radius * tileWidth);
 
-		int x = 0;
-		int y = pixelRadius;
-		int d = 1 - pixelRadius;
-
-		while (x <= y)
-		{
-			SDL_RenderDrawPoint(renderer, centerX + x, centerY + y);
-			SDL_RenderDrawPoint(renderer, centerX - x, centerY + y);
-			SDL_RenderDrawPoint(renderer, centerX + x, centerY - y);
-			SDL_RenderDrawPoint(renderer, centerX - x, centerY - y);
-			SDL_RenderDrawPoint(renderer, centerX + y, centerY + x);
-			SDL_RenderDrawPoint(renderer, centerX - y, centerY + x);
-			SDL_RenderDrawPoint(renderer, centerX + y, centerY - x);
-			SDL_RenderDrawPoint(renderer, centerX - y, centerY - x);
-
-			if (d < 0)
-			{
-				d += 2 * x + 3;
-			}
-			else
-			{
-				d += 2 * (x - y) + 5;
-				y--;
-			}
-			x++;
-		}
+		filledCircleRGBA(renderer,
+						 centerX,
+						 centerY,
+						 pixelRadius,
+						 color.r,
+						 color.g,
+						 color.b,
+						 color.a);
 	}
 }
