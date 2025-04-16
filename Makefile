@@ -15,7 +15,7 @@ ifdef TARGET_LINUX
 	CPPFLAGS +=
 	LDFLAGS += -lm
 
-	CPPFLAGS += `pkg-config --cflags sdl2 SDL2_mixer SDL2_image`
+	CPPFLAGS += `pkg-config --cflags sdl2 SDL2_mixer SDL2_image SDL2_ttf SDL2_gfx`
 	LDFLAGS += `pkg-config --libs sdl2 SDL2_mixer SDL2_image`
 
 	BIN = last-outpost
@@ -23,7 +23,7 @@ endif
 
 ifdef TARGET_WINDOWS
 	CPPFLAGS += -I"C:/Program Files/msys64/ucrt64/include/SDL2"
-	LDFLAGS += -L"C:/Program Files/msys64/ucrt64/lib" -lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_image -mwindows
+	LDFLAGS += -L"C:/Program Files/msys64/ucrt64/lib" -lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_image -lSDL2_ttf -lSDL2_gfx -mwindows
 endif
 
 # ----------------------------------
