@@ -1,36 +1,84 @@
-#ifndef __LAST_OUTPOST_PROJECTIL_H__
-#define __LAST_OUTPOST_PROJECTIL_H__
+#ifndef _LAST_OUTPOST_PROJECTIL_H_
+#define _LAST_OUTPOST_PROJECTIL_H_
 
 #include <last-outpost/object.h>
-#include <my-lib/math-vector.h>
+#include <last-outpost/graphics.h>
+#include <last-outpost/types.h>
+#include <memory>
 
 namespace Game
 {
-    class Projectil : public Object
-    {
-    private:
-        int damage;
-        MyLib::Vector2 direction;
+	class Enemy;
 
-    public:
-        Projectil(int damage = 0, float speed = 0.0f, MyLib::Vector2 position = {0, 0}, MyLib::Vector2 direction = {0, 0});
-        ~Projectil() override = default;
+	class Projectil : public Object
+	{
+	private:
+		int damage;
+		float speed; // Reordenado para combinar com a ordem de inicialização
+		Vector direction;
+		Vector targetPosition;
+		Enemy *targetEnemy;
 
-        void setDamage(int damage);
-        int getDamage() const;
+	public:
+		Projectil(int damage = 0, float speed = 0.0f, Vector position = {0, 0}, Vector direction = {0, 0});
+		~Projectil() override = default;
 
-        void setSpeed(float speed);
-        float getSpeed() const;
+		using Object::setPosition;
 
-        void setPosition(float x, float y);
-        MyLib::Vector2 getPosition() const;
+		void setPosition(const Vector &position)
+		{
+			setPosition(position.x, position.y);
+		}
 
-        void setDirection(float x, float y);
-        MyLib::Vector2 getDirection() const;
+		void setDamage(int damage)
+		{
+			this->damage = damage;
+		}
 
-        void update() override;
-        void render(Graphics &graphics) const override;
-    };
+		int getDamage() const
+		{
+			return this->damage;
+		}
+
+		void setSpeed(float speed)
+		{
+			this->speed = speed;
+		}
+
+		float getSpeed() const
+		{
+			return this->speed;
+		}
+
+		void setDirection(const Vector &direction)
+		{
+			this->direction = direction;
+		}
+
+		Vector getDirection() const
+		{
+			return this->direction;
+		}
+
+		void setTargetEnemy(Enemy *enemy);
+		void updateTargetPosition();
+
+		void setTargetPosition(const Vector &target);
+
+		void setTargetPosition(float x, float y)
+		{
+			setTargetPosition(Vector{x, y});
+		}
+
+		Vector getTargetPosition() const;
+
+		Enemy *getTargetEnemy() const { return targetEnemy; }
+
+		void update(float deltaTime) override;
+		void render(Graphics &graphics, float deltaTime) const override;
+
+		bool hasReachedTarget() const;
+	};
 }
 
 #endif
