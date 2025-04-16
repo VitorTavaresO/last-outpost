@@ -34,9 +34,7 @@ namespace Game
 
 		float length = directionVector.length();
 		if (length > 0.0001f)
-		{
-			direction = {directionVector.x / length, directionVector.y / length};
-		}
+			direction = Mylib::Math::with_length(directionVector, speed);
 	}
 
 	void Projectil::setTargetPosition(const Vector &target)
@@ -49,9 +47,7 @@ namespace Game
 
 		float length = directionVector.length();
 		if (length > 0.0001f)
-		{
-			direction = {directionVector.x / length, directionVector.y / length};
-		}
+			direction = Mylib::Math::with_length(directionVector, speed);
 	}
 
 	Vector Projectil::getTargetPosition() const

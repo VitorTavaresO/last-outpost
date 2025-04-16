@@ -145,7 +145,7 @@ namespace Game
 				Tile &tile = map(row, col);
 				if (tile.object.getType() == ObjectType::Space)
 				{
-					Tower tower(5.0f, Projectil(50, 5.0f), {0, 0, 255, 255});
+					Tower tower(5.0f, Projectil(50, 2.0f), {0, 0, 255, 255});
 					tower.setPosition(col, row);
 					towers.push_back(tower);
 				}
