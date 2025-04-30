@@ -17,7 +17,7 @@ namespace Game
 	{
 	public:
 		GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, Level &&level);
-		void run();
+		bool run();
 
 	private:
 		SDL_Renderer *renderer;
@@ -33,7 +33,7 @@ namespace Game
 		size_t enemyTypeIndex;
 		std::vector<Tower> towers;
 
-		void handleEvents();
+		bool handleEvents();
 		void update(float deltaTime);
 		void render(float deltaTime);
 		void spawnEnemies();

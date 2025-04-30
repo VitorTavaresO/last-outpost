@@ -20,7 +20,7 @@ namespace Game
 		this->replaceSpacesWithTowers();
 	}
 
-	void GameWorld::run()
+	bool GameWorld::run()
 	{
 		this->lastUpdateTime = getTimeInSeconds();
 
@@ -31,13 +31,24 @@ namespace Game
 
 			this->lastUpdateTime = currentTime;
 
-			this->handleEvents();
+			if (!this->handleEvents())
+			{
+				return false;
+			}
+
 			this->update(deltaTime);
 			this->render(deltaTime);
+
+			if (this->activeEnemies.empty() && this->spawnedEnemyCount >= this->level.getEnemyCount())
+			{
+				return true;
+			}
 		}
+
+		return false;
 	}
 
-	void GameWorld::handleEvents()
+	bool GameWorld::handleEvents()
 	{
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
@@ -45,8 +56,10 @@ namespace Game
 			if (event.type == SDL_QUIT)
 			{
 				this->running = false;
+				return false;
 			}
 		}
+		return true;
 	}
 
 	void GameWorld::update(float deltaTime)
