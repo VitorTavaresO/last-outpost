@@ -39,10 +39,10 @@ namespace Game
 			this->update(deltaTime);
 			this->render(deltaTime);
 
-			if (this->activeEnemies.empty() && this->spawnedEnemyCount >= this->level.getEnemyCount())
+			/*if (this->activeEnemies.empty() && this->spawnedEnemyCount >= this->level.getEnemyCount())
 			{
 				return true;
-			}
+			}*/
 		}
 
 		return false;
@@ -173,7 +173,7 @@ namespace Game
 					auto towerSprite = std::make_unique<Sprite>();
 					if (towerSprite->loadFromFile("assets/tower.png", renderer))
 					{
-						towerSprite->setScale(1.0f, 1.0f);
+						towerSprite->setScale(2.0f, 2.0f);
 						tower.setSprite(std::move(towerSprite));
 					}
 

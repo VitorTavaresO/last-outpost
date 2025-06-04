@@ -117,7 +117,7 @@ namespace Game
 
 		std::vector<Enemy> enemyTypes;
 
-		enemyTypes.emplace_back(100, 20, 1.0f, "Fireball", path);
+		enemyTypes.emplace_back(100, 20, 5.0f, "Fireball", path);
 		enemyTypes.emplace_back(150, 30, 0.8f, "Ice Spike", path);
 		enemyTypes.emplace_back(200, 40, 0.5f, "Lightning Bolt", path);
 
@@ -141,7 +141,13 @@ namespace Game
 
 		bool gameCompleted = gameWorld->run();
 
-		if (gameCompleted)
+		if (!gameCompleted)
+		{
+			changeState(GameState::Quitting);
+			return;
+		}
+
+		/*if (gameCompleted)
 		{
 			gameWorld.reset();
 
@@ -153,7 +159,7 @@ namespace Game
 			{
 				changeState(GameState::GameOver);
 			}
-		}
+		}*/
 	}
 
 	void GameControl::handlePauseMenu()
