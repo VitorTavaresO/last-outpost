@@ -171,9 +171,12 @@ namespace Game
 					tower.setPosition(col, row);
 
 					auto towerSprite = std::make_unique<Sprite>();
-					if (towerSprite->loadFromFile("assets/tower.png", renderer))
+					if (towerSprite->loadFromFile("assets/magic-tower.png", renderer))
 					{
-						towerSprite->setScale(2.5f, 2.5f);
+						towerSprite->setSourceRect(0, 0, 512, 599);
+
+						towerSprite->setScale(1.0f, 1.0f);
+
 						tower.setSprite(std::move(towerSprite));
 					}
 
