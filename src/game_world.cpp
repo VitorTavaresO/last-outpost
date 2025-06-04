@@ -173,7 +173,7 @@ namespace Game
 					auto towerSprite = std::make_unique<Sprite>();
 					if (towerSprite->loadFromFile("assets/tower.png", renderer))
 					{
-						towerSprite->setScale(2.0f, 2.0f);
+						towerSprite->setScale(2.5f, 2.5f);
 						tower.setSprite(std::move(towerSprite));
 					}
 

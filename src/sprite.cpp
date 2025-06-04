@@ -72,15 +72,18 @@ namespace Game
 		int tileWidth = graphics.getTileWidth();
 		int tileHeight = graphics.getTileHeight();
 
-		Vector finalPosition = position - origin;
-
 		Vector finalSize = {
 			static_cast<float>(tileWidth) * scale.x,
 			static_cast<float>(tileHeight) * scale.y};
 
+		Vector finalPosition = position - origin;
+
+		finalPosition.x = finalPosition.x * tileWidth + (tileWidth - finalSize.x) / 2.0f;
+		finalPosition.y = finalPosition.y * tileHeight + (tileHeight - finalSize.y) / 2.0f;
+
 		SDL_Rect destRect = {
-			static_cast<int>(finalPosition.x * tileWidth),
-			static_cast<int>(finalPosition.y * tileHeight),
+			static_cast<int>(finalPosition.x),
+			static_cast<int>(finalPosition.y),
 			static_cast<int>(finalSize.x),
 			static_cast<int>(finalSize.y)};
 
