@@ -2,9 +2,11 @@
 #define _LAST_OUTPOST_OBJECT_H_
 
 #include <SDL.h>
+#include <memory>
 #include <last-outpost/graphics.h>
 #include <last-outpost/types.h>
 #include <last-outpost/collision.h>
+#include <last-outpost/sprite.h>
 
 namespace Game
 {
@@ -17,6 +19,7 @@ namespace Game
 		ObjectType type;
 		Collision collider;
 		float collisionRadius;
+		std::unique_ptr<Sprite> sprite;
 
 	public:
 		Object() : type(ObjectType::Unknown), collisionRadius(0.5f)
@@ -25,6 +28,31 @@ namespace Game
 		}
 
 		virtual ~Object() = default;
+
+		Object(const Object &) = delete;
+		Object &operator=(const Object &) = delete;
+
+		Object(Object &&other) noexcept
+			: color(other.color), position(other.position), size(other.size),
+			  type(other.type), collider(other.collider),
+			  collisionRadius(other.collisionRadius), sprite(std::move(other.sprite))
+		{
+		}
+
+		Object &operator=(Object &&other) noexcept
+		{
+			if (this != &other)
+			{
+				color = other.color;
+				position = other.position;
+				size = other.size;
+				type = other.type;
+				collider = other.collider;
+				collisionRadius = other.collisionRadius;
+				sprite = std::move(other.sprite);
+			}
+			return *this;
+		}
 
 		virtual void update(float deltaTime);
 		virtual void render(Graphics &graphics, float deltaTime) const;
@@ -96,6 +124,21 @@ namespace Game
 		bool isColliding(const Object &other) const
 		{
 			return collider.checkCollision(other.getCollider());
+		}
+
+		void setSprite(std::unique_ptr<Sprite> newSprite)
+		{
+			sprite = std::move(newSprite);
+		}
+
+		bool hasSprite() const
+		{
+			return sprite != nullptr;
+		}
+
+		Sprite *getSprite() const
+		{
+			return sprite.get();
 		}
 	};
 }

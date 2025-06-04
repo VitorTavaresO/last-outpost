@@ -23,6 +23,33 @@ namespace Game
 	public:
 		Enemy(int life = 100, int damage = 10, float speed = 1.0f, const std::string &spell = "", std::vector<PathPoint> path = {});
 
+		Enemy(const Enemy &) = delete;
+		Enemy &operator=(const Enemy &) = delete;
+
+		Enemy(Enemy &&other) noexcept
+			: Object(std::move(other)), life(other.life), damage(other.damage),
+			  speed(other.speed), spell(std::move(other.spell)),
+			  path(std::move(other.path)), lastMoveTime(other.lastMoveTime),
+			  currentStep(other.currentStep)
+		{
+		}
+
+		Enemy &operator=(Enemy &&other) noexcept
+		{
+			if (this != &other)
+			{
+				Object::operator=(std::move(other));
+				life = other.life;
+				damage = other.damage;
+				speed = other.speed;
+				spell = std::move(other.spell);
+				path = std::move(other.path);
+				lastMoveTime = other.lastMoveTime;
+				currentStep = other.currentStep;
+			}
+			return *this;
+		}
+
 		using Object::setPosition;
 
 		void setPosition(const Point &position)

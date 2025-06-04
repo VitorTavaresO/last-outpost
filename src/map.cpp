@@ -13,49 +13,49 @@ namespace Game
 			{
 				char tileChar = mapString[row * this->width + col];
 
-				Tile tile;
-				tile.id = idCounter++;
-				tile.type = tileChar;
-				tile.object.setPosition(col, row);
-				tile.object.setSize(1, 1);
+				Object tileObject;
+				tileObject.setPosition(col, row);
+				tileObject.setSize(1, 1);
 
 				switch (tileChar)
 				{
 				case ' ':
-					tile.object.setColor({0, 100, 0, 255}); // Verde escuro
-					tile.object.setType(ObjectType::Unknown);
+					tileObject.setColor({0, 100, 0, 255}); // Verde escuro
+					tileObject.setType(ObjectType::Unknown);
 					break;
 
 				case 'F':
-					tile.object.setColor({194, 178, 128, 255}); // Areia
-					tile.object.setType(ObjectType::First);
+					tileObject.setColor({194, 178, 128, 255}); // Areia
+					tileObject.setType(ObjectType::First);
 					break;
 
 				case 'R':
 				case 'L':
 				case 'D':
 				case 'U':
-					tile.object.setColor({194, 178, 128, 255}); // Areia
-					tile.object.setType(ObjectType::Path);
+					tileObject.setColor({194, 178, 128, 255}); // Areia
+					tileObject.setType(ObjectType::Path);
 					break;
 
 				case 'E':
-					tile.object.setColor({194, 178, 128, 255}); // Areia
-					tile.object.setType(ObjectType::End);
+					tileObject.setColor({194, 178, 128, 255}); // Areia
+					tileObject.setType(ObjectType::End);
 					break;
 
 				case 'S':
-					tile.object.setColor({139, 69, 19, 255}); // Marrom
-					tile.object.setType(ObjectType::Space);
+					tileObject.setColor({139, 69, 19, 255}); // Marrom
+					tileObject.setType(ObjectType::Space);
 					break;
 
 				default:
-					tile.object.setColor({0, 0, 0, 255}); // Preto
-					tile.object.setType(ObjectType::Unknown);
+					tileObject.setColor({0, 0, 0, 255}); // Preto
+					tileObject.setType(ObjectType::Unknown);
 					break;
 				}
 
-				this->terrain[row, col] = tile;
+				Tile tile(idCounter++, tileChar, std::move(tileObject));
+
+				this->terrain[row, col] = std::move(tile);
 			}
 		}
 	}

@@ -23,6 +23,32 @@ namespace Game
 		Projectil(int damage = 0, float speed = 0.0f, Vector position = {0, 0}, Vector direction = {0, 0});
 		~Projectil() override = default;
 
+		Projectil(const Projectil &) = delete;
+		Projectil &operator=(const Projectil &) = delete;
+
+		Projectil(Projectil &&other) noexcept
+			: Object(std::move(other)), damage(other.damage), speed(other.speed),
+			  direction(other.direction), targetPosition(other.targetPosition),
+			  targetEnemy(other.targetEnemy)
+		{
+			other.targetEnemy = nullptr;
+		}
+
+		Projectil &operator=(Projectil &&other) noexcept
+		{
+			if (this != &other)
+			{
+				Object::operator=(std::move(other));
+				damage = other.damage;
+				speed = other.speed;
+				direction = other.direction;
+				targetPosition = other.targetPosition;
+				targetEnemy = other.targetEnemy;
+				other.targetEnemy = nullptr;
+			}
+			return *this;
+		}
+
 		using Object::setPosition;
 
 		void setPosition(const Vector &position)

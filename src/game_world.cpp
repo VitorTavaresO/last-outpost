@@ -120,11 +120,20 @@ namespace Game
 		float currentTime = getTimeInSeconds();
 		constexpr float spawnInterval = 2.0f;
 
-		if (this->spawnedEnemyCount < this->level.getEnemyCount() && currentTime - this->lastSpawnTime >= spawnInterval)
+		if (this->spawnedEnemyCount < this->level.getEnemyCount() &&
+			currentTime - this->lastSpawnTime >= spawnInterval)
 		{
 			if (!this->level.getEnemyTypes().empty())
 			{
-				auto enemy = std::make_unique<Enemy>(this->level.getEnemyTypes()[this->enemyTypeIndex]);
+				const Enemy &enemyTemplate = this->level.getEnemyTypes()[this->enemyTypeIndex];
+
+				auto enemy = std::make_unique<Enemy>(
+					enemyTemplate.getLife(),
+					enemyTemplate.getDamage(),
+					enemyTemplate.getSpeed(),
+					enemyTemplate.getSpell(),
+
+					map.extractPath());
 
 				this->activeEnemies.push_back(std::move(enemy));
 				++this->spawnedEnemyCount;
@@ -150,17 +159,25 @@ namespace Game
 
 	void GameWorld::replaceSpacesWithTowers()
 	{
-
-		for (int row = 0; row < this->map.getHeight(); ++row)
+		for (int row = 0; row < map.getHeight(); ++row)
 		{
-			for (int col = 0; col < this->map.getWidth(); ++col)
+			for (int col = 0; col < map.getWidth(); ++col)
 			{
-				Tile &tile = this->map(row, col);
+				Tile &tile = map(row, col);
 				if (tile.object.getType() == ObjectType::Space)
 				{
-					Tower tower(5.0f, Projectil(50, 2.0f), {0, 0, 255, 255});
+					Projectil towerProjectil(50, 2.0f);
+					Tower tower(5.0f, std::move(towerProjectil), {0, 0, 255, 255});
 					tower.setPosition(col, row);
-					this->towers.push_back(tower);
+
+					auto towerSprite = std::make_unique<Sprite>();
+					if (towerSprite->loadFromFile("assets/tower.png", renderer))
+					{
+						towerSprite->setScale(1.0f, 1.0f);
+						tower.setSprite(std::move(towerSprite));
+					}
+
+					towers.push_back(std::move(tower));
 				}
 			}
 		}

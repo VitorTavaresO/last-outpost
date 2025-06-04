@@ -11,8 +11,9 @@ namespace Game
 
 	void Tower::render(Graphics &graphics, float deltaTime) const
 	{
+		Object::render(graphics, deltaTime);
+
 		graphics.drawCircle(this->getPosition(), this->range, {0, 0, 255, 40});
-		graphics.drawRect(this->getPosition(), this->getSize(), this->getColor());
 	}
 
 	bool Tower::isWithinRange(const Vector &targetPosition) const

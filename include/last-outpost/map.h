@@ -17,6 +17,30 @@ namespace Game
 		int id;
 		char type;
 		Object object;
+
+		Tile() : id(0), type(' ') {}
+
+		Tile(int id, char type, Object &&obj)
+			: id(id), type(type), object(std::move(obj)) {}
+
+		Tile(const Tile &) = delete;
+		Tile &operator=(const Tile &) = delete;
+
+		Tile(Tile &&other) noexcept
+			: id(other.id), type(other.type), object(std::move(other.object))
+		{
+		}
+
+		Tile &operator=(Tile &&other) noexcept
+		{
+			if (this != &other)
+			{
+				id = other.id;
+				type = other.type;
+				object = std::move(other.object);
+			}
+			return *this;
+		}
 	};
 
 	class Map : public Object

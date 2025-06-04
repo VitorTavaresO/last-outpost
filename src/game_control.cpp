@@ -2,6 +2,7 @@
 #include <last-outpost/globals.h>
 #include <last-outpost/map.h>
 #include <iostream>
+#include <SDL_image.h>
 
 namespace Game
 {
@@ -66,6 +67,7 @@ namespace Game
 			window = nullptr;
 		}
 
+		IMG_Quit();
 		SDL_Quit();
 	}
 
@@ -74,6 +76,12 @@ namespace Game
 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
 		{
 			std::cerr << "Error on start SDL: " << SDL_GetError() << std::endl;
+			return false;
+		}
+
+		if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
+		{
+			std::cerr << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
 			return false;
 		}
 
@@ -107,10 +115,11 @@ namespace Game
 		Map map(TILES_X, TILES_Y, rawStringMap);
 		auto path = map.extractPath();
 
-		std::vector<Enemy> enemyTypes = {
-			Enemy(100, 20, 1.0f, "Fireball", path),
-			Enemy(150, 30, 0.8f, "Ice Spike", path),
-			Enemy(200, 40, 0.5f, "Lightning Bolt", path)};
+		std::vector<Enemy> enemyTypes;
+
+		enemyTypes.emplace_back(100, 20, 1.0f, "Fireball", path);
+		enemyTypes.emplace_back(150, 30, 0.8f, "Ice Spike", path);
+		enemyTypes.emplace_back(200, 40, 0.5f, "Lightning Bolt", path);
 
 		levels.emplace_back(rawStringMap, std::move(enemyTypes), 20);
 	}

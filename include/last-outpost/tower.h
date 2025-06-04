@@ -22,14 +22,37 @@ namespace Game
 
 	public:
 		Tower(float range = 0.0f,
-			  const Projectil &projectil = Projectil(),
+			  Projectil projectil = Projectil(),
 			  SDL_Color color = {0, 0, 255, 255})
 			: range(range), lastFireTime(0), fireRate(1.0f),
-			  projectil(projectil)
+			  projectil(std::move(projectil))
 		{
 			this->setType(ObjectType::Tower);
 			this->setColor(color);
 			this->setSize(1, 1);
+		}
+
+		Tower(const Tower &) = delete;
+		Tower &operator=(const Tower &) = delete;
+
+		Tower(Tower &&other) noexcept
+			: Object(std::move(other)), range(other.range),
+			  lastFireTime(other.lastFireTime), fireRate(other.fireRate),
+			  projectil(std::move(other.projectil))
+		{
+		}
+
+		Tower &operator=(Tower &&other) noexcept
+		{
+			if (this != &other)
+			{
+				Object::operator=(std::move(other));
+				range = other.range;
+				lastFireTime = other.lastFireTime;
+				fireRate = other.fireRate;
+				projectil = std::move(other.projectil);
+			}
+			return *this;
 		}
 
 		void setRange(float range)
@@ -50,9 +73,9 @@ namespace Game
 			return this->fireRate;
 		}
 
-		void setProjectil(const Projectil &projectil)
+		void setProjectil(Projectil projectil)
 		{
-			this->projectil = projectil;
+			this->projectil = std::move(projectil);
 		}
 
 		const Projectil &getProjectil() const

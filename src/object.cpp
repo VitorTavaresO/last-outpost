@@ -9,6 +9,14 @@ namespace Game
 
 	void Object::render(Graphics &graphics, float deltaTime) const
 	{
-		graphics.drawRect(this->position, this->size, this->color);
+		if (sprite)
+		{
+			sprite->setPosition(position);
+			sprite->render(graphics);
+		}
+		else
+		{
+			graphics.drawRect(position, size, color);
+		}
 	}
 }

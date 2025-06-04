@@ -28,6 +28,11 @@ namespace Game
 
 		void drawRect(const Vector &position, const Vector &size, const SDL_Color &color) const;
 		void drawCircle(const Vector &center, float radius, const SDL_Color &color) const;
+
+		SDL_Renderer *getRenderer() const
+		{
+			return this->renderer;
+		}
 	};
 }
 
