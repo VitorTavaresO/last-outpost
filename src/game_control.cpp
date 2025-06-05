@@ -116,6 +116,7 @@ namespace Game
 		auto path = map.extractPath();
 
 		std::vector<Enemy> enemyTypes;
+		enemyTypes.reserve(3);
 
 		enemyTypes.emplace_back(100, 20, 5.0f, "Fireball", path);
 		enemyTypes.emplace_back(150, 30, 0.8f, "Ice Spike", path);

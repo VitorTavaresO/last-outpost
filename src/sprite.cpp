@@ -11,30 +11,24 @@ namespace Game
 		  frameWidth(0), frameHeight(0), columns(0), rows(0),
 		  currentFrame(0)
 	{
-		sourceRect = {0, 0, 0, 0};
+		this->sourceRect = {0, 0, 0, 0};
 	}
 
 	Sprite::~Sprite()
 	{
-		if (texture)
+		if (this->texture)
 		{
-			SDL_DestroyTexture(texture);
-			texture = nullptr;
+			SDL_DestroyTexture(this->texture);
+			this->texture = nullptr;
 		}
 	}
 
 	bool Sprite::loadFromFile(const std::string &path, SDL_Renderer *renderer)
 	{
-		if (!renderer)
+		if (this->texture)
 		{
-			std::cerr << "Renderer is null in Sprite::loadFromFile" << std::endl;
-			return false;
-		}
-
-		if (texture)
-		{
-			SDL_DestroyTexture(texture);
-			texture = nullptr;
+			SDL_DestroyTexture(this->texture);
+			this->texture = nullptr;
 		}
 
 		SDL_Surface *surface = IMG_Load(path.c_str());
@@ -48,18 +42,17 @@ namespace Game
 		{
 			SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_BLEND);
 		}
-
-		texture = SDL_CreateTextureFromSurface(renderer, surface);
-		if (!texture)
+		this->texture = SDL_CreateTextureFromSurface(renderer, surface);
+		if (!this->texture)
 		{
 			std::cerr << "Failed to create texture from surface: " << SDL_GetError() << std::endl;
 			SDL_FreeSurface(surface);
 			return false;
 		}
-		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+		SDL_SetTextureBlendMode(this->texture, SDL_BLENDMODE_BLEND);
 
-		size.x = surface->w;
-		size.y = surface->h;
+		this->size.x = surface->w;
+		this->size.y = surface->h;
 
 		SDL_FreeSurface(surface);
 
@@ -69,7 +62,7 @@ namespace Game
 	bool Sprite::loadSpriteSheet(const std::string &filepath, SDL_Renderer *renderer,
 								 int frameWidth, int frameHeight, int columns, int rows)
 	{
-		if (loadFromFile(filepath, renderer))
+		if (this->loadFromFile(filepath, renderer))
 		{
 			this->frameWidth = frameWidth;
 			this->frameHeight = frameHeight;
@@ -77,7 +70,7 @@ namespace Game
 			this->rows = rows;
 			this->currentFrame = 0;
 
-			setFrame(0);
+			this->setFrame(0);
 			return true;
 		}
 		return false;
@@ -86,29 +79,29 @@ namespace Game
 	void Sprite::setFrame(int frameIndex)
 	{
 
-		int totalFrames = columns * rows;
+		int totalFrames = this->columns * this->rows;
 		if (frameIndex < 0 || frameIndex >= totalFrames)
 			return;
 
-		currentFrame = frameIndex;
+		this->currentFrame = frameIndex;
 
-		int col = frameIndex % columns;
-		int row = frameIndex / columns;
+		int col = frameIndex % this->columns;
+		int row = frameIndex / this->columns;
 
-		setSourceRect(col * frameWidth, row * frameHeight, frameWidth, frameHeight);
+		this->setSourceRect(col * this->frameWidth, row * this->frameHeight, this->frameWidth, this->frameHeight);
 	}
 
 	void Sprite::setFrame(int column, int row)
 	{
-		if (column < 0 || column >= columns || row < 0 || row >= this->rows)
+		if (column < 0 || column >= this->columns || row < 0 || row >= this->rows)
 			return;
 
-		int frameIndex = row * columns + column;
-		setFrame(frameIndex);
+		int frameIndex = row * this->columns + column;
+		this->setFrame(frameIndex);
 	}
 	void Sprite::render(Graphics &graphics) const
 	{
-		if (!texture)
+		if (!this->texture)
 			return;
 
 		int tileWidth = graphics.getTileWidth();
@@ -116,10 +109,10 @@ namespace Game
 
 		Vector finalSize;
 
-		finalSize.x = static_cast<float>(frameWidth) * scale.x;
-		finalSize.y = static_cast<float>(frameHeight) * scale.y;
+		finalSize.x = static_cast<float>(this->frameWidth) * this->scale.x;
+		finalSize.y = static_cast<float>(this->frameHeight) * this->scale.y;
 
-		Vector finalPosition = position - origin;
+		Vector finalPosition = this->position - this->origin;
 
 		finalPosition.x = finalPosition.x * tileWidth + (tileWidth - finalSize.x) / 2.0f;
 		finalPosition.y = finalPosition.y * tileHeight + (tileHeight - finalSize.y) / 2.0f;
@@ -129,25 +122,18 @@ namespace Game
 			static_cast<int>(finalPosition.y),
 			static_cast<int>(finalSize.x),
 			static_cast<int>(finalSize.y)};
-
 		SDL_RendererFlip flipFlags = SDL_FLIP_NONE;
-		if (flippedX)
+		if (this->flippedX)
 			flipFlags = static_cast<SDL_RendererFlip>(flipFlags | SDL_FLIP_HORIZONTAL);
-		if (flippedY)
+		if (this->flippedY)
 			flipFlags = static_cast<SDL_RendererFlip>(flipFlags | SDL_FLIP_VERTICAL);
 
-		SDL_SetTextureColorMod(texture, color.r, color.g, color.b);
-		SDL_SetTextureAlphaMod(texture, color.a);
+		SDL_SetTextureColorMod(this->texture, this->color.r, this->color.g, this->color.b);
+		SDL_SetTextureAlphaMod(this->texture, this->color.a);
 
-		if (useSourceRect)
-		{
-			SDL_RenderCopyEx(graphics.getRenderer(), texture, &sourceRect, &destRect,
-							 rotation, nullptr, flipFlags);
-		}
+		if (this->useSourceRect)
+			SDL_RenderCopyEx(graphics.getRenderer(), this->texture, &this->sourceRect, &destRect, this->rotation, nullptr, flipFlags);
 		else
-		{
-			SDL_RenderCopyEx(graphics.getRenderer(), texture, nullptr, &destRect,
-							 rotation, nullptr, flipFlags);
-		}
+			SDL_RenderCopyEx(graphics.getRenderer(), this->texture, nullptr, &destRect, this->rotation, nullptr, flipFlags);
 	}
 }

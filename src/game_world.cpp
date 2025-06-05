@@ -172,7 +172,7 @@ namespace Game
 					auto towerSprite = std::make_unique<Sprite>();
 
 					if (towerSprite->loadSpriteSheet("assets/magic-tower.png", renderer,
-													 512, 599, 4, 3))
+													 400, 467, 4, 3))
 					{
 						towerSprite->setFrame(0);
 						towerSprite->setScale(0.2f, 0.2f);
