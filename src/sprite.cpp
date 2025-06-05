@@ -7,7 +7,9 @@ namespace Game
 	Sprite::Sprite()
 		: texture(nullptr), useSourceRect(false), position{0, 0},
 		  size{1, 1}, scale{1, 1}, origin{0, 0}, rotation(0),
-		  color{255, 255, 255, 255}, flippedX(false), flippedY(false)
+		  color{255, 255, 255, 255}, flippedX(false), flippedY(false),
+		  frameWidth(0), frameHeight(0), columns(0), rows(0),
+		  currentFrame(0)
 	{
 		sourceRect = {0, 0, 0, 0};
 	}
@@ -54,16 +56,56 @@ namespace Game
 			SDL_FreeSurface(surface);
 			return false;
 		}
-
 		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
 		size.x = surface->w;
 		size.y = surface->h;
 
 		SDL_FreeSurface(surface);
+
 		return true;
 	}
 
+	bool Sprite::loadSpriteSheet(const std::string &filepath, SDL_Renderer *renderer,
+								 int frameWidth, int frameHeight, int columns, int rows)
+	{
+		if (loadFromFile(filepath, renderer))
+		{
+			this->frameWidth = frameWidth;
+			this->frameHeight = frameHeight;
+			this->columns = columns;
+			this->rows = rows;
+			this->currentFrame = 0;
+
+			setFrame(0);
+			return true;
+		}
+		return false;
+	}
+
+	void Sprite::setFrame(int frameIndex)
+	{
+
+		int totalFrames = columns * rows;
+		if (frameIndex < 0 || frameIndex >= totalFrames)
+			return;
+
+		currentFrame = frameIndex;
+
+		int col = frameIndex % columns;
+		int row = frameIndex / columns;
+
+		setSourceRect(col * frameWidth, row * frameHeight, frameWidth, frameHeight);
+	}
+
+	void Sprite::setFrame(int column, int row)
+	{
+		if (column < 0 || column >= columns || row < 0 || row >= this->rows)
+			return;
+
+		int frameIndex = row * columns + column;
+		setFrame(frameIndex);
+	}
 	void Sprite::render(Graphics &graphics) const
 	{
 		if (!texture)
@@ -72,9 +114,10 @@ namespace Game
 		int tileWidth = graphics.getTileWidth();
 		int tileHeight = graphics.getTileHeight();
 
-		Vector finalSize = {
-			static_cast<float>(tileWidth) * scale.x,
-			static_cast<float>(tileHeight) * scale.y};
+		Vector finalSize;
+
+		finalSize.x = static_cast<float>(frameWidth) * scale.x;
+		finalSize.y = static_cast<float>(frameHeight) * scale.y;
 
 		Vector finalPosition = position - origin;
 

@@ -23,11 +23,21 @@ namespace Game
 		bool flippedX;
 		bool flippedY;
 
+		int frameWidth, frameHeight;
+		int columns, rows;
+		int currentFrame;
+
 	public:
 		Sprite();
 		~Sprite();
-
 		bool loadFromFile(const std::string &path, SDL_Renderer *renderer);
+
+		bool loadSpriteSheet(const std::string &filepath, SDL_Renderer *renderer,
+							 int frameWidth, int frameHeight, int columns, int rows);
+		void setFrame(int frameIndex);
+		void setFrame(int column, int row);
+		int getCurrentFrame() const { return currentFrame; }
+
 		void render(Graphics &graphics) const;
 
 		void setSourceRect(int x, int y, int width, int height)

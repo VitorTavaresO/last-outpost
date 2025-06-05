@@ -156,7 +156,6 @@ namespace Game
 			}
 		}
 	}
-
 	void GameWorld::replaceSpacesWithTowers()
 	{
 		for (int row = 0; row < map.getHeight(); ++row)
@@ -171,12 +170,12 @@ namespace Game
 					tower.setPosition(col, row);
 
 					auto towerSprite = std::make_unique<Sprite>();
-					if (towerSprite->loadFromFile("assets/magic-tower.png", renderer))
+
+					if (towerSprite->loadSpriteSheet("assets/magic-tower.png", renderer,
+													 512, 599, 4, 3))
 					{
-						towerSprite->setSourceRect(0, 0, 512, 599);
-
-						towerSprite->setScale(1.0f, 1.0f);
-
+						towerSprite->setFrame(0);
+						towerSprite->setScale(0.2f, 0.2f);
 						tower.setSprite(std::move(towerSprite));
 					}
 
