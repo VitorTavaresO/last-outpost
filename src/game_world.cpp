@@ -3,6 +3,7 @@
 #include <last-outpost/game_world.h>
 #include <last-outpost/tower.h>
 #include <last-outpost/globals.h>
+#include <last-outpost/animation.h>
 
 namespace Game
 {
@@ -61,7 +62,6 @@ namespace Game
 		}
 		return true;
 	}
-
 	void GameWorld::update(float deltaTime)
 	{
 		for (auto &enemy : this->activeEnemies)
@@ -81,6 +81,11 @@ namespace Game
 			{
 				++it;
 			}
+		}
+
+		for (auto &tower : this->towers)
+		{
+			tower.update(deltaTime);
 		}
 
 		this->updateTowers(getTimeInSeconds());
@@ -169,14 +174,19 @@ namespace Game
 					Tower tower(5.0f, std::move(towerProjectil), {0, 0, 255, 255});
 					tower.setPosition(col, row);
 
-					auto towerSprite = std::make_unique<Sprite>();
-
-					if (towerSprite->loadSpriteSheet("assets/magic-tower.png", renderer,
-													 400, 467, 4, 3))
+					auto towerAnimation = std::make_unique<Animation>();
+					if (towerAnimation->loadSpriteSheet("assets/magic-tower.png", renderer,
+														400, 467, 4, 3))
 					{
-						towerSprite->setFrame(0);
-						towerSprite->setScale(0.2f, 0.2f);
-						tower.setSprite(std::move(towerSprite));
+						towerAnimation->setFrameTime(0.2f);
+						towerAnimation->setScale(0.2f, 0.2f);
+						towerAnimation->setPosition(col, row);
+
+						towerAnimation->setFrame(0, 0);
+						towerAnimation->pause();
+
+						tower.setAnimation(std::move(towerAnimation));
+						tower.setState(TowerState::Idle);
 					}
 
 					towers.push_back(std::move(tower));

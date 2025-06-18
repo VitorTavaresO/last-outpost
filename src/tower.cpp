@@ -7,11 +7,32 @@ namespace Game
 {
 	void Tower::update(float deltaTime)
 	{
-	}
+		if (animation)
+		{
+			animation->setPosition(this->getPosition().x, this->getPosition().y);
+			animation->update(deltaTime);
+		}
 
+		if (currentState == TowerState::Attacking)
+		{
+			attackAnimationTimer += deltaTime;
+			if (attackAnimationTimer >= attackAnimationDuration)
+			{
+				setState(TowerState::Idle);
+				attackAnimationTimer = 0.0f;
+			}
+		}
+	}
 	void Tower::render(Graphics &graphics, float deltaTime) const
 	{
-		Object::render(graphics, deltaTime);
+		if (animation)
+		{
+			animation->render(graphics);
+		}
+		else
+		{
+			Object::render(graphics, deltaTime);
+		}
 
 		graphics.drawCircle(this->getPosition(), this->range, {0, 0, 255, 40});
 	}
@@ -58,6 +79,28 @@ namespace Game
 
 		newProjectil->setTargetEnemy(enemy);
 
+		setState(TowerState::Attacking);
+		attackAnimationTimer = 0.0f;
+
 		return newProjectil;
+	}
+	void Tower::setState(TowerState state)
+	{
+		if (currentState == state || !animation)
+			return;
+
+		currentState = state;
+
+		switch (state)
+		{
+		case TowerState::Idle:
+			animation->setFrame(0, 0);
+			animation->pause();
+			break;
+		case TowerState::Attacking:
+			animation->setFrame(0, 1);
+			animation->pause();
+			break;
+		}
 	}
 }

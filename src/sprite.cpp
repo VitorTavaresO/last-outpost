@@ -7,9 +7,7 @@ namespace Game
 	Sprite::Sprite()
 		: texture(nullptr), useSourceRect(false), position{0, 0},
 		  size{1, 1}, scale{1, 1}, origin{0, 0}, rotation(0),
-		  color{255, 255, 255, 255}, flippedX(false), flippedY(false),
-		  frameWidth(0), frameHeight(0), columns(0), rows(0),
-		  currentFrame(0)
+		  color{255, 255, 255, 255}, flippedX(false), flippedY(false)
 	{
 		this->sourceRect = {0, 0, 0, 0};
 	}
@@ -55,50 +53,9 @@ namespace Game
 		this->size.y = surface->h;
 
 		SDL_FreeSurface(surface);
-
 		return true;
 	}
 
-	bool Sprite::loadSpriteSheet(const std::string &filepath, SDL_Renderer *renderer,
-								 int frameWidth, int frameHeight, int columns, int rows)
-	{
-		if (this->loadFromFile(filepath, renderer))
-		{
-			this->frameWidth = frameWidth;
-			this->frameHeight = frameHeight;
-			this->columns = columns;
-			this->rows = rows;
-			this->currentFrame = 0;
-
-			this->setFrame(0);
-			return true;
-		}
-		return false;
-	}
-
-	void Sprite::setFrame(int frameIndex)
-	{
-
-		int totalFrames = this->columns * this->rows;
-		if (frameIndex < 0 || frameIndex >= totalFrames)
-			return;
-
-		this->currentFrame = frameIndex;
-
-		int col = frameIndex % this->columns;
-		int row = frameIndex / this->columns;
-
-		this->setSourceRect(col * this->frameWidth, row * this->frameHeight, this->frameWidth, this->frameHeight);
-	}
-
-	void Sprite::setFrame(int column, int row)
-	{
-		if (column < 0 || column >= this->columns || row < 0 || row >= this->rows)
-			return;
-
-		int frameIndex = row * this->columns + column;
-		this->setFrame(frameIndex);
-	}
 	void Sprite::render(Graphics &graphics) const
 	{
 		if (!this->texture)
@@ -106,11 +63,18 @@ namespace Game
 
 		int tileWidth = graphics.getTileWidth();
 		int tileHeight = graphics.getTileHeight();
-
 		Vector finalSize;
 
-		finalSize.x = static_cast<float>(this->frameWidth) * this->scale.x;
-		finalSize.y = static_cast<float>(this->frameHeight) * this->scale.y;
+		if (this->useSourceRect)
+		{
+			finalSize.x = static_cast<float>(this->sourceRect.w) * this->scale.x;
+			finalSize.y = static_cast<float>(this->sourceRect.h) * this->scale.y;
+		}
+		else
+		{
+			finalSize.x = this->size.x * this->scale.x;
+			finalSize.y = this->size.y * this->scale.y;
+		}
 
 		Vector finalPosition = this->position - this->origin;
 
