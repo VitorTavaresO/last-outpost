@@ -52,7 +52,6 @@ namespace Game
 		void update(float deltaTime);
 		void render(Graphics &graphics) const;
 
-		// Delegate methods to sprite for convenience
 		void setPosition(float x, float y);
 		void setPosition(const Vector &pos);
 		Vector getPosition() const;

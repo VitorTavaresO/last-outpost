@@ -3,9 +3,11 @@
 
 #include <last-outpost/object.h>
 #include <last-outpost/types.h>
+#include <last-outpost/animation.h>
 #include <string>
 #include <vector>
 #include <utility>
+#include <memory>
 
 namespace Game
 {
@@ -19,6 +21,12 @@ namespace Game
 		std::vector<PathPoint> path;
 		uint32_t lastMoveTime;
 		size_t currentStep;
+
+		// Animation support
+		std::unique_ptr<Animation> walkAnimation;
+		std::unique_ptr<Animation> idleAnimation;
+		Animation *currentAnimation;
+		EnemyState state;
 
 	public:
 		Enemy(int life = 100, int damage = 10, float speed = 1.0f, const std::string &spell = "", std::vector<PathPoint> path = {});
@@ -91,11 +99,15 @@ namespace Game
 		{
 			this->spell = spell;
 		}
-
 		const std::string &getSpell() const
 		{
 			return this->spell;
 		}
+
+		// Animation methods
+		bool loadAnimations(SDL_Renderer *renderer);
+		void setAnimationState(EnemyState newState);
+		EnemyState getAnimationState() const { return state; }
 
 		void update(float deltaTime) override;
 		void render(Graphics &graphics, float deltaTime) const override;

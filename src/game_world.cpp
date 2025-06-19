@@ -131,7 +131,6 @@ namespace Game
 			if (!this->level.getEnemyTypes().empty())
 			{
 				const Enemy &enemyTemplate = this->level.getEnemyTypes()[this->enemyTypeIndex];
-
 				auto enemy = std::make_unique<Enemy>(
 					enemyTemplate.getLife(),
 					enemyTemplate.getDamage(),
@@ -139,6 +138,10 @@ namespace Game
 					enemyTemplate.getSpell(),
 
 					map.extractPath());
+
+				if (!enemy->loadAnimations(renderer))
+				{
+				}
 
 				this->activeEnemies.push_back(std::move(enemy));
 				++this->spawnedEnemyCount;

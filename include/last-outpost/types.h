@@ -15,7 +15,6 @@ namespace Game
 
 		PathPoint(int x = 0, int y = 0) : x(x), y(y) {}
 	};
-
 	enum class ObjectType
 	{
 		Enemy,
@@ -26,6 +25,14 @@ namespace Game
 		Path,
 		Projectil,
 		Unknown
+	};
+
+	enum class EnemyState
+	{
+		Idle,
+		Walking,
+		Attacking,
+		Dying
 	};
 }
 
