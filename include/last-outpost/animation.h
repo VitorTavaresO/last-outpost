@@ -41,43 +41,122 @@ namespace Game
 		void pause();
 		void stop();
 		void reset();
-		void setFrameTime(float time) { frameTime = time; }
 
 		void setFrame(int frameIndex);
 		void setFrame(int column, int row);
 		void setFrameRange(int startFrame, int endFrame);
 		void setFrameRange(int startCol, int startRow, int endCol, int endRow);
-		int getCurrentFrame() const { return currentFrame; }
-		int getTotalFrames() const { return totalFrames; }
+
 		void update(float deltaTime);
 		void render(Graphics &graphics) const;
 
-		void setPosition(float x, float y);
-		void setPosition(const Vector &pos);
-		Vector getPosition() const;
+		void setFrameTime(float time)
+		{
+			frameTime = time;
+		}
 
-		void setScale(float x, float y);
-		void setScale(const Vector &s);
-		Vector getScale() const;
+		int getCurrentFrame() const
+		{
+			return currentFrame;
+		}
+		int getTotalFrames() const
+		{
+			return totalFrames;
+		}
 
-		void setOrigin(float x, float y);
-		void setOrigin(const Vector &o);
-		Vector getOrigin() const;
+		void setPosition(float x, float y)
+		{
+			sprite->setPosition(x, y);
+		}
 
-		void setRotation(float rot);
-		float getRotation() const;
+		void setPosition(const Vector &pos)
+		{
+			sprite->setPosition(pos);
+		}
 
-		void setColor(const SDL_Color &c);
-		SDL_Color getColor() const;
+		Vector getPosition() const
+		{
+			return sprite->getPosition();
+		}
 
-		void setFlipped(bool x, bool y);
-		bool isFlippedX() const;
-		bool isFlippedY() const;
+		void setScale(float x, float y)
+		{
+			sprite->setScale(x, y);
+		}
 
-		bool getIsPlaying() const { return isPlaying; }
-		bool getIsLooping() const { return isLooping; }
+		void setScale(const Vector &s)
+		{
+			sprite->setScale(s);
+		}
 
-		SDL_Rect getFrameRect(int frameIndex) const;
+		Vector getScale() const
+		{
+			return sprite->getScale();
+		}
+
+		void setOrigin(float x, float y)
+		{
+			sprite->setOrigin(x, y);
+		}
+
+		void setOrigin(const Vector &o)
+		{
+			sprite->setOrigin(o);
+		}
+
+		Vector getOrigin() const
+		{
+			return sprite->getOrigin();
+		}
+
+		void setRotation(float rot)
+		{
+			sprite->setRotation(rot);
+		}
+
+		float getRotation() const
+		{
+			return sprite->getRotation();
+		}
+
+		void setColor(const SDL_Color &c)
+		{
+			sprite->setColor(c);
+		}
+
+		SDL_Color getColor() const
+		{
+			return sprite->getColor();
+		}
+
+		void setFlipped(bool x, bool y)
+		{
+			sprite->setFlipped(x, y);
+		}
+
+		bool isFlippedX() const
+		{
+			return sprite->isFlippedX();
+		}
+
+		bool isFlippedY() const
+		{
+			return sprite->isFlippedY();
+		}
+
+		bool getIsPlaying() const
+		{
+			return isPlaying;
+		}
+		bool getIsLooping() const
+		{
+			return isLooping;
+		}
+
+		SDL_Rect getFrameRect(int frameIndex) const
+		{
+			return frames[frameIndex];
+		}
 	};
 }
 
