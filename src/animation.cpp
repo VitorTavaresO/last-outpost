@@ -16,7 +16,7 @@ namespace Game
 	bool Animation::loadSpriteSheet(const std::string &filepath, SDL_Renderer *renderer,
 									int frameWidth, int frameHeight, int columns, int rows)
 	{
-		if (!sprite->loadFromFile(filepath, renderer))
+		if (!this->sprite->loadFromFile(filepath, renderer))
 		{
 			std::cerr << "Failed to load animation sprite sheet: " << filepath << std::endl;
 			return false;
@@ -28,10 +28,10 @@ namespace Game
 		this->rows = rows;
 		this->totalFrames = columns * rows;
 		this->frameRangeStart = 0;
-		this->frameRangeEnd = totalFrames - 1;
+		this->frameRangeEnd = this->totalFrames - 1;
 
-		frames.clear();
-		frames.reserve(totalFrames);
+		this->frames.clear();
+		this->frames.reserve(this->totalFrames);
 
 		for (int row = 0; row < rows; ++row)
 		{
@@ -42,130 +42,115 @@ namespace Game
 					row * frameHeight,
 					frameWidth,
 					frameHeight};
-				frames.push_back(frameRect);
+				this->frames.push_back(frameRect);
 			}
 		}
 
-		currentFrame = 0;
-		if (!frames.empty())
-		{
-			sprite->setSourceRect(frames[0]);
-		}
+		this->currentFrame = 0;
+		this->sprite->setSourceRect(this->frames[0]);
 
 		return true;
 	}
 
 	void Animation::play(bool loop)
 	{
-		isPlaying = true;
-		isLooping = loop;
+		this->isPlaying = true;
+		this->isLooping = loop;
 	}
 
 	void Animation::pause()
 	{
-		isPlaying = false;
+		this->isPlaying = false;
 	}
 	void Animation::stop()
 	{
-		isPlaying = false;
-		currentFrame = frameRangeStart;
-		elapsedTime = 0.0f;
-		if (currentFrame < static_cast<int>(frames.size()))
-		{
-			sprite->setSourceRect(frames[currentFrame]);
-		}
+		this->isPlaying = false;
+		this->currentFrame = this->frameRangeStart;
+		this->elapsedTime = 0.0f;
+		this->sprite->setSourceRect(this->frames[this->currentFrame]);
 	}
 	void Animation::reset()
 	{
-		currentFrame = frameRangeStart;
-		elapsedTime = 0.0f;
-		if (currentFrame < static_cast<int>(frames.size()))
-		{
-			sprite->setSourceRect(frames[currentFrame]);
-		}
+		this->currentFrame = this->frameRangeStart;
+		this->elapsedTime = 0.0f;
+		this->sprite->setSourceRect(this->frames[this->currentFrame]);
 	}
 
 	void Animation::setFrame(int frameIndex)
 	{
-		if (frameIndex >= 0 && frameIndex < totalFrames && frameIndex < static_cast<int>(frames.size()))
+		if (frameIndex >= 0 && frameIndex < this->totalFrames)
 		{
-			currentFrame = frameIndex;
-			sprite->setSourceRect(frames[currentFrame]);
+			this->currentFrame = frameIndex;
+			this->sprite->setSourceRect(this->frames[this->currentFrame]);
 		}
 	}
 
 	void Animation::setFrame(int column, int row)
 	{
-		if (column >= 0 && column < columns && row >= 0 && row < rows)
+		if (column >= 0 && column < this->columns && row >= 0 && row < this->rows)
 		{
-			int frameIndex = row * columns + column;
+			int frameIndex = row * this->columns + column;
 			setFrame(frameIndex);
 		}
 	}
 
 	void Animation::setFrameRange(int startFrame, int endFrame)
 	{
-		if (startFrame >= 0 && startFrame < totalFrames &&
-			endFrame >= startFrame && endFrame < totalFrames)
+		if (startFrame >= 0 && startFrame < this->totalFrames &&
+			endFrame >= startFrame && endFrame < this->totalFrames)
 		{
-			frameRangeStart = startFrame;
-			frameRangeEnd = endFrame;
+			this->frameRangeStart = startFrame;
+			this->frameRangeEnd = endFrame;
 
-			if (currentFrame < frameRangeStart || currentFrame > frameRangeEnd)
+			if (this->currentFrame < this->frameRangeStart || this->currentFrame > this->frameRangeEnd)
 			{
-				currentFrame = frameRangeStart;
-				if (currentFrame < static_cast<int>(frames.size()))
-				{
-					sprite->setSourceRect(frames[currentFrame]);
-				}
+				this->currentFrame = this->frameRangeStart;
+				this->sprite->setSourceRect(this->frames[this->currentFrame]);
 			}
 		}
 	}
 
 	void Animation::setFrameRange(int startCol, int startRow, int endCol, int endRow)
 	{
-		if (startCol >= 0 && startCol < columns && startRow >= 0 && startRow < rows &&
-			endCol >= 0 && endCol < columns && endRow >= 0 && endRow < rows)
+		if (startCol >= 0 && startCol < this->columns && startRow >= 0 && startRow < this->rows &&
+			endCol >= 0 && endCol < this->columns && endRow >= 0 && endRow < this->rows)
 		{
-			int startFrame = startRow * columns + startCol;
-			int endFrame = endRow * columns + endCol;
+			int startFrame = startRow * this->columns + startCol;
+			int endFrame = endRow * this->columns + endCol;
 			setFrameRange(startFrame, endFrame);
 		}
 	}
 	void Animation::update(float deltaTime)
 	{
-		if (!isPlaying || frameRangeEnd <= frameRangeStart)
+		if (!this->isPlaying || this->frameRangeEnd <= this->frameRangeStart)
 			return;
 
-		elapsedTime += deltaTime;
+		this->elapsedTime += deltaTime;
 
-		if (elapsedTime >= frameTime)
+		if (this->elapsedTime >= this->frameTime)
 		{
-			elapsedTime -= frameTime;
-			currentFrame++;
+			this->elapsedTime -= this->frameTime;
+			this->currentFrame++;
 
-			if (currentFrame > frameRangeEnd)
+			if (this->currentFrame > this->frameRangeEnd)
 			{
-				if (isLooping)
+				if (this->isLooping)
 				{
-					currentFrame = frameRangeStart;
+					this->currentFrame = this->frameRangeStart;
 				}
 				else
 				{
-					currentFrame = frameRangeEnd;
-					isPlaying = false;
+					this->currentFrame = this->frameRangeEnd;
+					this->isPlaying = false;
 				}
 			}
 
-			if (currentFrame < static_cast<int>(frames.size()))
-			{
-				sprite->setSourceRect(frames[currentFrame]);
-			}
+			this->sprite->setSourceRect(this->frames[this->currentFrame]);
 		}
 	}
 
 	void Animation::render(Graphics &graphics) const
 	{
-		sprite->render(graphics);
+		this->sprite->render(graphics);
 	}
 }

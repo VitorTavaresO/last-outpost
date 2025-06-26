@@ -7,27 +7,27 @@ namespace Game
 {
 	void Tower::update(float deltaTime)
 	{
-		if (animation)
+		if (this->animation)
 		{
-			animation->setPosition(this->getPosition().x, this->getPosition().y);
-			animation->update(deltaTime);
+			this->animation->setPosition(this->getPosition().x, this->getPosition().y);
+			this->animation->update(deltaTime);
 		}
 
-		if (currentState == TowerState::Attacking)
+		if (this->currentState == TowerState::Attacking)
 		{
-			attackAnimationTimer += deltaTime;
-			if (attackAnimationTimer >= attackAnimationDuration)
+			this->attackAnimationTimer += deltaTime;
+			if (this->attackAnimationTimer >= this->attackAnimationDuration)
 			{
 				setState(TowerState::Idle);
-				attackAnimationTimer = 0.0f;
+				this->attackAnimationTimer = 0.0f;
 			}
 		}
 	}
 	void Tower::render(Graphics &graphics, float deltaTime) const
 	{
-		if (animation)
+		if (this->animation)
 		{
-			animation->render(graphics);
+			this->animation->render(graphics);
 		}
 		else
 		{
@@ -86,20 +86,20 @@ namespace Game
 	}
 	void Tower::setState(TowerState state)
 	{
-		if (currentState == state || !animation)
+		if (this->currentState == state || !this->animation)
 			return;
 
-		currentState = state;
+		this->currentState = state;
 
 		switch (state)
 		{
 		case TowerState::Idle:
-			animation->setFrame(0, 0);
-			animation->pause();
+			this->animation->setFrame(0, 0);
+			this->animation->pause();
 			break;
 		case TowerState::Attacking:
-			animation->setFrame(0, 1);
-			animation->pause();
+			this->animation->setFrame(0, 1);
+			this->animation->pause();
 			break;
 		}
 	}

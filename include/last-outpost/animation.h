@@ -52,110 +52,110 @@ namespace Game
 
 		void setFrameTime(float time)
 		{
-			frameTime = time;
+			this->frameTime = time;
 		}
 
 		int getCurrentFrame() const
 		{
-			return currentFrame;
+			return this->currentFrame;
 		}
 		int getTotalFrames() const
 		{
-			return totalFrames;
+			return this->totalFrames;
 		}
 
 		void setPosition(float x, float y)
 		{
-			sprite->setPosition(x, y);
+			this->sprite->setPosition(x, y);
 		}
 
 		void setPosition(const Vector &pos)
 		{
-			sprite->setPosition(pos);
+			this->sprite->setPosition(pos);
 		}
 
 		Vector getPosition() const
 		{
-			return sprite->getPosition();
+			return this->sprite->getPosition();
 		}
 
 		void setScale(float x, float y)
 		{
-			sprite->setScale(x, y);
+			this->sprite->setScale(x, y);
 		}
 
 		void setScale(const Vector &s)
 		{
-			sprite->setScale(s);
+			this->sprite->setScale(s);
 		}
 
 		Vector getScale() const
 		{
-			return sprite->getScale();
+			return this->sprite->getScale();
 		}
 
 		void setOrigin(float x, float y)
 		{
-			sprite->setOrigin(x, y);
+			this->sprite->setOrigin(x, y);
 		}
 
 		void setOrigin(const Vector &o)
 		{
-			sprite->setOrigin(o);
+			this->sprite->setOrigin(o);
 		}
 
 		Vector getOrigin() const
 		{
-			return sprite->getOrigin();
+			return this->sprite->getOrigin();
 		}
 
 		void setRotation(float rot)
 		{
-			sprite->setRotation(rot);
+			this->sprite->setRotation(rot);
 		}
 
 		float getRotation() const
 		{
-			return sprite->getRotation();
+			return this->sprite->getRotation();
 		}
 
 		void setColor(const SDL_Color &c)
 		{
-			sprite->setColor(c);
+			this->sprite->setColor(c);
 		}
 
 		SDL_Color getColor() const
 		{
-			return sprite->getColor();
+			return this->sprite->getColor();
 		}
 
 		void setFlipped(bool x, bool y)
 		{
-			sprite->setFlipped(x, y);
+			this->sprite->setFlipped(x, y);
 		}
 
 		bool isFlippedX() const
 		{
-			return sprite->isFlippedX();
+			return this->sprite->isFlippedX();
 		}
 
 		bool isFlippedY() const
 		{
-			return sprite->isFlippedY();
+			return this->sprite->isFlippedY();
 		}
 
 		bool getIsPlaying() const
 		{
-			return isPlaying;
+			return this->isPlaying;
 		}
 		bool getIsLooping() const
 		{
-			return isLooping;
+			return this->isLooping;
 		}
 
 		SDL_Rect getFrameRect(int frameIndex) const
 		{
-			return frames[frameIndex];
+			return this->frames[frameIndex];
 		}
 	};
 }
