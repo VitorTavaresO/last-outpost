@@ -24,8 +24,8 @@ namespace Game
 
 	bool Enemy::loadAnimations(SDL_Renderer *renderer)
 	{
-		walkAnimation = std::make_unique<Animation>();
-		if (!walkAnimation->loadSpriteSheet("assets/base-enemy.png", renderer, 307, 512, 5, 2))
+		walkAnimation = std::make_unique<Animation>("assets/base-enemy.png", renderer, 307, 512, 5, 2);
+		if (!walkAnimation->isValid())
 		{
 			std::cerr << "Failed to load enemy walk animation" << std::endl;
 			return false;
@@ -34,8 +34,8 @@ namespace Game
 		walkAnimation->setFrameRange(0, 3);
 		walkAnimation->setScale(0.1f, 0.1f);
 
-		idleAnimation = std::make_unique<Animation>();
-		if (!idleAnimation->loadSpriteSheet("assets/base-enemy", renderer, 307, 512, 5, 2))
+		idleAnimation = std::make_unique<Animation>("assets/base-enemy.png", renderer, 307, 512, 5, 2);
+		if (!idleAnimation->isValid())
 		{
 			std::cerr << "Failed to load enemy idle animation" << std::endl;
 			return false;

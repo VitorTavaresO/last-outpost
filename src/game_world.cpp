@@ -177,9 +177,9 @@ namespace Game
 					Tower tower(5.0f, std::move(towerProjectil), {0, 0, 255, 255});
 					tower.setPosition(col, row);
 
-					auto towerAnimation = std::make_unique<Animation>();
-					if (towerAnimation->loadSpriteSheet("assets/magic-tower.png", renderer,
-														400, 467, 4, 3))
+					auto towerAnimation = std::make_unique<Animation>("assets/magic-tower.png", renderer,
+																	  400, 467, 4, 3);
+					if (towerAnimation->isValid())
 					{
 						towerAnimation->setFrameTime(0.2f);
 						towerAnimation->setScale(0.2f, 0.2f);

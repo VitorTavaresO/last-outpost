@@ -29,13 +29,14 @@ namespace Game
 		int rows;
 		int frameRangeStart;
 		int frameRangeEnd;
+		bool initialized;
 
 	public:
-		Animation();
+		Animation(const std::string &filepath, SDL_Renderer *renderer,
+				  int frameWidth, int frameHeight, int columns, int rows);
 		~Animation();
 
-		bool loadSpriteSheet(const std::string &filepath, SDL_Renderer *renderer,
-							 int frameWidth, int frameHeight, int columns, int rows);
+		bool isValid() const;
 
 		void play(bool loop = true);
 		void pause();

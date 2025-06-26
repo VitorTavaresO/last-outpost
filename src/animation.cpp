@@ -3,29 +3,21 @@
 
 namespace Game
 {
-	Animation::Animation()
+	Animation::Animation(const std::string &filepath, SDL_Renderer *renderer,
+						 int frameWidth, int frameHeight, int columns, int rows)
 		: sprite(std::make_unique<Sprite>()),
 		  currentFrame(0), frameTime(0.1f), elapsedTime(0.0f),
 		  isPlaying(false), isLooping(true), totalFrames(0),
-		  frameWidth(0), frameHeight(0), columns(0), rows(0),
-		  frameRangeStart(0), frameRangeEnd(0)
-	{
-	}
-
-	Animation::~Animation() = default;
-	bool Animation::loadSpriteSheet(const std::string &filepath, SDL_Renderer *renderer,
-									int frameWidth, int frameHeight, int columns, int rows)
+		  frameWidth(frameWidth), frameHeight(frameHeight),
+		  columns(columns), rows(rows),
+		  frameRangeStart(0), frameRangeEnd(0), initialized(false)
 	{
 		if (!this->sprite->loadFromFile(filepath, renderer))
 		{
 			std::cerr << "Failed to load animation sprite sheet: " << filepath << std::endl;
-			return false;
+			return;
 		}
 
-		this->frameWidth = frameWidth;
-		this->frameHeight = frameHeight;
-		this->columns = columns;
-		this->rows = rows;
 		this->totalFrames = columns * rows;
 		this->frameRangeStart = 0;
 		this->frameRangeEnd = this->totalFrames - 1;
@@ -48,8 +40,14 @@ namespace Game
 
 		this->currentFrame = 0;
 		this->sprite->setSourceRect(this->frames[0]);
+		this->initialized = true;
+	}
 
-		return true;
+	Animation::~Animation() = default;
+
+	bool Animation::isValid() const
+	{
+		return this->initialized;
 	}
 
 	void Animation::play(bool loop)
