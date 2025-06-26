@@ -106,6 +106,11 @@ namespace Game
 
 		// Animation methods
 		bool loadAnimations(SDL_Renderer *renderer);
+		bool loadAnimations(SDL_Renderer *renderer, const std::string &spriteAsset,
+							int spriteWidth, int spriteHeight, int spriteCols, int spriteRows,
+							float walkFrameTime, float idleFrameTime,
+							int walkFrameStart, int walkFrameEnd,
+							int idleFrameStart, int idleFrameEnd, float scale);
 		void setAnimationState(EnemyState newState);
 		EnemyState getAnimationState() const { return state; }
 

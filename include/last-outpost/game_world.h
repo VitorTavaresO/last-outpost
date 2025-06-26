@@ -13,6 +13,26 @@
 
 namespace Game
 {
+	struct EnemyType
+	{
+		int life;
+		int damage;
+		float speed;
+		std::string spell;
+		std::string spriteAsset;
+		int spriteWidth;
+		int spriteHeight;
+		int spriteCols;
+		int spriteRows;
+		float walkFrameTime;
+		float idleFrameTime;
+		int walkFrameStart;
+		int walkFrameEnd;
+		int idleFrameStart;
+		int idleFrameEnd;
+		float scale;
+	};
+
 	class GameWorld
 	{
 	public:
@@ -32,6 +52,7 @@ namespace Game
 		int spawnedEnemyCount;
 		size_t enemyTypeIndex;
 		std::vector<Tower> towers;
+		std::vector<EnemyType> enemyTypes;
 
 		bool handleEvents();
 		void update(float deltaTime);
@@ -40,6 +61,8 @@ namespace Game
 		void replaceSpacesWithTowers();
 		void updateTowers(float currentTime);
 		void checkProjectilCollisions();
+		void initializeEnemyTypes();
+		std::unique_ptr<Enemy> createEnemyFromType(const EnemyType &enemyType) const;
 	};
 }
 

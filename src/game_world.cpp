@@ -1,5 +1,6 @@
 #include <utility>
 #include <memory>
+#include <iostream>
 #include <last-outpost/game_world.h>
 #include <last-outpost/tower.h>
 #include <last-outpost/globals.h>
@@ -18,7 +19,8 @@ namespace Game
 		  spawnedEnemyCount(0),
 		  enemyTypeIndex(0)
 	{
-		this->replaceSpacesWithTowers();
+		this->initializeEnemyTypes();
+		// this->replaceSpacesWithTowers();
 	}
 
 	bool GameWorld::run()
@@ -128,26 +130,19 @@ namespace Game
 		if (this->spawnedEnemyCount < this->level.getEnemyCount() &&
 			currentTime - this->lastSpawnTime >= spawnInterval)
 		{
-			if (!this->level.getEnemyTypes().empty())
+			if (!this->enemyTypes.empty())
 			{
-				const Enemy &enemyTemplate = this->level.getEnemyTypes()[this->enemyTypeIndex];
-				auto enemy = std::make_unique<Enemy>(
-					enemyTemplate.getLife(),
-					enemyTemplate.getDamage(),
-					enemyTemplate.getSpeed(),
-					enemyTemplate.getSpell(),
+				const EnemyType &enemyType = this->enemyTypes[this->enemyTypeIndex];
+				auto enemy = this->createEnemyFromType(enemyType);
 
-					map.extractPath());
-
-				if (!enemy->loadAnimations(renderer))
+				if (enemy)
 				{
+					this->activeEnemies.push_back(std::move(enemy));
+					++this->spawnedEnemyCount;
+					this->lastSpawnTime = currentTime;
+
+					this->enemyTypeIndex = (this->enemyTypeIndex + 1) % this->enemyTypes.size();
 				}
-
-				this->activeEnemies.push_back(std::move(enemy));
-				++this->spawnedEnemyCount;
-				this->lastSpawnTime = currentTime;
-
-				this->enemyTypeIndex = (this->enemyTypeIndex + 1) % this->level.getEnemyTypes().size();
 			}
 		}
 	}
@@ -247,5 +242,103 @@ namespace Game
 				++projIt;
 			}
 		}
+	}
+
+	void GameWorld::initializeEnemyTypes()
+	{
+		// Definindo diferentes tipos de inimigos
+
+		// Tipo 1: Inimigo básico
+		EnemyType basicEnemy;
+		basicEnemy.life = 100;
+		basicEnemy.damage = 10;
+		basicEnemy.speed = 1.0f;
+		basicEnemy.spell = "basic";
+		basicEnemy.spriteAsset = "assets/base-enemy.png";
+		basicEnemy.spriteWidth = 307;
+		basicEnemy.spriteHeight = 512;
+		basicEnemy.spriteCols = 5;
+		basicEnemy.spriteRows = 2;
+		basicEnemy.walkFrameTime = 0.2f;
+		basicEnemy.idleFrameTime = 0.5f;
+		basicEnemy.walkFrameStart = 0;
+		basicEnemy.walkFrameEnd = 3;
+		basicEnemy.idleFrameStart = 0;
+		basicEnemy.idleFrameEnd = 1;
+		basicEnemy.scale = 0.1f;
+
+		this->enemyTypes.push_back(basicEnemy);
+
+		// Tipo 2: Inimigo rápido (mesmo sprite, mas configuração diferente)
+		EnemyType fastEnemy;
+		fastEnemy.life = 60;
+		fastEnemy.damage = 8;
+		fastEnemy.speed = 2.0f;
+		fastEnemy.spell = "speed";
+		fastEnemy.spriteAsset = "assets/base-enemy.png";
+		fastEnemy.spriteWidth = 307;
+		fastEnemy.spriteHeight = 512;
+		fastEnemy.spriteCols = 5;
+		fastEnemy.spriteRows = 2;
+		fastEnemy.walkFrameTime = 0.1f; // Animação mais rápida
+		fastEnemy.idleFrameTime = 0.3f;
+		fastEnemy.walkFrameStart = 0;
+		fastEnemy.walkFrameEnd = 3;
+		fastEnemy.idleFrameStart = 0;
+		fastEnemy.idleFrameEnd = 1;
+		fastEnemy.scale = 0.08f; // Ligeiramente menor
+
+		this->enemyTypes.push_back(fastEnemy);
+
+		// Tipo 3: Inimigo forte
+		EnemyType strongEnemy;
+		strongEnemy.life = 200;
+		strongEnemy.damage = 20;
+		strongEnemy.speed = 0.5f;
+		strongEnemy.spell = "tank";
+		strongEnemy.spriteAsset = "assets/base-enemy.png";
+		strongEnemy.spriteWidth = 307;
+		strongEnemy.spriteHeight = 512;
+		strongEnemy.spriteCols = 5;
+		strongEnemy.spriteRows = 2;
+		strongEnemy.walkFrameTime = 0.4f; // Animação mais lenta
+		strongEnemy.idleFrameTime = 0.8f;
+		strongEnemy.walkFrameStart = 0;
+		strongEnemy.walkFrameEnd = 3;
+		strongEnemy.idleFrameStart = 0;
+		strongEnemy.idleFrameEnd = 1;
+		strongEnemy.scale = 0.12f; // Ligeiramente maior
+
+		this->enemyTypes.push_back(strongEnemy);
+	}
+
+	std::unique_ptr<Enemy> GameWorld::createEnemyFromType(const EnemyType &enemyType) const
+	{
+		auto enemy = std::make_unique<Enemy>(
+			enemyType.life,
+			enemyType.damage,
+			enemyType.speed,
+			enemyType.spell,
+			map.extractPath());
+
+		if (!enemy->loadAnimations(renderer,
+								   enemyType.spriteAsset,
+								   enemyType.spriteWidth,
+								   enemyType.spriteHeight,
+								   enemyType.spriteCols,
+								   enemyType.spriteRows,
+								   enemyType.walkFrameTime,
+								   enemyType.idleFrameTime,
+								   enemyType.walkFrameStart,
+								   enemyType.walkFrameEnd,
+								   enemyType.idleFrameStart,
+								   enemyType.idleFrameEnd,
+								   enemyType.scale))
+		{
+			std::cerr << "Failed to load animations for enemy type: " << enemyType.spell << std::endl;
+			return nullptr;
+		}
+
+		return enemy;
 	}
 }

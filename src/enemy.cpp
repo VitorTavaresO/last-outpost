@@ -47,6 +47,36 @@ namespace Game
 		return true;
 	}
 
+	bool Enemy::loadAnimations(SDL_Renderer *renderer, const std::string &spriteAsset,
+							   int spriteWidth, int spriteHeight, int spriteCols, int spriteRows,
+							   float walkFrameTime, float idleFrameTime,
+							   int walkFrameStart, int walkFrameEnd,
+							   int idleFrameStart, int idleFrameEnd, float scale)
+	{
+		walkAnimation = std::make_unique<Animation>(spriteAsset, renderer, spriteWidth, spriteHeight, spriteCols, spriteRows);
+		if (!walkAnimation->isValid())
+		{
+			std::cerr << "Failed to load enemy walk animation from: " << spriteAsset << std::endl;
+			return false;
+		}
+		walkAnimation->setFrameTime(walkFrameTime);
+		walkAnimation->setFrameRange(walkFrameStart, walkFrameEnd);
+		walkAnimation->setScale(scale, scale);
+
+		idleAnimation = std::make_unique<Animation>(spriteAsset, renderer, spriteWidth, spriteHeight, spriteCols, spriteRows);
+		if (!idleAnimation->isValid())
+		{
+			std::cerr << "Failed to load enemy idle animation from: " << spriteAsset << std::endl;
+			return false;
+		}
+		idleAnimation->setFrameTime(idleFrameTime);
+		idleAnimation->setFrameRange(idleFrameStart, idleFrameEnd);
+		idleAnimation->setScale(scale, scale);
+
+		setAnimationState(EnemyState::Idle);
+		return true;
+	}
+
 	void Enemy::setAnimationState(EnemyState newState)
 	{
 		if (state == newState)
