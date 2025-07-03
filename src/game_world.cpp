@@ -17,7 +17,10 @@ namespace Game
 		  lastSpawnTime(getTimeInSeconds()),
 		  lastUpdateTime(getTimeInSeconds()),
 		  spawnedEnemyCount(0),
-		  enemyTypeIndex(0)
+		  enemyTypeIndex(0),
+		  tileSelected(false),
+		  selectedRow(-1),
+		  selectedCol(-1)
 	{
 		this->initializeEnemyTypes();
 		//  this->replaceSpacesWithTowers();
@@ -61,6 +64,31 @@ namespace Game
 				this->running = false;
 				return false;
 			}
+			else if (event.type == SDL_MOUSEBUTTONDOWN)
+			{
+				if (event.button.button == SDL_BUTTON_LEFT)
+				{
+					handleTileSelection(event.button.x, event.button.y);
+				}
+			}
+			else if (event.type == SDL_KEYDOWN)
+			{
+				if (event.key.keysym.sym == SDLK_1)
+				{
+					handleTowerPlacement(1); // Magic Tower
+				}
+				else if (event.key.keysym.sym == SDLK_2)
+				{
+					handleTowerPlacement(2); // Canon Tower
+				}
+				else if (event.key.keysym.sym == SDLK_ESCAPE)
+				{
+					// Cancelar seleção
+					tileSelected = false;
+					selectedRow = -1;
+					selectedCol = -1;
+				}
+			}
 		}
 		return true;
 	}
@@ -103,6 +131,13 @@ namespace Game
 		SDL_RenderClear(this->renderer);
 
 		this->map.render(this->graphics, deltaTime);
+
+		// Destacar tile selecionado
+		if (tileSelected && selectedRow >= 0 && selectedCol >= 0)
+		{
+			Vector selectedPos(selectedCol, selectedRow);
+			graphics.drawRect(selectedPos, {1, 1}, {255, 255, 0, 100}); // Amarelo transparente
+		}
 
 		for (const auto &enemy : this->activeEnemies)
 		{
@@ -330,10 +365,124 @@ namespace Game
 								   enemyType.idleFrameEnd,
 								   enemyType.scale))
 		{
-			std::cerr << "Failed to load animations for enemy type: " << enemyType.spell << std::endl;
 			return nullptr;
 		}
 
 		return enemy;
+	}
+
+	void GameWorld::handleTileSelection(int mouseX, int mouseY)
+	{
+		int tileWidth = graphics.getTileWidth();
+		int tileHeight = graphics.getTileHeight();
+
+		int col = mouseX / tileWidth;
+		int row = mouseY / tileHeight;
+
+		if (row >= 0 && row < map.getHeight() && col >= 0 && col < map.getWidth())
+		{
+			if (isTileValidForTower(row, col))
+			{
+				tileSelected = true;
+				selectedRow = row;
+				selectedCol = col;
+			}
+		}
+	}
+
+	void GameWorld::handleTowerPlacement(int towerType)
+	{
+		if (tileSelected && selectedRow >= 0 && selectedCol >= 0)
+		{
+			placeTower(selectedRow, selectedCol, towerType);
+
+			tileSelected = false;
+			selectedRow = -1;
+			selectedCol = -1;
+		}
+	}
+
+	void GameWorld::placeTower(int row, int col, int towerType)
+	{
+
+		Tower tower;
+		std::string towerName;
+
+		switch (towerType)
+		{
+		case 1:
+		{
+			Projectil magicProjectil(50, 3.0f);
+			tower = Tower(5.0f, std::move(magicProjectil), {0, 0, 255, 255});
+			tower.setFireRate(1.0f);
+			towerName = "Magic Tower";
+
+			auto towerAnimation = std::make_unique<Animation>("assets/sprites/magic-tower.png", renderer,
+															  400, 467, 4, 3);
+			if (towerAnimation->isValid())
+			{
+				towerAnimation->setFrameTime(0.2f);
+				towerAnimation->setScale(0.2f, 0.2f);
+				towerAnimation->setPosition(col, row);
+				towerAnimation->setFrame(0, 0);
+				towerAnimation->pause();
+
+				tower.setAnimation(std::move(towerAnimation));
+				tower.setState(TowerState::Idle);
+			}
+		}
+		break;
+
+		case 2:
+		{
+			Projectil canonProjectil(80, 2.0f);
+			tower = Tower(4.0f, std::move(canonProjectil), {255, 0, 0, 255});
+			tower.setFireRate(1.5f);
+			towerName = "Canon Tower";
+
+			auto towerAnimation = std::make_unique<Animation>("assets/sprites/magic-tower.png", renderer,
+															  400, 467, 4, 3);
+			if (towerAnimation->isValid())
+			{
+				towerAnimation->setFrameTime(0.3f);
+				towerAnimation->setScale(0.25f, 0.25f);
+				towerAnimation->setPosition(col, row);
+				towerAnimation->setFrame(0, 0);
+				towerAnimation->pause();
+
+				tower.setAnimation(std::move(towerAnimation));
+				tower.setState(TowerState::Idle);
+			}
+		}
+		break;
+
+		default:
+			return;
+		}
+
+		tower.setPosition(col, row);
+		towers.push_back(std::move(tower));
+	}
+
+	bool GameWorld::isTileValidForTower(int row, int col) const
+	{
+		if (row < 0 || row >= map.getHeight() || col < 0 || col >= map.getWidth())
+			return false;
+
+		const Tile &tile = map(row, col);
+
+		if (tile.object.getType() != ObjectType::Space)
+			return false;
+
+		for (const auto &tower : towers)
+		{
+			Vector towerPos = tower.getPosition();
+			if (static_cast<int>(towerPos.x) == col && static_cast<int>(towerPos.y) == row)
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
