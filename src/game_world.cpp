@@ -246,9 +246,6 @@ namespace Game
 
 	void GameWorld::initializeEnemyTypes()
 	{
-		// Definindo diferentes tipos de inimigos
-
-		// Tipo 1: Inimigo básico
 		EnemyType basicEnemy;
 		basicEnemy.life = 100;
 		basicEnemy.damage = 10;
@@ -269,7 +266,6 @@ namespace Game
 
 		this->enemyTypes.push_back(basicEnemy);
 
-		// Tipo 2: Inimigo rápido (mesmo sprite, mas configuração diferente)
 		EnemyType fastEnemy;
 		fastEnemy.life = 60;
 		fastEnemy.damage = 8;
@@ -280,17 +276,16 @@ namespace Game
 		fastEnemy.spriteHeight = 512;
 		fastEnemy.spriteCols = 5;
 		fastEnemy.spriteRows = 2;
-		fastEnemy.walkFrameTime = 0.1f; // Animação mais rápida
+		fastEnemy.walkFrameTime = 0.1f;
 		fastEnemy.idleFrameTime = 0.3f;
 		fastEnemy.walkFrameStart = 0;
 		fastEnemy.walkFrameEnd = 3;
 		fastEnemy.idleFrameStart = 0;
 		fastEnemy.idleFrameEnd = 1;
-		fastEnemy.scale = 0.08f; // Ligeiramente menor
+		fastEnemy.scale = 0.08f;
 
 		this->enemyTypes.push_back(fastEnemy);
 
-		// Tipo 3: Inimigo forte
 		EnemyType strongEnemy;
 		strongEnemy.life = 200;
 		strongEnemy.damage = 20;
@@ -301,13 +296,13 @@ namespace Game
 		strongEnemy.spriteHeight = 512;
 		strongEnemy.spriteCols = 5;
 		strongEnemy.spriteRows = 2;
-		strongEnemy.walkFrameTime = 0.4f; // Animação mais lenta
+		strongEnemy.walkFrameTime = 0.4f;
 		strongEnemy.idleFrameTime = 0.8f;
 		strongEnemy.walkFrameStart = 0;
 		strongEnemy.walkFrameEnd = 3;
 		strongEnemy.idleFrameStart = 0;
 		strongEnemy.idleFrameEnd = 1;
-		strongEnemy.scale = 0.12f; // Ligeiramente maior
+		strongEnemy.scale = 0.12f;
 
 		this->enemyTypes.push_back(strongEnemy);
 	}
