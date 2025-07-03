@@ -54,6 +54,10 @@ namespace Game
 		std::vector<Tower> towers;
 		std::vector<EnemyType> enemyTypes;
 
+		bool tileSelected;
+		int selectedRow;
+		int selectedCol;
+
 		bool handleEvents();
 		void update(float deltaTime);
 		void render(float deltaTime);
@@ -63,6 +67,11 @@ namespace Game
 		void checkProjectilCollisions();
 		void initializeEnemyTypes();
 		std::unique_ptr<Enemy> createEnemyFromType(const EnemyType &enemyType) const;
+
+		void handleTileSelection(int mouseX, int mouseY);
+		void handleTowerPlacement(int towerType);
+		void placeTower(int row, int col, int towerType);
+		bool isTileValidForTower(int row, int col) const;
 	};
 }
 
