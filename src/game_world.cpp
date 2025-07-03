@@ -20,7 +20,7 @@ namespace Game
 		  enemyTypeIndex(0)
 	{
 		this->initializeEnemyTypes();
-		// this->replaceSpacesWithTowers();
+		//  this->replaceSpacesWithTowers();
 	}
 
 	bool GameWorld::run()
@@ -172,7 +172,7 @@ namespace Game
 					Tower tower(5.0f, std::move(towerProjectil), {0, 0, 255, 255});
 					tower.setPosition(col, row);
 
-					auto towerAnimation = std::make_unique<Animation>("assets/magic-tower.png", renderer,
+					auto towerAnimation = std::make_unique<Animation>("assets/sprites/magic-tower.png", renderer,
 																	  400, 467, 4, 3);
 					if (towerAnimation->isValid())
 					{
@@ -254,7 +254,7 @@ namespace Game
 		basicEnemy.damage = 10;
 		basicEnemy.speed = 1.0f;
 		basicEnemy.spell = "basic";
-		basicEnemy.spriteAsset = "assets/base-enemy.png";
+		basicEnemy.spriteAsset = "assets/sprites/base-enemy.png";
 		basicEnemy.spriteWidth = 307;
 		basicEnemy.spriteHeight = 512;
 		basicEnemy.spriteCols = 5;
@@ -275,7 +275,7 @@ namespace Game
 		fastEnemy.damage = 8;
 		fastEnemy.speed = 2.0f;
 		fastEnemy.spell = "speed";
-		fastEnemy.spriteAsset = "assets/base-enemy.png";
+		fastEnemy.spriteAsset = "assets/sprites/base-enemy.png";
 		fastEnemy.spriteWidth = 307;
 		fastEnemy.spriteHeight = 512;
 		fastEnemy.spriteCols = 5;
@@ -296,7 +296,7 @@ namespace Game
 		strongEnemy.damage = 20;
 		strongEnemy.speed = 0.5f;
 		strongEnemy.spell = "tank";
-		strongEnemy.spriteAsset = "assets/base-enemy.png";
+		strongEnemy.spriteAsset = "assets/sprites/base-enemy.png";
 		strongEnemy.spriteWidth = 307;
 		strongEnemy.spriteHeight = 512;
 		strongEnemy.spriteCols = 5;
