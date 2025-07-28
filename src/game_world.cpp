@@ -20,7 +20,9 @@ namespace Game
 		  enemyTypeIndex(0),
 		  tileSelected(false),
 		  selectedRow(-1),
-		  selectedCol(-1)
+		  selectedCol(-1),
+		  towerSelected(false),
+		  selectedTowerIndex(-1)
 	{
 		this->initializeEnemyTypes();
 		//  this->replaceSpacesWithTowers();
@@ -70,6 +72,10 @@ namespace Game
 				{
 					handleTileSelection(event.button.x, event.button.y);
 				}
+				else if (event.button.button == SDL_BUTTON_RIGHT)
+				{
+					handleTowerSelection(event.button.x, event.button.y);
+				}
 			}
 			else if (event.type == SDL_KEYDOWN)
 			{
@@ -81,12 +87,18 @@ namespace Game
 				{
 					handleTowerPlacement(2); // Canon Tower
 				}
+				else if (event.key.keysym.sym == SDLK_DELETE)
+				{
+					deleteTower();
+				}
 				else if (event.key.keysym.sym == SDLK_ESCAPE)
 				{
 					// Cancelar seleção
 					tileSelected = false;
 					selectedRow = -1;
 					selectedCol = -1;
+					towerSelected = false;
+					selectedTowerIndex = -1;
 				}
 			}
 		}
@@ -144,9 +156,15 @@ namespace Game
 			enemy->render(this->graphics, deltaTime);
 		}
 
-		for (const auto &tower : this->towers)
+		for (size_t i = 0; i < this->towers.size(); ++i)
 		{
-			tower.render(this->graphics, deltaTime);
+			this->towers[i].render(this->graphics, deltaTime);
+
+			if (towerSelected && selectedTowerIndex == static_cast<int>(i))
+			{
+				Vector towerPos = this->towers[i].getPosition();
+				graphics.drawRect(towerPos, {1, 1}, {255, 0, 0, 150});
+			}
 		}
 
 		for (const auto &projectil : this->activeProjectils)
@@ -386,6 +404,10 @@ namespace Game
 				tileSelected = true;
 				selectedRow = row;
 				selectedCol = col;
+
+				// Desmarcar torre selecionada
+				towerSelected = false;
+				selectedTowerIndex = -1;
 			}
 		}
 	}
@@ -399,6 +421,10 @@ namespace Game
 			tileSelected = false;
 			selectedRow = -1;
 			selectedCol = -1;
+
+			// Desmarcar torre selecionada
+			towerSelected = false;
+			selectedTowerIndex = -1;
 		}
 	}
 
@@ -484,5 +510,63 @@ namespace Game
 		}
 
 		return true;
+	}
+
+	void GameWorld::handleTowerSelection(int mouseX, int mouseY)
+	{
+		int tileWidth = graphics.getTileWidth();
+		int tileHeight = graphics.getTileHeight();
+
+		int col = mouseX / tileWidth;
+		int row = mouseY / tileHeight;
+
+		if (row >= 0 && row < map.getHeight() && col >= 0 && col < map.getWidth())
+		{
+			int towerIndex = getTowerAtPosition(row, col);
+			if (towerIndex >= 0)
+			{
+				towerSelected = true;
+				selectedTowerIndex = towerIndex;
+
+				// Desmarcar tile selecionado
+				tileSelected = false;
+				selectedRow = -1;
+				selectedCol = -1;
+
+				std::cout << "Torre selecionada na posição (" << row << ", " << col << ") - Pressione DELETE para remover" << std::endl;
+			}
+		}
+	}
+
+	void GameWorld::deleteTower()
+	{
+		if (towerSelected && selectedTowerIndex >= 0 && selectedTowerIndex < static_cast<int>(towers.size()))
+		{
+			Vector towerPos = towers[selectedTowerIndex].getPosition();
+			std::cout << "Torre removida da posição (" << static_cast<int>(towerPos.y) << ", " << static_cast<int>(towerPos.x) << ")" << std::endl;
+
+			towers.erase(towers.begin() + selectedTowerIndex);
+
+			// Limpar seleção
+			towerSelected = false;
+			selectedTowerIndex = -1;
+		}
+		else
+		{
+			std::cout << "Nenhuma torre selecionada para deletar!" << std::endl;
+		}
+	}
+
+	int GameWorld::getTowerAtPosition(int row, int col) const
+	{
+		for (size_t i = 0; i < towers.size(); ++i)
+		{
+			Vector towerPos = towers[i].getPosition();
+			if (static_cast<int>(towerPos.x) == col && static_cast<int>(towerPos.y) == row)
+			{
+				return static_cast<int>(i);
+			}
+		}
+		return -1; // Nenhuma torre encontrada
 	}
 }

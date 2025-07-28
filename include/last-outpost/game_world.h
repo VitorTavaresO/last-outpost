@@ -58,6 +58,9 @@ namespace Game
 		int selectedRow;
 		int selectedCol;
 
+		bool towerSelected;
+		int selectedTowerIndex;
+
 		bool handleEvents();
 		void update(float deltaTime);
 		void render(float deltaTime);
@@ -72,6 +75,10 @@ namespace Game
 		void handleTowerPlacement(int towerType);
 		void placeTower(int row, int col, int towerType);
 		bool isTileValidForTower(int row, int col) const;
+
+		void handleTowerSelection(int mouseX, int mouseY);
+		void deleteTower();
+		int getTowerAtPosition(int row, int col) const;
 	};
 }
 
