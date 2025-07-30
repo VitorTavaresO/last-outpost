@@ -21,6 +21,7 @@ namespace Game
 		std::vector<PathPoint> path;
 		uint32_t lastMoveTime;
 		size_t currentStep;
+		int goldReward; // Quantidade de ouro que este inimigo dá ao morrer
 
 		// Animation support
 		std::unique_ptr<Animation> walkAnimation;
@@ -29,7 +30,7 @@ namespace Game
 		EnemyState state;
 
 	public:
-		Enemy(int life = 100, int damage = 10, float speed = 1.0f, const std::string &spell = "", std::vector<PathPoint> path = {});
+		Enemy(int life = 100, int damage = 10, float speed = 1.0f, const std::string &spell = "", std::vector<PathPoint> path = {}, int goldReward = 10);
 
 		Enemy(const Enemy &) = delete;
 		Enemy &operator=(const Enemy &) = delete;
@@ -38,7 +39,7 @@ namespace Game
 			: Object(std::move(other)), life(other.life), damage(other.damage),
 			  speed(other.speed), spell(std::move(other.spell)),
 			  path(std::move(other.path)), lastMoveTime(other.lastMoveTime),
-			  currentStep(other.currentStep)
+			  currentStep(other.currentStep), goldReward(other.goldReward)
 		{
 		}
 
@@ -54,6 +55,7 @@ namespace Game
 				path = std::move(other.path);
 				lastMoveTime = other.lastMoveTime;
 				currentStep = other.currentStep;
+				goldReward = other.goldReward;
 			}
 			return *this;
 		}
@@ -103,6 +105,9 @@ namespace Game
 		{
 			return this->spell;
 		}
+
+		void setGoldReward(int reward) { goldReward = reward; }
+		int getGoldReward() const { return goldReward; }
 
 		// Animation methods
 		bool loadAnimations(SDL_Renderer *renderer);

@@ -5,8 +5,8 @@
 
 namespace Game
 {
-	Enemy::Enemy(int life, int damage, float speed, const std::string &spell, std::vector<PathPoint> path)
-		: life(life), damage(damage), speed(speed), spell(spell), path(std::move(path)), lastMoveTime(0), currentStep(0),
+	Enemy::Enemy(int life, int damage, float speed, const std::string &spell, std::vector<PathPoint> path, int goldReward)
+		: life(life), damage(damage), speed(speed), spell(spell), path(std::move(path)), lastMoveTime(0), currentStep(0), goldReward(goldReward),
 		  walkAnimation(nullptr), idleAnimation(nullptr), currentAnimation(nullptr), state(EnemyState::Idle)
 	{
 		this->setType(ObjectType::Enemy);

@@ -32,6 +32,7 @@ namespace Game
 		int idleFrameStart;
 		int idleFrameEnd;
 		float scale;
+		int goldReward;
 	};
 
 	class GameWorld
@@ -55,6 +56,8 @@ namespace Game
 		size_t enemyTypeIndex;
 		std::vector<Tower> towers;
 		std::vector<EnemyType> enemyTypes;
+
+		int gold;
 
 		bool tileSelected;
 		int selectedRow;
@@ -81,6 +84,15 @@ namespace Game
 		void handleTowerSelection(int mouseX, int mouseY);
 		void deleteTower();
 		int getTowerAtPosition(int row, int col) const;
+
+		int getGold() const { return gold; }
+		void addGold(int amount) { gold += amount; }
+		bool spendGold(int amount);
+		void renderUI();
+		int getTowerCost(int towerType) const;
+
+		void renderSimpleText(const std::string &text, int x, int y);
+		void renderNumber(int number, int x, int y);
 	};
 }
 

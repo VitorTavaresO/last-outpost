@@ -25,7 +25,8 @@ namespace Game
 		  selectedRow(-1),
 		  selectedCol(-1),
 		  towerSelected(false),
-		  selectedTowerIndex(-1)
+		  selectedTowerIndex(-1),
+		  gold(100) // Jogador começa com 100 de ouro
 	{
 		this->initializeEnemyTypes();
 		/*if (audioSystem)
@@ -105,7 +106,6 @@ namespace Game
 				}
 				else if (event.key.keysym.sym == SDLK_ESCAPE)
 				{
-					// Cancelar seleção
 					tileSelected = false;
 					selectedRow = -1;
 					selectedCol = -1;
@@ -216,6 +216,8 @@ namespace Game
 		{
 			projectil->render(this->graphics, deltaTime);
 		}
+
+		this->renderUI();
 
 		SDL_RenderPresent(this->renderer);
 	}
@@ -338,6 +340,9 @@ namespace Game
 							{
 								audioSystem->playSound(SoundType::EnemyDeath);
 							}
+
+							this->addGold((*enemyIt)->getGoldReward());
+
 							enemyIt = this->activeEnemies.erase(enemyIt);
 						}
 
@@ -380,6 +385,7 @@ namespace Game
 		basicEnemy.idleFrameStart = 0;
 		basicEnemy.idleFrameEnd = 1;
 		basicEnemy.scale = 0.1f;
+		basicEnemy.goldReward = 10;
 
 		this->enemyTypes.push_back(basicEnemy);
 
@@ -388,10 +394,10 @@ namespace Game
 		fastEnemy.damage = 8;
 		fastEnemy.speed = 2.0f;
 		fastEnemy.spell = "speed";
-		fastEnemy.spriteAsset = "assets/sprites/base-enemy.png";
-		fastEnemy.spriteWidth = 307;
+		fastEnemy.spriteAsset = "assets/sprites/fast-enemy.png";
+		fastEnemy.spriteWidth = 384;
 		fastEnemy.spriteHeight = 512;
-		fastEnemy.spriteCols = 5;
+		fastEnemy.spriteCols = 4;
 		fastEnemy.spriteRows = 2;
 		fastEnemy.walkFrameTime = 0.1f;
 		fastEnemy.idleFrameTime = 0.3f;
@@ -400,6 +406,7 @@ namespace Game
 		fastEnemy.idleFrameStart = 0;
 		fastEnemy.idleFrameEnd = 1;
 		fastEnemy.scale = 0.08f;
+		fastEnemy.goldReward = 5;
 
 		this->enemyTypes.push_back(fastEnemy);
 
@@ -408,8 +415,8 @@ namespace Game
 		strongEnemy.damage = 20;
 		strongEnemy.speed = 0.5f;
 		strongEnemy.spell = "tank";
-		strongEnemy.spriteAsset = "assets/sprites/base-enemy.png";
-		strongEnemy.spriteWidth = 307;
+		strongEnemy.spriteAsset = "assets/sprites/giant-enemy.png";
+		strongEnemy.spriteWidth = 320;
 		strongEnemy.spriteHeight = 512;
 		strongEnemy.spriteCols = 5;
 		strongEnemy.spriteRows = 2;
@@ -420,6 +427,7 @@ namespace Game
 		strongEnemy.idleFrameStart = 0;
 		strongEnemy.idleFrameEnd = 1;
 		strongEnemy.scale = 0.12f;
+		strongEnemy.goldReward = 50;
 
 		this->enemyTypes.push_back(strongEnemy);
 	}
@@ -431,7 +439,8 @@ namespace Game
 			enemyType.damage,
 			enemyType.speed,
 			enemyType.spell,
-			map.extractPath());
+			map.extractPath(),
+			enemyType.goldReward);
 
 		if (!enemy->loadAnimations(renderer,
 								   enemyType.spriteAsset,
@@ -479,14 +488,22 @@ namespace Game
 	{
 		if (tileSelected && selectedRow >= 0 && selectedCol >= 0)
 		{
-			placeTower(selectedRow, selectedCol, towerType);
+			int cost = getTowerCost(towerType);
+			if (spendGold(cost))
+			{
+				placeTower(selectedRow, selectedCol, towerType);
 
-			tileSelected = false;
-			selectedRow = -1;
-			selectedCol = -1;
+				tileSelected = false;
+				selectedRow = -1;
+				selectedCol = -1;
 
-			towerSelected = false;
-			selectedTowerIndex = -1;
+				towerSelected = false;
+				selectedTowerIndex = -1;
+			}
+			else
+			{
+				std::cout << "Dinheiro insuficiente! Precisa de " << cost << " de ouro, mas tem apenas " << gold << std::endl;
+			}
 		}
 	}
 
@@ -528,8 +545,8 @@ namespace Game
 			tower.setFireRate(1.5f);
 			towerName = "Canon Tower";
 
-			auto towerAnimation = std::make_unique<Animation>("assets/sprites/magic-tower.png", renderer,
-															  400, 467, 4, 3);
+			auto towerAnimation = std::make_unique<Animation>("assets/sprites/canon-tower.png", renderer,
+															  384, 512, 4, 2);
 			if (towerAnimation->isValid())
 			{
 				towerAnimation->setFrameTime(0.3f);
@@ -633,5 +650,160 @@ namespace Game
 			}
 		}
 		return -1;
+	}
+
+	bool GameWorld::spendGold(int amount)
+	{
+		if (gold >= amount)
+		{
+			gold -= amount;
+			return true;
+		}
+		return false;
+	}
+
+	int GameWorld::getTowerCost(int towerType) const
+	{
+		switch (towerType)
+		{
+		case 1: // Magic Tower
+			return 50;
+		case 2: // Canon Tower
+			return 100;
+		default:
+			return 0;
+		}
+	}
+
+	void GameWorld::renderUI()
+	{
+		SDL_Rect goldBackground = {10, 10, 150, 30};
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200);
+		SDL_RenderFillRect(renderer, &goldBackground);
+
+		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+		SDL_RenderDrawRect(renderer, &goldBackground);
+
+		renderSimpleText("GOLD:", 15, 18);
+
+		renderNumber(gold, 80, 18);
+	}
+
+	void GameWorld::renderSimpleText(const std::string &text, int x, int y)
+	{
+		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+
+		int charWidth = 8;
+
+		for (size_t i = 0; i < text.length(); ++i)
+		{
+			char c = text[i];
+			int charX = x + (i * charWidth);
+
+			if (c == 'G')
+			{
+				SDL_Rect rects[5] = {
+					{charX, y, 6, 2}, {charX, y + 2, 2, 8}, {charX, y + 10, 6, 2}, {charX + 4, y + 6, 2, 4}, {charX + 3, y + 6, 3, 2}};
+				SDL_RenderFillRects(renderer, rects, 5);
+			}
+			else if (c == 'O')
+			{
+				SDL_Rect rects[4] = {
+					{charX, y, 6, 2}, {charX, y + 2, 2, 8}, {charX, y + 10, 6, 2}, {charX + 4, y + 2, 2, 8}};
+				SDL_RenderFillRects(renderer, rects, 4);
+			}
+			else if (c == 'L')
+			{
+				SDL_Rect rects[2] = {
+					{charX, y, 2, 12}, {charX, y + 10, 6, 2}};
+				SDL_RenderFillRects(renderer, rects, 2);
+			}
+			else if (c == 'D')
+			{
+				SDL_Rect rects[4] = {
+					{charX, y, 2, 12}, {charX, y, 4, 2}, {charX, y + 10, 4, 2}, {charX + 4, y + 2, 2, 8}};
+				SDL_RenderFillRects(renderer, rects, 4);
+			}
+			else if (c == ':')
+			{
+				SDL_Rect rects[2] = {
+					{charX + 2, y + 3, 2, 2}, {charX + 2, y + 7, 2, 2}};
+				SDL_RenderFillRects(renderer, rects, 2);
+			}
+		}
+	}
+
+	void GameWorld::renderNumber(int number, int x, int y)
+	{
+		std::string numStr = std::to_string(number);
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+		int digitWidth = 8;
+
+		for (size_t i = 0; i < numStr.length(); ++i)
+		{
+			char digit = numStr[i];
+			int digitX = x + (i * digitWidth);
+
+			if (digit == '0')
+			{
+				SDL_Rect rects[4] = {
+					{digitX, y, 6, 2}, {digitX, y + 2, 2, 8}, {digitX, y + 10, 6, 2}, {digitX + 4, y + 2, 2, 8}};
+				SDL_RenderFillRects(renderer, rects, 4);
+			}
+			else if (digit == '1')
+			{
+				SDL_Rect rects[1] = {{digitX + 2, y, 2, 12}};
+				SDL_RenderFillRects(renderer, rects, 1);
+			}
+			else if (digit == '2')
+			{
+				SDL_Rect rects[5] = {
+					{digitX, y, 6, 2}, {digitX + 4, y + 2, 2, 4}, {digitX, y + 6, 6, 2}, {digitX, y + 8, 2, 2}, {digitX, y + 10, 6, 2}};
+				SDL_RenderFillRects(renderer, rects, 5);
+			}
+			else if (digit == '3')
+			{
+				SDL_Rect rects[5] = {
+					{digitX, y, 6, 2}, {digitX + 4, y + 2, 2, 3}, {digitX + 2, y + 5, 4, 2}, {digitX + 4, y + 7, 2, 3}, {digitX, y + 10, 6, 2}};
+				SDL_RenderFillRects(renderer, rects, 5);
+			}
+			else if (digit == '4')
+			{
+				SDL_Rect rects[3] = {
+					{digitX, y, 2, 6}, {digitX + 4, y, 2, 12}, {digitX, y + 6, 6, 2}};
+				SDL_RenderFillRects(renderer, rects, 3);
+			}
+			else if (digit == '5')
+			{
+				SDL_Rect rects[5] = {
+					{digitX, y, 6, 2}, {digitX, y + 2, 2, 4}, {digitX, y + 6, 6, 2}, {digitX + 4, y + 8, 2, 2}, {digitX, y + 10, 6, 2}};
+				SDL_RenderFillRects(renderer, rects, 5);
+			}
+			else if (digit == '6')
+			{
+				SDL_Rect rects[5] = {
+					{digitX, y, 6, 2}, {digitX, y + 2, 2, 8}, {digitX, y + 6, 6, 2}, {digitX + 4, y + 8, 2, 2}, {digitX, y + 10, 6, 2}};
+				SDL_RenderFillRects(renderer, rects, 5);
+			}
+			else if (digit == '7')
+			{
+				SDL_Rect rects[2] = {
+					{digitX, y, 6, 2}, {digitX + 4, y + 2, 2, 10}};
+				SDL_RenderFillRects(renderer, rects, 2);
+			}
+			else if (digit == '8')
+			{
+				SDL_Rect rects[7] = {
+					{digitX, y, 6, 2}, {digitX, y + 2, 2, 3}, {digitX + 4, y + 2, 2, 3}, {digitX, y + 5, 6, 2}, {digitX, y + 7, 2, 3}, {digitX + 4, y + 7, 2, 3}, {digitX, y + 10, 6, 2}};
+				SDL_RenderFillRects(renderer, rects, 7);
+			}
+			else if (digit == '9')
+			{
+				SDL_Rect rects[5] = {
+					{digitX, y, 6, 2}, {digitX, y + 2, 2, 4}, {digitX + 4, y + 2, 2, 8}, {digitX, y + 6, 6, 2}, {digitX, y + 10, 6, 2}};
+				SDL_RenderFillRects(renderer, rects, 5);
+			}
+		}
 	}
 }
