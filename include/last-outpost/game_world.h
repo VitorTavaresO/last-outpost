@@ -83,6 +83,7 @@ namespace Game
 
 		void handleTowerSelection(int mouseX, int mouseY);
 		void deleteTower();
+		void sellTower();
 		int getTowerAtPosition(int row, int col) const;
 
 		int getGold() const { return gold; }
