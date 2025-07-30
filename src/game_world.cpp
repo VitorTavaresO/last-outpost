@@ -1,6 +1,8 @@
 #include <utility>
 #include <memory>
 #include <iostream>
+#include <algorithm>
+#include <cstdlib>
 #include <last-outpost/game_world.h>
 #include <last-outpost/tower.h>
 #include <last-outpost/globals.h>
@@ -8,11 +10,12 @@
 
 namespace Game
 {
-	GameWorld::GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, Level &&level)
+	GameWorld::GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, Level &&level, Audio *audioSystem)
 		: renderer(renderer),
 		  graphics(screenWidth, screenHeight, TILES_X, TILES_Y, renderer),
 		  map(TILES_X, TILES_Y, level.getMapData()),
 		  level(std::move(level)),
+		  audioSystem(audioSystem),
 		  running(true),
 		  lastSpawnTime(getTimeInSeconds()),
 		  lastUpdateTime(getTimeInSeconds()),
@@ -25,7 +28,16 @@ namespace Game
 		  selectedTowerIndex(-1)
 	{
 		this->initializeEnemyTypes();
-		//  this->replaceSpacesWithTowers();
+		/*if (audioSystem)
+		{
+			std::cout << "\n=== AUDIO SYSTEM CONTROLS ===" << std::endl;
+			std::cout << "M - Toggle music on/off" << std::endl;
+			std::cout << "S - Toggle sound effects on/off" << std::endl;
+			std::cout << "+ or = - Increase master volume" << std::endl;
+			std::cout << "- - Decrease master volume" << std::endl;
+			std::cout << "===========================\n"
+					  << std::endl;
+		}*/
 	}
 
 	bool GameWorld::run()
@@ -100,6 +112,40 @@ namespace Game
 					towerSelected = false;
 					selectedTowerIndex = -1;
 				}
+				else if (event.key.keysym.sym == SDLK_m)
+				{
+					if (audioSystem)
+					{
+						audioSystem->setMusicEnabled(!audioSystem->isMusicEnabled());
+						std::cout << "Music " << (audioSystem->isMusicEnabled() ? "enabled" : "disabled") << std::endl;
+					}
+				}
+				else if (event.key.keysym.sym == SDLK_s)
+				{
+					if (audioSystem)
+					{
+						audioSystem->setSoundEnabled(!audioSystem->isSoundEnabled());
+						std::cout << "Sound effects " << (audioSystem->isSoundEnabled() ? "enabled" : "disabled") << std::endl;
+					}
+				}
+				else if (event.key.keysym.sym == SDLK_PLUS || event.key.keysym.sym == SDLK_EQUALS)
+				{
+					if (audioSystem)
+					{
+						float currentVolume = audioSystem->getMasterVolume();
+						audioSystem->setMasterVolume(std::min(1.0f, currentVolume + 0.1f));
+						std::cout << "Master volume: " << (int)(audioSystem->getMasterVolume() * 100) << "%" << std::endl;
+					}
+				}
+				else if (event.key.keysym.sym == SDLK_MINUS)
+				{
+					if (audioSystem)
+					{
+						float currentVolume = audioSystem->getMasterVolume();
+						audioSystem->setMasterVolume(std::max(0.0f, currentVolume - 0.1f));
+						std::cout << "Master volume: " << (int)(audioSystem->getMasterVolume() * 100) << "%" << std::endl;
+					}
+				}
 			}
 		}
 		return true;
@@ -144,11 +190,10 @@ namespace Game
 
 		this->map.render(this->graphics, deltaTime);
 
-		// Destacar tile selecionado
 		if (tileSelected && selectedRow >= 0 && selectedCol >= 0)
 		{
 			Vector selectedPos(selectedCol, selectedRow);
-			graphics.drawRect(selectedPos, {1, 1}, {255, 255, 0, 100}); // Amarelo transparente
+			graphics.drawRect(selectedPos, {1, 1}, {255, 255, 0, 100});
 		}
 
 		for (const auto &enemy : this->activeEnemies)
@@ -190,6 +235,11 @@ namespace Game
 
 				if (enemy)
 				{
+					if (audioSystem)
+					{
+						audioSystem->playSoundWithVolume(SoundType::EnemySpawn, 0.4f);
+					}
+
 					this->activeEnemies.push_back(std::move(enemy));
 					++this->spawnedEnemyCount;
 					this->lastSpawnTime = currentTime;
@@ -208,6 +258,11 @@ namespace Game
 
 			if (projectil)
 			{
+				if (audioSystem)
+				{
+					float volumeVariation = 0.8f + (rand() % 40) / 100.0f;
+					audioSystem->playSoundWithVolume(SoundType::TowerFire, volumeVariation);
+				}
 				this->activeProjectils.push_back(std::move(projectil));
 			}
 		}
@@ -268,12 +323,21 @@ namespace Game
 				{
 					if ((*projIt)->isColliding(**enemyIt))
 					{
+						if (audioSystem)
+						{
+							audioSystem->playSound(SoundType::ProjectilHit);
+						}
+
 						int currentLife = (*enemyIt)->getLife();
 						currentLife -= (*projIt)->getDamage();
 						(*enemyIt)->setLife(currentLife);
 
 						if (currentLife <= 0)
 						{
+							if (audioSystem)
+							{
+								audioSystem->playSound(SoundType::EnemyDeath);
+							}
 							enemyIt = this->activeEnemies.erase(enemyIt);
 						}
 
@@ -405,7 +469,6 @@ namespace Game
 				selectedRow = row;
 				selectedCol = col;
 
-				// Desmarcar torre selecionada
 				towerSelected = false;
 				selectedTowerIndex = -1;
 			}
@@ -422,7 +485,6 @@ namespace Game
 			selectedRow = -1;
 			selectedCol = -1;
 
-			// Desmarcar torre selecionada
 			towerSelected = false;
 			selectedTowerIndex = -1;
 		}
@@ -488,6 +550,11 @@ namespace Game
 
 		tower.setPosition(col, row);
 		towers.push_back(std::move(tower));
+
+		if (audioSystem)
+		{
+			audioSystem->playSound(SoundType::TowerPlace);
+		}
 	}
 
 	bool GameWorld::isTileValidForTower(int row, int col) const
@@ -528,7 +595,6 @@ namespace Game
 				towerSelected = true;
 				selectedTowerIndex = towerIndex;
 
-				// Desmarcar tile selecionado
 				tileSelected = false;
 				selectedRow = -1;
 				selectedCol = -1;
@@ -547,7 +613,6 @@ namespace Game
 
 			towers.erase(towers.begin() + selectedTowerIndex);
 
-			// Limpar seleção
 			towerSelected = false;
 			selectedTowerIndex = -1;
 		}
@@ -567,6 +632,6 @@ namespace Game
 				return static_cast<int>(i);
 			}
 		}
-		return -1; // Nenhuma torre encontrada
+		return -1;
 	}
 }

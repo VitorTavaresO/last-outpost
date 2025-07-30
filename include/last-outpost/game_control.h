@@ -6,6 +6,7 @@
 #include <vector>
 #include <last-outpost/game_world.h>
 #include <last-outpost/level.h>
+#include <last-outpost/audio.h>
 
 namespace Game
 {
@@ -33,6 +34,7 @@ namespace Game
 		SDL_Window *window;
 		SDL_Renderer *renderer;
 		std::unique_ptr<GameWorld> gameWorld;
+		std::unique_ptr<Audio> audioSystem;
 		GameState currentState;
 		std::vector<Level> levels;
 		int currentLevelIndex;
@@ -47,6 +49,8 @@ namespace Game
 
 		void changeState(GameState newState);
 		Level &getCurrentLevel();
+
+		Audio *getAudioSystem() const { return audioSystem.get(); }
 	};
 }
 

@@ -1,13 +1,15 @@
 #include <last-outpost/game_control.h>
 #include <last-outpost/globals.h>
 #include <last-outpost/map.h>
+#include <last-outpost/audio.h>
 #include <iostream>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 
 namespace Game
 {
 	GameControl::GameControl()
-		: window(nullptr), renderer(nullptr), gameWorld(nullptr),
+		: window(nullptr), renderer(nullptr), gameWorld(nullptr), audioSystem(nullptr),
 		  currentState(GameState::MainMenu), currentLevelIndex(0)
 	{
 	}
@@ -21,6 +23,21 @@ namespace Game
 	{
 		if (!initializeSDL())
 			return false;
+
+		// Initialize audio system
+		audioSystem = std::make_unique<Audio>();
+		if (!audioSystem->initialize())
+		{
+			std::cerr << "Failed to initialize audio system!" << std::endl;
+			return false;
+		}
+
+		audioSystem->loadGameSounds();
+		audioSystem->loadGameMusic();
+
+		audioSystem->setMasterVolume(0.7f);
+		audioSystem->setSoundVolume(0.5f);
+		audioSystem->setMusicVolume(0.6f);
 
 		createLevels();
 		return true;
@@ -55,6 +72,12 @@ namespace Game
 
 	void GameControl::cleanup()
 	{
+		if (audioSystem)
+		{
+			audioSystem->cleanup();
+			audioSystem.reset();
+		}
+
 		if (renderer)
 		{
 			SDL_DestroyRenderer(renderer);
@@ -67,6 +90,7 @@ namespace Game
 			window = nullptr;
 		}
 
+		Mix_Quit();
 		IMG_Quit();
 		SDL_Quit();
 	}
@@ -82,6 +106,12 @@ namespace Game
 		if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
 		{
 			std::cerr << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
+			return false;
+		}
+
+		if (Mix_Init(MIX_INIT_MP3) == 0)
+		{
+			std::cerr << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << std::endl;
 			return false;
 		}
 
@@ -127,6 +157,11 @@ namespace Game
 
 	void GameControl::handleMainMenu()
 	{
+		if (audioSystem && !audioSystem->isMusicPlaying())
+		{
+			audioSystem->playMusic(MusicType::MainMenu);
+		}
+
 		changeState(GameState::Playing);
 	}
 
@@ -134,10 +169,17 @@ namespace Game
 	{
 		if (!gameWorld)
 		{
+			if (audioSystem)
+			{
+				audioSystem->fadeOutMusic(1000);
+				audioSystem->playMusic(MusicType::GamePlay);
+			}
+
 			gameWorld = std::make_unique<GameWorld>(
 				renderer,
 				SCREEN_WIDTH, SCREEN_HEIGHT,
-				std::move(getCurrentLevel()));
+				std::move(getCurrentLevel()),
+				audioSystem.get());
 		}
 
 		bool gameCompleted = gameWorld->run();
