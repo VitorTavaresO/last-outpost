@@ -1,10 +1,28 @@
 #include <last-outpost/map.h>
+#include <iostream>
 
 namespace Game
 {
-	Map::Map(int width, int height, const std::string &mapString)
-		: width(width), height(height), terrain(height, width)
+	Map::Map(int width, int height, const std::string &mapString, SDL_Renderer *renderer)
+		: width(width), height(height), terrain(height, width), renderer(renderer)
 	{
+		if (renderer)
+		{
+			grassSprite = std::make_unique<Sprite>();
+			pathSprite = std::make_unique<Sprite>();
+
+			if (!grassSprite->loadFromFile("assets/sprites/grass.jpg", renderer))
+			{
+				std::cerr << "Falha ao carregar grass.jpg" << std::endl;
+				grassSprite.reset();
+			}
+
+			if (!pathSprite->loadFromFile("assets/sprites/path.jpg", renderer))
+			{
+				std::cerr << "Falha ao carregar path.jpg" << std::endl;
+				pathSprite.reset();
+			}
+		}
 		int idCounter = 0;
 
 		for (int row = 0; row < this->height; ++row)
@@ -149,11 +167,57 @@ namespace Game
 
 	void Map::render(Graphics &graphics, float deltaTime) const
 	{
+		int tileWidth = graphics.getTileWidth();
+		int tileHeight = graphics.getTileHeight();
+
 		for (uint32_t row = 0; row < this->terrain.get_nrows(); ++row)
 		{
 			for (uint32_t col = 0; col < this->terrain.get_ncols(); ++col)
 			{
-				this->terrain[row, col].object.render(graphics, deltaTime);
+				const Tile &tile = this->terrain[row, col];
+
+				if (renderer)
+				{
+					int x = col * tileWidth;
+					int y = row * tileHeight;
+
+					Sprite *spriteToRender = nullptr;
+
+					switch (tile.type)
+					{
+					case ' ':
+						spriteToRender = grassSprite.get();
+						break;
+					case 'F': // First (início do caminho) - usar path
+					case 'R': // Right
+					case 'L': // Left
+					case 'D': // Down
+					case 'U': // Up
+					case 'E': // End
+						spriteToRender = pathSprite.get();
+						break;
+					case 'S':
+						spriteToRender = pathSprite.get();
+						break;
+					default:
+						spriteToRender = grassSprite.get();
+						break;
+					}
+
+					if (spriteToRender)
+					{
+						SDL_Rect destRect = {x, y, tileWidth, tileHeight};
+						spriteToRender->renderAt(renderer, destRect);
+					}
+					else
+					{
+						tile.object.render(graphics, deltaTime);
+					}
+				}
+				else
+				{
+					tile.object.render(graphics, deltaTime);
+				}
 			}
 		}
 	}

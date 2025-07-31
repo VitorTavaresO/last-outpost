@@ -29,6 +29,7 @@ namespace Game
 		bool loadFromFile(const std::string &path, SDL_Renderer *renderer);
 
 		void render(Graphics &graphics) const;
+		void renderAt(SDL_Renderer *renderer, const SDL_Rect &destRect) const;
 
 		void setSourceRect(int x, int y, int width, int height)
 		{

@@ -5,10 +5,12 @@
 #include <last-outpost/object.h>
 #include <last-outpost/graphics.h>
 #include <last-outpost/types.h>
+#include <last-outpost/sprite.h>
 #include <SDL.h>
 #include <string>
 #include <vector>
 #include <utility>
+#include <memory>
 
 namespace Game
 {
@@ -50,8 +52,13 @@ namespace Game
 		int height;
 		Mylib::Matrix<Tile> terrain;
 
+		// Sprites para os tiles
+		std::unique_ptr<Sprite> grassSprite;
+		std::unique_ptr<Sprite> pathSprite;
+		SDL_Renderer *renderer;
+
 	public:
-		Map(int width, int height, const std::string &mapString);
+		Map(int width, int height, const std::string &mapString, SDL_Renderer *renderer = nullptr);
 
 		int getWidth() const
 		{

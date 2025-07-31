@@ -100,4 +100,24 @@ namespace Game
 		else
 			SDL_RenderCopyEx(graphics.getRenderer(), this->texture, nullptr, &destRect, this->rotation, nullptr, flipFlags);
 	}
+
+	void Sprite::renderAt(SDL_Renderer *renderer, const SDL_Rect &destRect) const
+	{
+		if (!this->texture || !renderer)
+			return;
+
+		SDL_RendererFlip flipFlags = SDL_FLIP_NONE;
+		if (this->flippedX)
+			flipFlags = static_cast<SDL_RendererFlip>(flipFlags | SDL_FLIP_HORIZONTAL);
+		if (this->flippedY)
+			flipFlags = static_cast<SDL_RendererFlip>(flipFlags | SDL_FLIP_VERTICAL);
+
+		SDL_SetTextureColorMod(this->texture, this->color.r, this->color.g, this->color.b);
+		SDL_SetTextureAlphaMod(this->texture, this->color.a);
+
+		if (this->useSourceRect)
+			SDL_RenderCopyEx(renderer, this->texture, &this->sourceRect, &destRect, this->rotation, nullptr, flipFlags);
+		else
+			SDL_RenderCopyEx(renderer, this->texture, nullptr, &destRect, this->rotation, nullptr, flipFlags);
+	}
 }

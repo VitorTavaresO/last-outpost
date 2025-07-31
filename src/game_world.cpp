@@ -13,7 +13,7 @@ namespace Game
 	GameWorld::GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, Level &&level, Audio *audioSystem)
 		: renderer(renderer),
 		  graphics(screenWidth, screenHeight, TILES_X, TILES_Y, renderer),
-		  map(TILES_X, TILES_Y, level.getMapData()),
+		  map(TILES_X, TILES_Y, level.getMapData(), renderer),
 		  level(std::move(level)),
 		  audioSystem(audioSystem),
 		  running(true),
