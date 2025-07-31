@@ -11,17 +11,8 @@ namespace Game
 			grassSprite = std::make_unique<Sprite>();
 			pathSprite = std::make_unique<Sprite>();
 
-			if (!grassSprite->loadFromFile("assets/sprites/grass.jpg", renderer))
-			{
-				std::cerr << "Falha ao carregar grass.jpg" << std::endl;
-				grassSprite.reset();
-			}
-
-			if (!pathSprite->loadFromFile("assets/sprites/path.jpg", renderer))
-			{
-				std::cerr << "Falha ao carregar path.jpg" << std::endl;
-				pathSprite.reset();
-			}
+			grassSprite->loadFromFile("assets/sprites/grass.jpg", renderer);
+			pathSprite->loadFromFile("assets/sprites/path.jpg", renderer);
 		}
 		int idCounter = 0;
 
@@ -188,7 +179,7 @@ namespace Game
 					case ' ':
 						spriteToRender = grassSprite.get();
 						break;
-					case 'F': // First (início do caminho) - usar path
+					case 'F': // First
 					case 'R': // Right
 					case 'L': // Left
 					case 'D': // Down
@@ -228,21 +219,21 @@ namespace Game
 
 	const char rawStringMap[] =
 		"                                "
+		"         S                      "
 		"                                "
-		"                                "
-		"    S   RRRD                    "
+		"    S   RRRD        S           "
 		"        U  D                    "
 		"FRRRRRRRU  RRRRRRRRRRRRRRRD     "
-		"            S             D     "
+		"                          D     "
+		"         S           S    D     "
 		"                          D     "
 		"   S    DLLLLLLLLLLLLLLLLLL     "
 		"        D                       "
-		"        D              S        "
+		"        D    S         S        "
 		"        D                       "
 		"    S   D                       "
 		"        D                       "
-		"        D                       "
-		"        D                       "
+		"        D    S                  "
 		"        D                       "
 		"        E                       ";
 }

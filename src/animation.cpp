@@ -12,11 +12,7 @@ namespace Game
 		  columns(columns), rows(rows),
 		  frameRangeStart(0), frameRangeEnd(0), initialized(false)
 	{
-		if (!this->sprite->loadFromFile(filepath, renderer))
-		{
-			std::cerr << "Failed to load animation sprite sheet: " << filepath << std::endl;
-			return;
-		}
+		this->sprite->loadFromFile(filepath, renderer);
 
 		this->totalFrames = columns * rows;
 		this->frameRangeStart = 0;

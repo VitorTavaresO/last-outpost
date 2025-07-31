@@ -73,11 +73,6 @@ namespace Game
 		unloadSound(type);
 
 		Mix_Chunk *chunk = Mix_LoadWAV(filepath.c_str());
-		if (chunk == nullptr)
-		{
-			return false;
-		}
-
 		sounds[type] = chunk;
 		return true;
 	}
@@ -92,11 +87,6 @@ namespace Game
 		unloadMusic(type);
 
 		Mix_Music *musicTrack = Mix_LoadMUS(filepath.c_str());
-		if (musicTrack == nullptr)
-		{
-			return false;
-		}
-
 		music[type] = musicTrack;
 		return true;
 	}
@@ -313,53 +303,19 @@ namespace Game
 
 	void Audio::loadGameSounds()
 	{
-
-		if (!loadSound(SoundType::ProjectilHit, "assets/audios/Projectile1.mp3"))
-		{
-			std::cerr << "Warning: Failed to load Projectile1.mp3 sound effect" << std::endl;
-		}
-		if (!loadSound(SoundType::TowerFire, "assets/audios/Projectile1.mp3"))
-		{
-			std::cerr << "Warning: Failed to load tower fire sound effect" << std::endl;
-		}
-
-		if (!loadSound(SoundType::EnemyDeath, "assets/audios/Projectile1.mp3"))
-		{
-			std::cerr << "Warning: Failed to load enemy death sound effect" << std::endl;
-		}
-
-		if (!loadSound(SoundType::EnemySpawn, "assets/audios/Projectile1.mp3"))
-		{
-			std::cerr << "Warning: Failed to load enemy spawn sound effect" << std::endl;
-		}
-
-		if (!loadSound(SoundType::TowerPlace, "assets/audios/Projectile1.mp3"))
-		{
-			std::cerr << "Warning: Failed to load tower place sound effect" << std::endl;
-		}
+		loadSound(SoundType::ProjectilHit, "assets/audios/Projectile1.mp3");
+		loadSound(SoundType::TowerFire, "assets/audios/Projectile1.mp3");
+		loadSound(SoundType::EnemyDeath, "assets/audios/Projectile1.mp3");
+		loadSound(SoundType::EnemySpawn, "assets/audios/Projectile1.mp3");
+		loadSound(SoundType::TowerPlace, "assets/audios/Projectile1.mp3");
 	}
 
 	void Audio::loadGameMusic()
 	{
-		if (!loadMusic(MusicType::MainMenu, "assets/audios/GameSong1.mp3"))
-		{
-			std::cerr << "Warning: Failed to load main menu music (GameSong1.mp3)" << std::endl;
-		}
-
-		if (!loadMusic(MusicType::GamePlay, "assets/audios/GameSong2.mp3"))
-		{
-			std::cerr << "Warning: Failed to load gameplay music (GameSong2.mp3)" << std::endl;
-		}
-
-		if (!loadMusic(MusicType::Victory, "assets/audios/GameSong3.mp3"))
-		{
-			std::cerr << "Warning: Failed to load victory music (GameSong3.mp3)" << std::endl;
-		}
-
-		if (!loadMusic(MusicType::Defeat, "assets/audios/GameSong4.mp3"))
-		{
-			std::cerr << "Warning: Failed to load defeat music (GameSong4.mp3)" << std::endl;
-		}
+		loadMusic(MusicType::MainMenu, "assets/audios/GameSong1.mp3");
+		loadMusic(MusicType::GamePlay, "assets/audios/GameSong2.mp3");
+		loadMusic(MusicType::Victory, "assets/audios/GameSong3.mp3");
+		loadMusic(MusicType::Defeat, "assets/audios/GameSong4.mp3");
 	}
 
 	void Audio::updateVolumes()

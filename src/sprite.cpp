@@ -30,23 +30,12 @@ namespace Game
 		}
 
 		SDL_Surface *surface = IMG_Load(path.c_str());
-		if (!surface)
-		{
-			std::cerr << "Failed to load image: " << path << " - " << IMG_GetError() << std::endl;
-			return false;
-		}
 
 		if (surface->format->BytesPerPixel == 4)
 		{
 			SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_BLEND);
 		}
 		this->texture = SDL_CreateTextureFromSurface(renderer, surface);
-		if (!this->texture)
-		{
-			std::cerr << "Failed to create texture from surface: " << SDL_GetError() << std::endl;
-			SDL_FreeSurface(surface);
-			return false;
-		}
 		SDL_SetTextureBlendMode(this->texture, SDL_BLENDMODE_BLEND);
 
 		this->size.x = surface->w;
