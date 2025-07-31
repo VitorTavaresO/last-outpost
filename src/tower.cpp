@@ -34,7 +34,7 @@ namespace Game
 			Object::render(graphics, deltaTime);
 		}
 
-		graphics.drawCircle(this->getPosition(), this->range, {0, 0, 255, 40});
+		graphics.drawCircle(this->getPosition(), this->range, {163, 163, 163, 40});
 	}
 
 	bool Tower::isWithinRange(const Vector &targetPosition) const
