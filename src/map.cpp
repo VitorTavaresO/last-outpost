@@ -126,6 +126,7 @@ namespace Game
 
 			if (currentType == 'E')
 			{
+				path.emplace_back(currentCol, currentRow);
 				break;
 			}
 

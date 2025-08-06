@@ -95,11 +95,11 @@ namespace Game
 			{
 				if (event.key.keysym.sym == SDLK_1)
 				{
-					handleTowerPlacement(1); // Magic Tower
+					handleTowerPlacement(1);
 				}
 				else if (event.key.keysym.sym == SDLK_2)
 				{
-					handleTowerPlacement(2); // Canon Tower
+					handleTowerPlacement(2);
 				}
 				else if (event.key.keysym.sym == SDLK_DELETE)
 				{
@@ -122,7 +122,6 @@ namespace Game
 					if (audioSystem)
 					{
 						audioSystem->setMusicEnabled(!audioSystem->isMusicEnabled());
-						std::cout << "Music " << (audioSystem->isMusicEnabled() ? "enabled" : "disabled") << std::endl;
 					}
 				}
 				else if (event.key.keysym.sym == SDLK_s)
@@ -130,7 +129,6 @@ namespace Game
 					if (audioSystem)
 					{
 						audioSystem->setSoundEnabled(!audioSystem->isSoundEnabled());
-						std::cout << "Sound effects " << (audioSystem->isSoundEnabled() ? "enabled" : "disabled") << std::endl;
 					}
 				}
 				else if (event.key.keysym.sym == SDLK_PLUS || event.key.keysym.sym == SDLK_EQUALS)
@@ -139,7 +137,6 @@ namespace Game
 					{
 						float currentVolume = audioSystem->getMasterVolume();
 						audioSystem->setMasterVolume(std::min(1.0f, currentVolume + 0.1f));
-						std::cout << "Master volume: " << (int)(audioSystem->getMasterVolume() * 100) << "%" << std::endl;
 					}
 				}
 				else if (event.key.keysym.sym == SDLK_MINUS)
@@ -148,7 +145,6 @@ namespace Game
 					{
 						float currentVolume = audioSystem->getMasterVolume();
 						audioSystem->setMasterVolume(std::max(0.0f, currentVolume - 0.1f));
-						std::cout << "Master volume: " << (int)(audioSystem->getMasterVolume() * 100) << "%" << std::endl;
 					}
 				}
 			}
@@ -157,20 +153,16 @@ namespace Game
 	}
 	void GameWorld::update(float deltaTime)
 	{
-		// Update enemies and check if they reached the end
 		auto enemyIt = this->activeEnemies.begin();
 		while (enemyIt != this->activeEnemies.end())
 		{
 			(*enemyIt)->update(deltaTime);
 
-			// Check if enemy reached the end of path
-			if ((*enemyIt)->getCurrentStep() >= (*enemyIt)->getPath().size() - 1)
+			if ((*enemyIt)->getCurrentStep() >= (*enemyIt)->getPath().size())
 			{
-				// Enemy reached the end, cause damage to player
 				int damage = (*enemyIt)->getDamage();
 				this->takeDamage(damage);
 
-				// Remove the enemy
 				enemyIt = this->activeEnemies.erase(enemyIt);
 			}
 			else
@@ -259,10 +251,10 @@ namespace Game
 
 				if (enemy)
 				{
-					if (audioSystem)
-					{
-						audioSystem->playSoundWithVolume(SoundType::EnemySpawn, 0.4f);
-					}
+					// if (audioSystem)
+					// {
+					// 	audioSystem->playSoundWithVolume(SoundType::EnemySpawn, 0.4f);
+					// }
 
 					this->activeEnemies.push_back(std::move(enemy));
 					++this->spawnedEnemyCount;
@@ -276,9 +268,9 @@ namespace Game
 
 	void GameWorld::updateTowers(float currentTime)
 	{
-		for (auto &tower : this->towers)
+		for (size_t i = 0; i < this->towers.size(); ++i)
 		{
-			auto projectil = tower.findTargetAndTryFireAt(this->activeEnemies, currentTime);
+			auto projectil = towers[i].findTargetAndTryFireAt(this->activeEnemies, currentTime);
 
 			if (projectil)
 			{
@@ -288,39 +280,6 @@ namespace Game
 					audioSystem->playSoundWithVolume(SoundType::TowerFire, volumeVariation);
 				}
 				this->activeProjectils.push_back(std::move(projectil));
-			}
-		}
-	}
-	void GameWorld::replaceSpacesWithTowers()
-	{
-		for (int row = 0; row < map.getHeight(); ++row)
-		{
-			for (int col = 0; col < map.getWidth(); ++col)
-			{
-				Tile &tile = map(row, col);
-				if (tile.object.getType() == ObjectType::Space)
-				{
-					Projectil towerProjectil(50, 2.0f);
-					Tower tower(5.0f, std::move(towerProjectil), {0, 0, 255, 255});
-					tower.setPosition(col, row);
-
-					auto towerAnimation = std::make_unique<Animation>("assets/sprites/magic-tower.png", renderer,
-																	  400, 467, 4, 3);
-					if (towerAnimation->isValid())
-					{
-						towerAnimation->setFrameTime(0.2f);
-						towerAnimation->setScale(0.2f, 0.2f);
-						towerAnimation->setPosition(col, row);
-
-						towerAnimation->setFrame(0, 0);
-						towerAnimation->pause();
-
-						tower.setAnimation(std::move(towerAnimation));
-						tower.setState(TowerState::Idle);
-					}
-
-					towers.push_back(std::move(tower));
-				}
 			}
 		}
 	}
@@ -392,7 +351,7 @@ namespace Game
 	{
 		EnemyType basicEnemy;
 		basicEnemy.life = 100;
-		basicEnemy.damage = 3; // Dano alterado para 3
+		basicEnemy.damage = 3;
 		basicEnemy.speed = 1.0f;
 		basicEnemy.spell = "basic";
 		basicEnemy.spriteAsset = "assets/sprites/base-enemy.png";
@@ -413,7 +372,7 @@ namespace Game
 
 		EnemyType fastEnemy;
 		fastEnemy.life = 60;
-		fastEnemy.damage = 5; // Dano alterado para 5
+		fastEnemy.damage = 5;
 		fastEnemy.speed = 2.0f;
 		fastEnemy.spell = "speed";
 		fastEnemy.spriteAsset = "assets/sprites/fast-enemy.png";
@@ -434,7 +393,7 @@ namespace Game
 
 		EnemyType strongEnemy;
 		strongEnemy.life = 200;
-		strongEnemy.damage = 10; // Dano alterado para 10
+		strongEnemy.damage = 10;
 		strongEnemy.speed = 0.5f;
 		strongEnemy.spell = "tank";
 		strongEnemy.spriteAsset = "assets/sprites/giant-enemy.png";
@@ -522,10 +481,6 @@ namespace Game
 				towerSelected = false;
 				selectedTowerIndex = -1;
 			}
-			else
-			{
-				std::cout << "Dinheiro insuficiente! Precisa de " << cost << " de ouro, mas tem apenas " << gold << std::endl;
-			}
 		}
 	}
 
@@ -567,7 +522,7 @@ namespace Game
 			tower.setFireRate(1.5f);
 			towerName = "Canon Tower";
 
-			auto towerAnimation = std::make_unique<Animation>("assets/sprites/fire-tower.png", renderer,
+			auto towerAnimation = std::make_unique<Animation>("assets/sprites/thunder-tower.png", renderer,
 															  512, 599, 4, 3);
 			if (towerAnimation->isValid())
 			{
@@ -671,9 +626,6 @@ namespace Game
 	{
 		if (towerSelected && selectedTowerIndex >= 0 && selectedTowerIndex < static_cast<int>(towers.size()))
 		{
-			Vector towerPos = towers[selectedTowerIndex].getPosition();
-			std::cout << "Torre removida da posição (" << static_cast<int>(towerPos.y) << ", " << static_cast<int>(towerPos.x) << ")" << std::endl;
-
 			towers.erase(towers.begin() + selectedTowerIndex);
 
 			towerSelected = false;
@@ -739,9 +691,9 @@ namespace Game
 	{
 		switch (towerType)
 		{
-		case 1: // Magic Tower
+		case 1:
 			return 50;
-		case 2: // Canon Tower
+		case 2:
 			return 100;
 		default:
 			return 0;
@@ -750,7 +702,6 @@ namespace Game
 
 	void GameWorld::renderUI()
 	{
-		// Gold UI
 		SDL_Rect goldBackground = {10, 10, 150, 30};
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200);
 		SDL_RenderFillRect(renderer, &goldBackground);
@@ -761,12 +712,11 @@ namespace Game
 		renderSimpleText("GOLD:", 15, 18);
 		renderNumber(gold, 80, 18);
 
-		// Life UI - positioned next to gold
 		SDL_Rect lifeBackground = {170, 10, 150, 30};
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200);
 		SDL_RenderFillRect(renderer, &lifeBackground);
 
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red color for life
+		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 		SDL_RenderDrawRect(renderer, &lifeBackground);
 
 		renderSimpleText("LIFE:", 175, 18);
@@ -825,6 +775,30 @@ namespace Game
 				SDL_Rect rects[4] = {
 					{charX, y, 2, 12}, {charX, y, 6, 2}, {charX, y + 6, 4, 2}, {charX, y + 10, 6, 2}};
 				SDL_RenderFillRects(renderer, rects, 4);
+			}
+			else if (c == 'T')
+			{
+				SDL_Rect rects[2] = {
+					{charX, y, 6, 2}, {charX + 2, y + 2, 2, 10}};
+				SDL_RenderFillRects(renderer, rects, 2);
+			}
+			else if (c == 'W')
+			{
+				SDL_Rect rects[3] = {
+					{charX, y, 2, 12}, {charX + 2, y + 8, 2, 4}, {charX + 4, y, 2, 12}};
+				SDL_RenderFillRects(renderer, rects, 3);
+			}
+			else if (c == 'R')
+			{
+				SDL_Rect rects[5] = {
+					{charX, y, 2, 12}, {charX, y, 4, 2}, {charX, y + 6, 4, 2}, {charX + 4, y + 2, 2, 4}, {charX + 2, y + 8, 4, 4}};
+				SDL_RenderFillRects(renderer, rects, 5);
+			}
+			else if (c == 'S')
+			{
+				SDL_Rect rects[5] = {
+					{charX, y, 6, 2}, {charX, y + 2, 2, 4}, {charX, y + 6, 6, 2}, {charX + 4, y + 8, 2, 2}, {charX, y + 10, 6, 2}};
+				SDL_RenderFillRects(renderer, rects, 5);
 			}
 			else if (c == ':')
 			{
@@ -917,7 +891,6 @@ namespace Game
 			playerLife = 0;
 		}
 
-		// Optional: play damage sound
 		if (audioSystem)
 		{
 			audioSystem->playSound(SoundType::GameOver);

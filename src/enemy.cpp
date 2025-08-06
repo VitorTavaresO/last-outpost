@@ -25,21 +25,11 @@ namespace Game
 	bool Enemy::loadAnimations(SDL_Renderer *renderer)
 	{
 		walkAnimation = std::make_unique<Animation>("assets/base-enemy.png", renderer, 307, 512, 5, 2);
-		if (!walkAnimation->isValid())
-		{
-			std::cerr << "Failed to load enemy walk animation" << std::endl;
-			return false;
-		}
 		walkAnimation->setFrameTime(0.2f);
 		walkAnimation->setFrameRange(0, 3);
 		walkAnimation->setScale(0.1f, 0.1f);
 
 		idleAnimation = std::make_unique<Animation>("assets/base-enemy.png", renderer, 307, 512, 5, 2);
-		if (!idleAnimation->isValid())
-		{
-			std::cerr << "Failed to load enemy idle animation" << std::endl;
-			return false;
-		}
 		idleAnimation->setFrameTime(0.5f);
 		idleAnimation->setFrameRange(0, 1);
 
@@ -54,21 +44,11 @@ namespace Game
 							   int idleFrameStart, int idleFrameEnd, float scale)
 	{
 		walkAnimation = std::make_unique<Animation>(spriteAsset, renderer, spriteWidth, spriteHeight, spriteCols, spriteRows);
-		if (!walkAnimation->isValid())
-		{
-			std::cerr << "Failed to load enemy walk animation from: " << spriteAsset << std::endl;
-			return false;
-		}
 		walkAnimation->setFrameTime(walkFrameTime);
 		walkAnimation->setFrameRange(walkFrameStart, walkFrameEnd);
 		walkAnimation->setScale(scale, scale);
 
 		idleAnimation = std::make_unique<Animation>(spriteAsset, renderer, spriteWidth, spriteHeight, spriteCols, spriteRows);
-		if (!idleAnimation->isValid())
-		{
-			std::cerr << "Failed to load enemy idle animation from: " << spriteAsset << std::endl;
-			return false;
-		}
 		idleAnimation->setFrameTime(idleFrameTime);
 		idleAnimation->setFrameRange(idleFrameStart, idleFrameEnd);
 		idleAnimation->setScale(scale, scale);
@@ -105,35 +85,39 @@ namespace Game
 
 	void Enemy::update(float deltaTime)
 	{
-		bool wasMoving = false;
-
-		if (this->path.empty() || this->currentStep >= this->path.size() - 1)
+		if (this->path.empty() || this->currentStep >= this->path.size())
 		{
 			setAnimationState(EnemyState::Idle);
 		}
-		else
+		else if (this->currentStep < this->path.size())
 		{
-			const auto currentPos = this->getPosition();
-			const auto nextPos = Point(this->path[this->currentStep + 1].x, this->path[this->currentStep + 1].y);
-			const auto direction = nextPos - currentPos;
-			const float distance = direction.length();
+			if (this->currentStep + 1 < this->path.size())
+			{
+				const auto currentPos = this->getPosition();
+				const auto nextPos = Point(this->path[this->currentStep + 1].x, this->path[this->currentStep + 1].y);
+				const auto direction = nextPos - currentPos;
+				const float distance = direction.length();
 
-			const float distanceTraveled = this->speed * deltaTime;
-			const auto newPos = currentPos + Mylib::Math::with_length(direction, distanceTraveled);
+				const float distanceTraveled = this->speed * deltaTime;
 
-			if (distanceTraveled >= distance)
+				if (distanceTraveled >= distance)
+				{
+					this->setPosition(nextPos);
+					this->currentStep++;
+				}
+				else
+				{
+					const auto newPos = currentPos + Mylib::Math::with_length(direction, distanceTraveled);
+					this->setPosition(newPos);
+				}
+
+				setAnimationState(EnemyState::Walking);
+			}
+			else
 			{
 				this->currentStep++;
-				if (this->currentStep >= this->path.size())
-				{
-					setAnimationState(EnemyState::Idle);
-					return;
-				}
+				setAnimationState(EnemyState::Idle);
 			}
-
-			this->setPosition(newPos);
-			wasMoving = true;
-			setAnimationState(EnemyState::Walking);
 		}
 
 		if (currentAnimation)
