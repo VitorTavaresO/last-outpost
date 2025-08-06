@@ -30,14 +30,17 @@ namespace Game
 		TowerState currentState;
 		float attackAnimationDuration;
 		float attackAnimationTimer;
+		SDL_Renderer *renderer;
 
 	public:
 		Tower(float range = 0.0f,
 			  Projectil projectil = Projectil(),
-			  SDL_Color color = {0, 0, 255, 255})
+			  SDL_Color color = {0, 0, 255, 255},
+			  SDL_Renderer *renderer = nullptr)
 			: range(range), lastFireTime(0), fireRate(1.0f),
 			  projectil(std::move(projectil)), currentState(TowerState::Idle),
-			  attackAnimationDuration(0.5f), attackAnimationTimer(0.0f)
+			  attackAnimationDuration(0.5f), attackAnimationTimer(0.0f),
+			  renderer(renderer)
 		{
 			this->setType(ObjectType::Tower);
 			this->setColor(color);
@@ -51,8 +54,9 @@ namespace Game
 			  lastFireTime(other.lastFireTime), fireRate(other.fireRate),
 			  projectil(std::move(other.projectil)), animation(std::move(other.animation)),
 			  currentState(other.currentState), attackAnimationDuration(other.attackAnimationDuration),
-			  attackAnimationTimer(other.attackAnimationTimer)
+			  attackAnimationTimer(other.attackAnimationTimer), renderer(other.renderer)
 		{
+			other.renderer = nullptr;
 		}
 		Tower &operator=(Tower &&other) noexcept
 		{
@@ -67,6 +71,8 @@ namespace Game
 				currentState = other.currentState;
 				attackAnimationDuration = other.attackAnimationDuration;
 				attackAnimationTimer = other.attackAnimationTimer;
+				renderer = other.renderer;
+				other.renderer = nullptr;
 			}
 			return *this;
 		}
@@ -96,6 +102,28 @@ namespace Game
 		const Projectil &getProjectil() const
 		{
 			return this->projectil;
+		}
+
+		// Method to configure projectile with sprite
+		void setProjectileSprite(const std::string &spritePath)
+		{
+			if (renderer)
+			{
+				projectil.loadSprite(renderer, spritePath);
+			}
+		}
+
+		void setProjectileAnimation(const std::string &spriteAsset,
+									int spriteWidth, int spriteHeight,
+									int spriteCols, int spriteRows,
+									float frameTime, int frameStart, int frameEnd,
+									float scale = 1.0f)
+		{
+			if (renderer)
+			{
+				projectil.loadAnimation(renderer, spriteAsset, spriteWidth, spriteHeight,
+										spriteCols, spriteRows, frameTime, frameStart, frameEnd, scale);
+			}
 		}
 
 		void setAnimation(std::unique_ptr<Animation> newAnimation)

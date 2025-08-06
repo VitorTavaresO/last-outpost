@@ -4,6 +4,8 @@
 #include <last-outpost/object.h>
 #include <last-outpost/graphics.h>
 #include <last-outpost/types.h>
+#include <last-outpost/sprite.h>
+#include <last-outpost/animation.h>
 #include <memory>
 
 namespace Game
@@ -18,6 +20,19 @@ namespace Game
 		Vector direction;
 		Vector targetPosition;
 		Enemy *targetEnemy;
+		std::unique_ptr<Sprite> projectileSprite;
+		std::unique_ptr<Animation> projectileAnimation;
+
+		std::string animationSpriteAsset;
+		int animationSpriteWidth = 0;
+		int animationSpriteHeight = 0;
+		int animationSpriteCols = 0;
+		int animationSpriteRows = 0;
+		float animationFrameTime = 0.0f;
+		int animationFrameStart = 0;
+		int animationFrameEnd = 0;
+		float animationScale = 1.0f;
+		bool hasAnimationConfig = false;
 
 	public:
 		Projectil(int damage = 0, float speed = 0.0f, Vector position = {0, 0}, Vector direction = {0, 0});
@@ -29,7 +44,18 @@ namespace Game
 		Projectil(Projectil &&other) noexcept
 			: Object(std::move(other)), damage(other.damage), speed(other.speed),
 			  direction(other.direction), targetPosition(other.targetPosition),
-			  targetEnemy(other.targetEnemy)
+			  targetEnemy(other.targetEnemy), projectileSprite(std::move(other.projectileSprite)),
+			  projectileAnimation(std::move(other.projectileAnimation)),
+			  animationSpriteAsset(std::move(other.animationSpriteAsset)),
+			  animationSpriteWidth(other.animationSpriteWidth),
+			  animationSpriteHeight(other.animationSpriteHeight),
+			  animationSpriteCols(other.animationSpriteCols),
+			  animationSpriteRows(other.animationSpriteRows),
+			  animationFrameTime(other.animationFrameTime),
+			  animationFrameStart(other.animationFrameStart),
+			  animationFrameEnd(other.animationFrameEnd),
+			  animationScale(other.animationScale),
+			  hasAnimationConfig(other.hasAnimationConfig)
 		{
 			other.targetEnemy = nullptr;
 		}
@@ -44,6 +70,18 @@ namespace Game
 				direction = other.direction;
 				targetPosition = other.targetPosition;
 				targetEnemy = other.targetEnemy;
+				projectileSprite = std::move(other.projectileSprite);
+				projectileAnimation = std::move(other.projectileAnimation);
+				animationSpriteAsset = std::move(other.animationSpriteAsset);
+				animationSpriteWidth = other.animationSpriteWidth;
+				animationSpriteHeight = other.animationSpriteHeight;
+				animationSpriteCols = other.animationSpriteCols;
+				animationSpriteRows = other.animationSpriteRows;
+				animationFrameTime = other.animationFrameTime;
+				animationFrameStart = other.animationFrameStart;
+				animationFrameEnd = other.animationFrameEnd;
+				animationScale = other.animationScale;
+				hasAnimationConfig = other.hasAnimationConfig;
 				other.targetEnemy = nullptr;
 			}
 			return *this;
@@ -99,6 +137,16 @@ namespace Game
 		Vector getTargetPosition() const;
 
 		Enemy *getTargetEnemy() const { return targetEnemy; }
+
+		bool loadSprite(SDL_Renderer *renderer, const std::string &spritePath = "assets/sprites/projectile.png");
+		bool loadAnimation(SDL_Renderer *renderer, const std::string &spriteAsset,
+						   int spriteWidth, int spriteHeight, int spriteCols, int spriteRows,
+						   float frameTime, int frameStart, int frameEnd, float scale = 1.0f);
+
+		bool hasAnimation() const { return projectileAnimation != nullptr; }
+		bool hasSprite() const { return projectileSprite != nullptr; }
+
+		void cloneVisualConfiguration(const Projectil &source, SDL_Renderer *renderer);
 
 		void update(float deltaTime) override;
 		void render(Graphics &graphics, float deltaTime) const override;

@@ -98,6 +98,12 @@ namespace Game
 				const auto direction = nextPos - currentPos;
 				const float distance = direction.length();
 
+				if (currentAnimation)
+				{
+					bool shouldFlipX = direction.x < 0;
+					currentAnimation->setFlipped(shouldFlipX, false);
+				}
+
 				const float distanceTraveled = this->speed * deltaTime;
 
 				if (distanceTraveled >= distance)

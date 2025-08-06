@@ -77,6 +77,8 @@ namespace Game
 		newProjectil->setColor(this->projectil.getColor());
 		newProjectil->setSize(this->projectil.getSize().x, this->projectil.getSize().y);
 
+		newProjectil->cloneVisualConfiguration(this->projectil, this->renderer);
+
 		newProjectil->setTargetEnemy(enemy);
 
 		setState(TowerState::Attacking);

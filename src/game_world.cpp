@@ -355,7 +355,7 @@ namespace Game
 		basicEnemy.speed = 1.0f;
 		basicEnemy.spell = "basic";
 		basicEnemy.spriteAsset = "assets/sprites/base-enemy.png";
-		basicEnemy.spriteWidth = 307;
+		basicEnemy.spriteWidth = 305;
 		basicEnemy.spriteHeight = 512;
 		basicEnemy.spriteCols = 5;
 		basicEnemy.spriteRows = 2;
@@ -376,8 +376,8 @@ namespace Game
 		fastEnemy.speed = 2.0f;
 		fastEnemy.spell = "speed";
 		fastEnemy.spriteAsset = "assets/sprites/fast-enemy.png";
-		fastEnemy.spriteWidth = 384;
-		fastEnemy.spriteHeight = 512;
+		fastEnemy.spriteWidth = 336;
+		fastEnemy.spriteHeight = 466;
 		fastEnemy.spriteCols = 4;
 		fastEnemy.spriteRows = 2;
 		fastEnemy.walkFrameTime = 0.1f;
@@ -495,7 +495,7 @@ namespace Game
 		case 1:
 		{
 			Projectil magicProjectil(50, 3.0f);
-			tower = Tower(5.0f, std::move(magicProjectil), {0, 0, 255, 255});
+			tower = Tower(5.0f, std::move(magicProjectil), {0, 0, 255, 255}, renderer);
 			tower.setFireRate(1.0f);
 			towerName = "Magic Tower";
 
@@ -512,13 +512,20 @@ namespace Game
 				tower.setAnimation(std::move(towerAnimation));
 				tower.setState(TowerState::Idle);
 			}
+
+			tower.setProjectileAnimation("assets/sprites/projectile.png",
+										 256, 256,
+										 4, 1,
+										 0.1f,
+										 0, 3,
+										 0.1f);
 		}
 		break;
 
 		case 2:
 		{
 			Projectil canonProjectil(80, 2.0f);
-			tower = Tower(4.0f, std::move(canonProjectil), {255, 0, 0, 255});
+			tower = Tower(4.0f, std::move(canonProjectil), {255, 0, 0, 255}, renderer);
 			tower.setFireRate(1.5f);
 			towerName = "Canon Tower";
 
@@ -535,6 +542,38 @@ namespace Game
 				tower.setAnimation(std::move(towerAnimation));
 				tower.setState(TowerState::Idle);
 			}
+
+			tower.setProjectileAnimation("assets/sprites/projectile.png",
+										 64, 64,
+										 4, 2,
+										 0.15f,
+										 4, 7,
+										 0.7f);
+		}
+		break;
+
+		case 3:
+		{
+			Projectil fireProjectil(60, 2.5f);
+			tower = Tower(3.5f, std::move(fireProjectil), {255, 165, 0, 255}, renderer);
+			tower.setFireRate(2.0f);
+			towerName = "Fire Tower";
+
+			auto towerAnimation = std::make_unique<Animation>("assets/sprites/fire-tower.png", renderer,
+															  400, 467, 4, 3);
+			if (towerAnimation->isValid())
+			{
+				towerAnimation->setFrameTime(0.2f);
+				towerAnimation->setScale(0.2f, 0.2f);
+				towerAnimation->setPosition(col, row);
+				towerAnimation->setFrame(0, 0);
+				towerAnimation->pause();
+
+				tower.setAnimation(std::move(towerAnimation));
+				tower.setState(TowerState::Idle);
+			}
+
+			tower.setProjectileSprite("assets/sprites/projectile.png");
 		}
 		break;
 

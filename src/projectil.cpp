@@ -5,7 +5,8 @@
 namespace Game
 {
 	Projectil::Projectil(int damage, float speed, Vector position, Vector direction)
-		: damage(damage), speed(speed), direction(direction), targetEnemy(nullptr)
+		: damage(damage), speed(speed), direction(direction), targetEnemy(nullptr),
+		  projectileSprite(std::make_unique<Sprite>()), projectileAnimation(nullptr)
 	{
 		this->setType(ObjectType::Projectil);
 		this->setPosition(position.x, position.y);
@@ -59,8 +60,80 @@ namespace Game
 		return this->targetPosition;
 	}
 
+	bool Projectil::loadSprite(SDL_Renderer *renderer, const std::string &spritePath)
+	{
+		if (!projectileSprite)
+		{
+			projectileSprite = std::make_unique<Sprite>();
+		}
+
+		bool success = projectileSprite->loadFromFile(spritePath, renderer);
+		if (success)
+		{
+			projectileSprite->setScale(0.05f, 0.05f);
+		}
+		return success;
+	}
+
+	bool Projectil::loadAnimation(SDL_Renderer *renderer, const std::string &spriteAsset,
+								  int spriteWidth, int spriteHeight, int spriteCols, int spriteRows,
+								  float frameTime, int frameStart, int frameEnd, float scale)
+	{
+		animationSpriteAsset = spriteAsset;
+		animationSpriteWidth = spriteWidth;
+		animationSpriteHeight = spriteHeight;
+		animationSpriteCols = spriteCols;
+		animationSpriteRows = spriteRows;
+		animationFrameTime = frameTime;
+		animationFrameStart = frameStart;
+		animationFrameEnd = frameEnd;
+		animationScale = scale;
+		hasAnimationConfig = true;
+
+		projectileAnimation = std::make_unique<Animation>(spriteAsset, renderer, spriteWidth, spriteHeight, spriteCols, spriteRows);
+		if (!projectileAnimation->isValid())
+		{
+			projectileAnimation.reset();
+			hasAnimationConfig = false;
+			return false;
+		}
+
+		projectileAnimation->setFrameTime(frameTime);
+		projectileAnimation->setFrameRange(frameStart, frameEnd);
+		projectileAnimation->setScale(scale, scale);
+		projectileAnimation->play(true);
+
+		projectileSprite.reset();
+
+		return true;
+	}
+
+	void Projectil::cloneVisualConfiguration(const Projectil &source, SDL_Renderer *renderer)
+	{
+		projectileSprite.reset();
+		projectileAnimation.reset();
+
+		if (source.hasAnimationConfig)
+		{
+			loadAnimation(renderer, source.animationSpriteAsset,
+						  source.animationSpriteWidth, source.animationSpriteHeight,
+						  source.animationSpriteCols, source.animationSpriteRows,
+						  source.animationFrameTime, source.animationFrameStart,
+						  source.animationFrameEnd, source.animationScale);
+		}
+		else if (source.hasSprite())
+		{
+			loadSprite(renderer, "assets/sprites/projectile.png");
+		}
+	}
+
 	void Projectil::update(float deltaTime)
 	{
+		if (projectileAnimation)
+		{
+			projectileAnimation->update(deltaTime);
+		}
+
 		if (this->targetEnemy)
 		{
 			this->updateTargetPosition();
@@ -85,7 +158,20 @@ namespace Game
 
 	void Projectil::render(Graphics &graphics, float deltaTime) const
 	{
-		graphics.drawRect(this->getPosition(), this->getSize(), this->getColor());
+		if (projectileAnimation)
+		{
+			projectileAnimation->setPosition(this->getPosition().x, this->getPosition().y);
+			projectileAnimation->render(graphics);
+		}
+		else if (projectileSprite)
+		{
+			projectileSprite->setPosition(this->getPosition());
+			projectileSprite->render(graphics);
+		}
+		else
+		{
+			graphics.drawRect(this->getPosition(), this->getSize(), this->getColor());
+		}
 	}
 
 	bool Projectil::hasReachedTarget() const
