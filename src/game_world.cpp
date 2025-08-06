@@ -26,7 +26,7 @@ namespace Game
 		  selectedCol(-1),
 		  towerSelected(false),
 		  selectedTowerIndex(-1),
-		  gold(100) // Jogador começa com 100 de ouro
+		  gold(100)
 	{
 		this->initializeEnemyTypes();
 		/*if (audioSystem)
@@ -106,7 +106,7 @@ namespace Game
 				}
 				else if (event.key.keysym.sym == SDLK_v)
 				{
-					sellTower(); // Vender torre por metade do preço
+					sellTower();
 				}
 				else if (event.key.keysym.sym == SDLK_ESCAPE)
 				{
@@ -549,12 +549,12 @@ namespace Game
 			tower.setFireRate(1.5f);
 			towerName = "Canon Tower";
 
-			auto towerAnimation = std::make_unique<Animation>("assets/sprites/canon-tower.png", renderer,
-															  384, 512, 4, 2);
+			auto towerAnimation = std::make_unique<Animation>("assets/sprites/fire-tower.png", renderer,
+															  512, 599, 4, 3);
 			if (towerAnimation->isValid())
 			{
-				towerAnimation->setFrameTime(0.3f);
-				towerAnimation->setScale(0.25f, 0.25f);
+				towerAnimation->setFrameTime(0.2f);
+				towerAnimation->setScale(0.2f, 0.2f);
 				towerAnimation->setPosition(col, row);
 				towerAnimation->setFrame(0, 0);
 				towerAnimation->pause();
@@ -605,21 +605,16 @@ namespace Game
 		int tileWidth = graphics.getTileWidth();
 		int tileHeight = graphics.getTileHeight();
 
-		// Verificar clique em cada torre considerando sua área visual
 		for (size_t i = 0; i < towers.size(); ++i)
 		{
 			Vector towerPos = towers[i].getPosition();
 
-			// Calcular posição em pixels da torre
 			int towerPixelX = static_cast<int>(towerPos.x * tileWidth);
 			int towerPixelY = static_cast<int>(towerPos.y * tileHeight);
 
-			// Expandir área de clique para cobrir a sprite da torre
-			// Considerando que as torres têm escala de 0.2f a 0.25f e sprites maiores que um tile
-			int expandedWidth = static_cast<int>(tileWidth * 1.5f); // 1.5x o tamanho do tile
+			int expandedWidth = static_cast<int>(tileWidth * 1.5f);
 			int expandedHeight = static_cast<int>(tileHeight * 1.5f);
 
-			// Verificar se o clique está dentro da área expandida da torre
 			if (mouseX >= towerPixelX - (expandedWidth - tileWidth) / 2 &&
 				mouseX <= towerPixelX + expandedWidth - (expandedWidth - tileWidth) / 2 &&
 				mouseY >= towerPixelY - (expandedHeight - tileHeight) / 2 &&
@@ -632,12 +627,10 @@ namespace Game
 				selectedRow = -1;
 				selectedCol = -1;
 
-				std::cout << "Torre selecionada na posição (" << static_cast<int>(towerPos.y) << ", " << static_cast<int>(towerPos.x) << ") - Pressione V para vender ou DELETE para remover" << std::endl;
-				return; // Sair após selecionar a primeira torre encontrada
+				return;
 			}
 		}
 
-		// Se não clicou em nenhuma torre, usar o método original baseado em tiles
 		int col = mouseX / tileWidth;
 		int row = mouseY / tileHeight;
 
@@ -652,8 +645,6 @@ namespace Game
 				tileSelected = false;
 				selectedRow = -1;
 				selectedCol = -1;
-
-				std::cout << "Torre selecionada na posição (" << row << ", " << col << ") - Pressione V para vender ou DELETE para remover" << std::endl;
 			}
 		}
 	}
@@ -670,10 +661,6 @@ namespace Game
 			towerSelected = false;
 			selectedTowerIndex = -1;
 		}
-		else
-		{
-			std::cout << "Nenhuma torre selecionada para deletar! Clique com o botão direito em uma torre primeiro." << std::endl;
-		}
 	}
 
 	void GameWorld::sellTower()
@@ -683,38 +670,27 @@ namespace Game
 			const Tower &tower = towers[selectedTowerIndex];
 			Vector towerPos = tower.getPosition();
 
-			// Determinar tipo da torre baseado no dano do projétil
-			int towerType = 1; // Padrão: Magic Tower
+			int towerType = 1;
 			int projectilDamage = tower.getProjectil().getDamage();
 
-			if (projectilDamage == 80) // Canon Tower tem 80 de dano
+			if (projectilDamage == 80)
 			{
 				towerType = 2;
 			}
-			else if (projectilDamage == 50) // Magic Tower tem 50 de dano
+			else if (projectilDamage == 50)
 			{
 				towerType = 1;
 			}
 
-			// Calcular valor de venda (metade do preço original)
 			int originalCost = getTowerCost(towerType);
 			int sellValue = originalCost / 2;
 
-			// Adicionar ouro ao jogador
 			addGold(sellValue);
 
-			std::cout << "Torre vendida da posição (" << static_cast<int>(towerPos.y) << ", " << static_cast<int>(towerPos.x) << ") por " << sellValue << " de ouro" << std::endl;
-
-			// Remover a torre
 			towers.erase(towers.begin() + selectedTowerIndex);
 
-			// Limpar seleção
 			towerSelected = false;
 			selectedTowerIndex = -1;
-		}
-		else
-		{
-			std::cout << "Nenhuma torre selecionada para vender! Clique com o botão direito em uma torre primeiro." << std::endl;
 		}
 	}
 
