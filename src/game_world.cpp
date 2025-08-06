@@ -26,7 +26,8 @@ namespace Game
 		  selectedCol(-1),
 		  towerSelected(false),
 		  selectedTowerIndex(-1),
-		  gold(100)
+		  gold(100),
+		  playerLife(100)
 	{
 		this->initializeEnemyTypes();
 		/*if (audioSystem)
@@ -156,9 +157,26 @@ namespace Game
 	}
 	void GameWorld::update(float deltaTime)
 	{
-		for (auto &enemy : this->activeEnemies)
+		// Update enemies and check if they reached the end
+		auto enemyIt = this->activeEnemies.begin();
+		while (enemyIt != this->activeEnemies.end())
 		{
-			enemy->update(deltaTime);
+			(*enemyIt)->update(deltaTime);
+
+			// Check if enemy reached the end of path
+			if ((*enemyIt)->getCurrentStep() >= (*enemyIt)->getPath().size() - 1)
+			{
+				// Enemy reached the end, cause damage to player
+				int damage = (*enemyIt)->getDamage();
+				this->takeDamage(damage);
+
+				// Remove the enemy
+				enemyIt = this->activeEnemies.erase(enemyIt);
+			}
+			else
+			{
+				++enemyIt;
+			}
 		}
 
 		for (auto it = this->activeProjectils.begin(); it != this->activeProjectils.end();)
@@ -374,7 +392,7 @@ namespace Game
 	{
 		EnemyType basicEnemy;
 		basicEnemy.life = 100;
-		basicEnemy.damage = 10;
+		basicEnemy.damage = 3; // Dano alterado para 3
 		basicEnemy.speed = 1.0f;
 		basicEnemy.spell = "basic";
 		basicEnemy.spriteAsset = "assets/sprites/base-enemy.png";
@@ -395,7 +413,7 @@ namespace Game
 
 		EnemyType fastEnemy;
 		fastEnemy.life = 60;
-		fastEnemy.damage = 8;
+		fastEnemy.damage = 5; // Dano alterado para 5
 		fastEnemy.speed = 2.0f;
 		fastEnemy.spell = "speed";
 		fastEnemy.spriteAsset = "assets/sprites/fast-enemy.png";
@@ -416,7 +434,7 @@ namespace Game
 
 		EnemyType strongEnemy;
 		strongEnemy.life = 200;
-		strongEnemy.damage = 20;
+		strongEnemy.damage = 10; // Dano alterado para 10
 		strongEnemy.speed = 0.5f;
 		strongEnemy.spell = "tank";
 		strongEnemy.spriteAsset = "assets/sprites/giant-enemy.png";
@@ -732,6 +750,7 @@ namespace Game
 
 	void GameWorld::renderUI()
 	{
+		// Gold UI
 		SDL_Rect goldBackground = {10, 10, 150, 30};
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200);
 		SDL_RenderFillRect(renderer, &goldBackground);
@@ -740,8 +759,18 @@ namespace Game
 		SDL_RenderDrawRect(renderer, &goldBackground);
 
 		renderSimpleText("GOLD:", 15, 18);
-
 		renderNumber(gold, 80, 18);
+
+		// Life UI - positioned next to gold
+		SDL_Rect lifeBackground = {170, 10, 150, 30};
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200);
+		SDL_RenderFillRect(renderer, &lifeBackground);
+
+		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red color for life
+		SDL_RenderDrawRect(renderer, &lifeBackground);
+
+		renderSimpleText("LIFE:", 175, 18);
+		renderNumber(playerLife, 240, 18);
 	}
 
 	void GameWorld::renderSimpleText(const std::string &text, int x, int y)
@@ -777,6 +806,24 @@ namespace Game
 			{
 				SDL_Rect rects[4] = {
 					{charX, y, 2, 12}, {charX, y, 4, 2}, {charX, y + 10, 4, 2}, {charX + 4, y + 2, 2, 8}};
+				SDL_RenderFillRects(renderer, rects, 4);
+			}
+			else if (c == 'I')
+			{
+				SDL_Rect rects[3] = {
+					{charX, y, 6, 2}, {charX + 2, y + 2, 2, 8}, {charX, y + 10, 6, 2}};
+				SDL_RenderFillRects(renderer, rects, 3);
+			}
+			else if (c == 'F')
+			{
+				SDL_Rect rects[3] = {
+					{charX, y, 2, 12}, {charX, y, 6, 2}, {charX, y + 6, 4, 2}};
+				SDL_RenderFillRects(renderer, rects, 3);
+			}
+			else if (c == 'E')
+			{
+				SDL_Rect rects[4] = {
+					{charX, y, 2, 12}, {charX, y, 6, 2}, {charX, y + 6, 4, 2}, {charX, y + 10, 6, 2}};
 				SDL_RenderFillRects(renderer, rects, 4);
 			}
 			else if (c == ':')
@@ -859,6 +906,21 @@ namespace Game
 					{digitX, y, 6, 2}, {digitX, y + 2, 2, 4}, {digitX + 4, y + 2, 2, 8}, {digitX, y + 6, 6, 2}, {digitX, y + 10, 6, 2}};
 				SDL_RenderFillRects(renderer, rects, 5);
 			}
+		}
+	}
+
+	void GameWorld::takeDamage(int damage)
+	{
+		playerLife -= damage;
+		if (playerLife < 0)
+		{
+			playerLife = 0;
+		}
+
+		// Optional: play damage sound
+		if (audioSystem)
+		{
+			audioSystem->playSound(SoundType::GameOver);
 		}
 	}
 }

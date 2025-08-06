@@ -109,6 +109,10 @@ namespace Game
 		void setGoldReward(int reward) { goldReward = reward; }
 		int getGoldReward() const { return goldReward; }
 
+		// Path management
+		size_t getCurrentStep() const { return currentStep; }
+		const std::vector<PathPoint> &getPath() const { return path; }
+
 		// Animation methods
 		bool loadAnimations(SDL_Renderer *renderer);
 		bool loadAnimations(SDL_Renderer *renderer, const std::string &spriteAsset,

@@ -58,6 +58,7 @@ namespace Game
 		std::vector<EnemyType> enemyTypes;
 
 		int gold;
+		int playerLife;
 
 		bool tileSelected;
 		int selectedRow;
@@ -89,6 +90,13 @@ namespace Game
 		int getGold() const { return gold; }
 		void addGold(int amount) { gold += amount; }
 		bool spendGold(int amount);
+
+		// Player life management
+		void setPlayerLife(int life) { playerLife = life; }
+		int getPlayerLife() const { return playerLife; }
+		void takeDamage(int damage);
+		bool isGameOver() const { return playerLife <= 0; }
+
 		void renderUI();
 		int getTowerCost(int towerType) const;
 
