@@ -6,7 +6,7 @@ CPP = g++
 
 BIN = last-outpost.exe
 
-CPPFLAGS = -std=c++23 -Wall -g -I./include  -I../my-lib/include
+CPPFLAGS = -std=c++23 -Wall -g -I./include -I./include/imgui -I../my-lib/include
 LDFLAGS = -std=c++23
 
 # ----------------------------------
@@ -28,7 +28,7 @@ endif
 
 # ----------------------------------
 
-SRCS := $(wildcard src/*.cpp)
+SRCS := $(wildcard src/*.cpp) $(wildcard src/imgui/*.cpp)
 
 HEADERS := $(wildcard include/last-outpost/*.h)
 

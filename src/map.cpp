@@ -11,8 +11,8 @@ namespace Game
 			grassSprite = std::make_unique<Sprite>();
 			pathSprite = std::make_unique<Sprite>();
 
-			grassSprite->loadFromFile("assets/sprites/grass.jpg", renderer);
-			pathSprite->loadFromFile("assets/sprites/path.jpg", renderer);
+			grassSprite->loadFromFile("assets/sprites/environment/grass.jpg", renderer);
+			pathSprite->loadFromFile("assets/sprites/environment/path.jpg", renderer);
 		}
 		int idCounter = 0;
 

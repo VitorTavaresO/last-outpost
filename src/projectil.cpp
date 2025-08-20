@@ -123,7 +123,7 @@ namespace Game
 		}
 		else if (source.hasSprite())
 		{
-			loadSprite(renderer, "assets/sprites/projectile.png");
+			loadSprite(renderer, "assets/sprites/projectiles/projectile.png");
 		}
 	}
 

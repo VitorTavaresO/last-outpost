@@ -9,7 +9,7 @@
 namespace Game
 {
 	GameControl::GameControl()
-		: window(nullptr), renderer(nullptr), gameWorld(nullptr), audioSystem(nullptr),
+		: window(nullptr), renderer(nullptr), gameWorld(nullptr), audioSystem(nullptr), uiSystem(nullptr),
 		  currentState(GameState::MainMenu), currentLevelIndex(0)
 	{
 	}
@@ -24,7 +24,6 @@ namespace Game
 		if (!initializeSDL())
 			return false;
 
-		// Initialize audio system
 		audioSystem = std::make_unique<Audio>();
 		if (!audioSystem->initialize())
 		{
@@ -38,6 +37,16 @@ namespace Game
 		audioSystem->setMasterVolume(0.7f);
 		audioSystem->setSoundVolume(0.5f);
 		audioSystem->setMusicVolume(0.6f);
+
+		uiSystem = std::make_unique<UISystem>();
+		if (!uiSystem->initialize(window, renderer))
+		{
+			std::cerr << "Failed to initialize UI system!" << std::endl;
+			return false;
+		}
+
+		uiSystem->setOnTowerSelected([this](TowerType towerType)
+									 { std::cout << "Tower selected: " << static_cast<int>(towerType) << std::endl; });
 
 		createLevels();
 		return true;
@@ -72,6 +81,12 @@ namespace Game
 
 	void GameControl::cleanup()
 	{
+		if (uiSystem)
+		{
+			uiSystem->cleanup();
+			uiSystem.reset();
+		}
+
 		if (audioSystem)
 		{
 			audioSystem->cleanup();
@@ -179,7 +194,8 @@ namespace Game
 				renderer,
 				SCREEN_WIDTH, SCREEN_HEIGHT,
 				std::move(getCurrentLevel()),
-				audioSystem.get());
+				audioSystem.get(),
+				uiSystem.get());
 		}
 
 		bool gameCompleted = gameWorld->run();

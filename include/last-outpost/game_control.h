@@ -7,6 +7,7 @@
 #include <last-outpost/game_world.h>
 #include <last-outpost/level.h>
 #include <last-outpost/audio.h>
+#include <last-outpost/ui_system.h>
 
 namespace Game
 {
@@ -35,6 +36,7 @@ namespace Game
 		SDL_Renderer *renderer;
 		std::unique_ptr<GameWorld> gameWorld;
 		std::unique_ptr<Audio> audioSystem;
+		std::unique_ptr<UISystem> uiSystem;
 		GameState currentState;
 		std::vector<Level> levels;
 		int currentLevelIndex;

@@ -10,17 +10,21 @@
 
 namespace Game
 {
-	GameWorld::GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, Level &&level, Audio *audioSystem)
+	GameWorld::GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, Level &&level, Audio *audioSystem, UISystem *uiSystem)
 		: renderer(renderer),
 		  graphics(screenWidth, screenHeight, TILES_X, TILES_Y, renderer),
 		  map(TILES_X, TILES_Y, level.getMapData(), renderer),
 		  level(std::move(level)),
 		  audioSystem(audioSystem),
+		  uiSystem(uiSystem),
 		  running(true),
 		  lastSpawnTime(getTimeInSeconds()),
 		  lastUpdateTime(getTimeInSeconds()),
 		  spawnedEnemyCount(0),
 		  enemyTypeIndex(0),
+		  screenWidth(screenWidth),
+		  screenHeight(screenHeight),
+		  gameAreaWidth(screenWidth * 4 / 5), // 4/5 of screen for game, 1/5 for UI
 		  tileSelected(false),
 		  selectedRow(-1),
 		  selectedCol(-1),
@@ -75,6 +79,12 @@ namespace Game
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
+			// Let UI handle events first
+			if (uiSystem)
+			{
+				uiSystem->handleEvent(event);
+			}
+
 			if (event.type == SDL_QUIT)
 			{
 				this->running = false;
@@ -84,11 +94,19 @@ namespace Game
 			{
 				if (event.button.button == SDL_BUTTON_LEFT)
 				{
-					handleTileSelection(event.button.x, event.button.y);
+					// Only handle tile selection if click is in game area (not UI area)
+					if (event.button.x < gameAreaWidth)
+					{
+						handleTileSelection(event.button.x, event.button.y);
+					}
 				}
 				else if (event.button.button == SDL_BUTTON_RIGHT)
 				{
-					handleTowerSelection(event.button.x, event.button.y);
+					// Only handle tower selection if click is in game area
+					if (event.button.x < gameAreaWidth)
+					{
+						handleTowerSelection(event.button.x, event.button.y);
+					}
 				}
 			}
 			else if (event.type == SDL_KEYDOWN)
@@ -202,6 +220,10 @@ namespace Game
 		SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
 		SDL_RenderClear(this->renderer);
 
+		// Set viewport for game area (4/5 of screen)
+		SDL_Rect gameViewport = {0, 0, gameAreaWidth, screenHeight};
+		SDL_RenderSetViewport(this->renderer, &gameViewport);
+
 		this->map.render(this->graphics, deltaTime);
 
 		if (tileSelected && selectedRow >= 0 && selectedCol >= 0)
@@ -232,6 +254,17 @@ namespace Game
 		}
 
 		this->renderUI();
+
+		// Reset viewport for UI rendering
+		SDL_RenderSetViewport(this->renderer, nullptr);
+
+		// Render ImGui UI
+		if (uiSystem)
+		{
+			uiSystem->beginFrame();
+			uiSystem->renderTowerMenu(screenWidth, screenHeight);
+			uiSystem->endFrame();
+		}
 
 		SDL_RenderPresent(this->renderer);
 	}
@@ -354,9 +387,9 @@ namespace Game
 		basicEnemy.damage = 3;
 		basicEnemy.speed = 1.0f;
 		basicEnemy.spell = "basic";
-		basicEnemy.spriteAsset = "assets/sprites/base-enemy.png";
-		basicEnemy.spriteWidth = 305;
-		basicEnemy.spriteHeight = 512;
+		basicEnemy.spriteAsset = "assets/sprites/enemies/base-enemy.png";
+		basicEnemy.spriteWidth = 460;
+		basicEnemy.spriteHeight = 460;
 		basicEnemy.spriteCols = 5;
 		basicEnemy.spriteRows = 2;
 		basicEnemy.walkFrameTime = 0.2f;
@@ -375,9 +408,9 @@ namespace Game
 		fastEnemy.damage = 5;
 		fastEnemy.speed = 2.0f;
 		fastEnemy.spell = "speed";
-		fastEnemy.spriteAsset = "assets/sprites/fast-enemy.png";
-		fastEnemy.spriteWidth = 336;
-		fastEnemy.spriteHeight = 466;
+		fastEnemy.spriteAsset = "assets/sprites/enemies/fast-enemy.png";
+		fastEnemy.spriteWidth = 580;
+		fastEnemy.spriteHeight = 580;
 		fastEnemy.spriteCols = 4;
 		fastEnemy.spriteRows = 2;
 		fastEnemy.walkFrameTime = 0.1f;
@@ -396,9 +429,9 @@ namespace Game
 		strongEnemy.damage = 10;
 		strongEnemy.speed = 0.5f;
 		strongEnemy.spell = "tank";
-		strongEnemy.spriteAsset = "assets/sprites/giant-enemy.png";
-		strongEnemy.spriteWidth = 320;
-		strongEnemy.spriteHeight = 512;
+		strongEnemy.spriteAsset = "assets/sprites/enemies/giant-enemy.png";
+		strongEnemy.spriteWidth = 530;
+		strongEnemy.spriteHeight = 530;
 		strongEnemy.spriteCols = 5;
 		strongEnemy.spriteRows = 2;
 		strongEnemy.walkFrameTime = 0.4f;
@@ -461,6 +494,14 @@ namespace Game
 
 				towerSelected = false;
 				selectedTowerIndex = -1;
+
+				if (uiSystem && uiSystem->isTowerSelected())
+				{
+					TowerType selectedTowerType = uiSystem->getSelectedTower();
+					int towerTypeInt = static_cast<int>(selectedTowerType) + 1;
+					handleTowerPlacement(towerTypeInt);
+					uiSystem->clearTowerSelection();
+				}
 			}
 		}
 	}
@@ -499,7 +540,7 @@ namespace Game
 			tower.setFireRate(1.0f);
 			towerName = "Magic Tower";
 
-			auto towerAnimation = std::make_unique<Animation>("assets/sprites/magic-tower.png", renderer,
+			auto towerAnimation = std::make_unique<Animation>("assets/sprites/towers/magic-tower.png", renderer,
 															  400, 467, 4, 3);
 			if (towerAnimation->isValid())
 			{
@@ -513,7 +554,7 @@ namespace Game
 				tower.setState(TowerState::Idle);
 			}
 
-			tower.setProjectileAnimation("assets/sprites/projectile.png",
+			tower.setProjectileAnimation("assets/sprites/projectiles/projectile.png",
 										 256, 256,
 										 4, 1,
 										 0.1f,
@@ -529,12 +570,12 @@ namespace Game
 			tower.setFireRate(1.5f);
 			towerName = "Canon Tower";
 
-			auto towerAnimation = std::make_unique<Animation>("assets/sprites/thunder-tower.png", renderer,
-															  512, 599, 4, 3);
+			auto towerAnimation = std::make_unique<Animation>("assets/sprites/towers/thunder-tower.png", renderer,
+															  360, 360, 4, 3);
 			if (towerAnimation->isValid())
 			{
 				towerAnimation->setFrameTime(0.2f);
-				towerAnimation->setScale(0.2f, 0.2f);
+				towerAnimation->setScale(0.25f, 0.25f);
 				towerAnimation->setPosition(col, row);
 				towerAnimation->setFrame(0, 0);
 				towerAnimation->pause();
@@ -543,7 +584,7 @@ namespace Game
 				tower.setState(TowerState::Idle);
 			}
 
-			tower.setProjectileAnimation("assets/sprites/projectile.png",
+			tower.setProjectileAnimation("assets/sprites/projectiles/projectile.png",
 										 64, 64,
 										 4, 2,
 										 0.15f,
@@ -559,12 +600,12 @@ namespace Game
 			tower.setFireRate(2.0f);
 			towerName = "Fire Tower";
 
-			auto towerAnimation = std::make_unique<Animation>("assets/sprites/fire-tower.png", renderer,
-															  400, 467, 4, 3);
+			auto towerAnimation = std::make_unique<Animation>("assets/sprites/towers/fire-tower.png", renderer,
+															  360, 360, 4, 3);
 			if (towerAnimation->isValid())
 			{
 				towerAnimation->setFrameTime(0.2f);
-				towerAnimation->setScale(0.2f, 0.2f);
+				towerAnimation->setScale(0.25f, 0.25f);
 				towerAnimation->setPosition(col, row);
 				towerAnimation->setFrame(0, 0);
 				towerAnimation->pause();
@@ -573,7 +614,12 @@ namespace Game
 				tower.setState(TowerState::Idle);
 			}
 
-			tower.setProjectileSprite("assets/sprites/projectile.png");
+			tower.setProjectileAnimation("assets/sprites/projectiles/fireball.png",
+										 256, 256,
+										 4, 2,
+										 0.15f,
+										 4, 7,
+										 0.3f);
 		}
 		break;
 

@@ -11,6 +11,7 @@
 #include <last-outpost/projectil.h>
 #include <last-outpost/level.h>
 #include <last-outpost/audio.h>
+#include <last-outpost/ui_system.h>
 
 namespace Game
 {
@@ -38,7 +39,7 @@ namespace Game
 	class GameWorld
 	{
 	public:
-		GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, Level &&level, Audio *audioSystem = nullptr);
+		GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, Level &&level, Audio *audioSystem = nullptr, UISystem *uiSystem = nullptr);
 		bool run();
 
 	private:
@@ -49,6 +50,7 @@ namespace Game
 		std::vector<std::unique_ptr<Projectil>> activeProjectils;
 		Level level;
 		Audio *audioSystem;
+		UISystem *uiSystem;
 		bool running;
 		float lastSpawnTime;
 		float lastUpdateTime;
@@ -56,6 +58,10 @@ namespace Game
 		size_t enemyTypeIndex;
 		std::vector<Tower> towers;
 		std::vector<EnemyType> enemyTypes;
+
+		int screenWidth;
+		int screenHeight;
+		int gameAreaWidth; // Width of the game area (excluding UI)
 
 		int gold;
 		int playerLife;
