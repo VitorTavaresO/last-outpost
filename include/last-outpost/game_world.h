@@ -61,7 +61,7 @@ namespace Game
 
 		int screenWidth;
 		int screenHeight;
-		int gameAreaWidth; // Width of the game area (excluding UI)
+		int gameAreaWidth;
 
 		int gold;
 		int playerLife;
@@ -97,7 +97,6 @@ namespace Game
 		void addGold(int amount) { gold += amount; }
 		bool spendGold(int amount);
 
-		// Player life management
 		void setPlayerLife(int life) { playerLife = life; }
 		int getPlayerLife() const { return playerLife; }
 		void takeDamage(int damage);

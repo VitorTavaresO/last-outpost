@@ -24,7 +24,7 @@ namespace Game
 		  enemyTypeIndex(0),
 		  screenWidth(screenWidth),
 		  screenHeight(screenHeight),
-		  gameAreaWidth(screenWidth * 4 / 5), // 4/5 of screen for game, 1/5 for UI
+		  gameAreaWidth(screenWidth * 4 / 5),
 		  tileSelected(false),
 		  selectedRow(-1),
 		  selectedCol(-1),
@@ -79,7 +79,6 @@ namespace Game
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
-			// Let UI handle events first
 			if (uiSystem)
 			{
 				uiSystem->handleEvent(event);
@@ -94,7 +93,6 @@ namespace Game
 			{
 				if (event.button.button == SDL_BUTTON_LEFT)
 				{
-					// Only handle tile selection if click is in game area (not UI area)
 					if (event.button.x < gameAreaWidth)
 					{
 						handleTileSelection(event.button.x, event.button.y);
@@ -102,7 +100,6 @@ namespace Game
 				}
 				else if (event.button.button == SDL_BUTTON_RIGHT)
 				{
-					// Only handle tower selection if click is in game area
 					if (event.button.x < gameAreaWidth)
 					{
 						handleTowerSelection(event.button.x, event.button.y);
@@ -220,7 +217,6 @@ namespace Game
 		SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
 		SDL_RenderClear(this->renderer);
 
-		// Set viewport for game area (4/5 of screen)
 		SDL_Rect gameViewport = {0, 0, gameAreaWidth, screenHeight};
 		SDL_RenderSetViewport(this->renderer, &gameViewport);
 
@@ -255,10 +251,8 @@ namespace Game
 
 		this->renderUI();
 
-		// Reset viewport for UI rendering
 		SDL_RenderSetViewport(this->renderer, nullptr);
 
-		// Render ImGui UI
 		if (uiSystem)
 		{
 			uiSystem->beginFrame();
@@ -284,11 +278,6 @@ namespace Game
 
 				if (enemy)
 				{
-					// if (audioSystem)
-					// {
-					// 	audioSystem->playSoundWithVolume(SoundType::EnemySpawn, 0.4f);
-					// }
-
 					this->activeEnemies.push_back(std::move(enemy));
 					++this->spawnedEnemyCount;
 					this->lastSpawnTime = currentTime;
@@ -527,7 +516,6 @@ namespace Game
 
 	void GameWorld::placeTower(int row, int col, int towerType)
 	{
-
 		Tower tower;
 		std::string towerName;
 
@@ -565,36 +553,6 @@ namespace Game
 
 		case 2:
 		{
-			Projectil canonProjectil(80, 2.0f);
-			tower = Tower(4.0f, std::move(canonProjectil), {255, 0, 0, 255}, renderer);
-			tower.setFireRate(1.5f);
-			towerName = "Canon Tower";
-
-			auto towerAnimation = std::make_unique<Animation>("assets/sprites/towers/thunder-tower.png", renderer,
-															  360, 360, 4, 3);
-			if (towerAnimation->isValid())
-			{
-				towerAnimation->setFrameTime(0.2f);
-				towerAnimation->setScale(0.25f, 0.25f);
-				towerAnimation->setPosition(col, row);
-				towerAnimation->setFrame(0, 0);
-				towerAnimation->pause();
-
-				tower.setAnimation(std::move(towerAnimation));
-				tower.setState(TowerState::Idle);
-			}
-
-			tower.setProjectileAnimation("assets/sprites/projectiles/projectile.png",
-										 64, 64,
-										 4, 2,
-										 0.15f,
-										 4, 7,
-										 0.7f);
-		}
-		break;
-
-		case 3:
-		{
 			Projectil fireProjectil(60, 2.5f);
 			tower = Tower(3.5f, std::move(fireProjectil), {255, 165, 0, 255}, renderer);
 			tower.setFireRate(2.0f);
@@ -620,6 +578,66 @@ namespace Game
 										 0.15f,
 										 4, 7,
 										 0.3f);
+		}
+		break;
+
+		case 3:
+		{
+			Projectil leafProjectil(30, 2.0f);
+			tower = Tower(4.0f, std::move(leafProjectil), {0, 255, 0, 255}, renderer);
+			tower.setFireRate(1.5f);
+			towerName = "Leaf Tower";
+
+			auto towerAnimation = std::make_unique<Animation>("assets/sprites/towers/leaf-tower.png", renderer,
+															  360, 360, 4, 3);
+			if (towerAnimation->isValid())
+			{
+				towerAnimation->setFrameTime(0.2f);
+				towerAnimation->setScale(0.25f, 0.25f);
+				towerAnimation->setPosition(col, row);
+				towerAnimation->setFrame(0, 0);
+				towerAnimation->pause();
+
+				tower.setAnimation(std::move(towerAnimation));
+				tower.setState(TowerState::Idle);
+			}
+
+			tower.setProjectileAnimation("assets/sprites/projectiles/projectile.png",
+										 256, 256,
+										 4, 1,
+										 0.1f,
+										 0, 3,
+										 0.2f);
+		}
+		break;
+
+		case 4:
+		{
+			Projectil thunderProjectil(40, 4.0f);
+			tower = Tower(6.0f, std::move(thunderProjectil), {255, 255, 0, 255}, renderer);
+			tower.setFireRate(3.0f);
+			towerName = "Thunder Tower";
+
+			auto towerAnimation = std::make_unique<Animation>("assets/sprites/towers/thunder-tower.png", renderer,
+															  360, 360, 4, 3);
+			if (towerAnimation->isValid())
+			{
+				towerAnimation->setFrameTime(0.2f);
+				towerAnimation->setScale(0.25f, 0.25f);
+				towerAnimation->setPosition(col, row);
+				towerAnimation->setFrame(0, 0);
+				towerAnimation->pause();
+
+				tower.setAnimation(std::move(towerAnimation));
+				tower.setState(TowerState::Idle);
+			}
+
+			tower.setProjectileAnimation("assets/sprites/projectiles/projectile.png",
+										 256, 256,
+										 4, 1,
+										 0.1f,
+										 0, 3,
+										 0.05f);
 		}
 		break;
 
@@ -728,13 +746,21 @@ namespace Game
 			int towerType = 1;
 			int projectilDamage = tower.getProjectil().getDamage();
 
-			if (projectilDamage == 80)
+			if (projectilDamage == 50)
+			{
+				towerType = 1;
+			}
+			else if (projectilDamage == 60)
 			{
 				towerType = 2;
 			}
-			else if (projectilDamage == 50)
+			else if (projectilDamage == 30)
 			{
-				towerType = 1;
+				towerType = 3;
+			}
+			else if (projectilDamage == 40)
+			{
+				towerType = 4; // Thunder Tower
 			}
 
 			int originalCost = getTowerCost(towerType);
@@ -776,10 +802,14 @@ namespace Game
 	{
 		switch (towerType)
 		{
-		case 1:
+		case 1: // Magic Tower
 			return 50;
-		case 2:
-			return 100;
+		case 2: // Fire Tower
+			return 75;
+		case 3: // Leaf Tower
+			return 60;
+		case 4: // Thunder Tower
+			return 80;
 		default:
 			return 0;
 		}

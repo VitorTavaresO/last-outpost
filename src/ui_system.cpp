@@ -6,16 +6,15 @@
 
 namespace Game
 {
-	const TowerInfo UISystem::towerInfos[5] = {
-		{TowerType::Canon, "Canon Tower", "Basic tower with good damage", 50, "assets/sprites/towers/canon-tower.png"},
-		{TowerType::Fire, "Fire Tower", "Shoots fireballs with area damage", 75, "assets/sprites/towers/fire-tower.png"},
-		{TowerType::Magic, "Magic Tower", "High damage with slow rate", 100, "assets/sprites/towers/magic-tower.png"},
+	const TowerInfo UISystem::towerInfos[4] = {
+		{TowerType::Magic, "Magic Tower", "High damage projectiles", 50, "assets/sprites/towers/magic-tower.png"},
+		{TowerType::Fire, "Fire Tower", "Area damage with fireballs", 75, "assets/sprites/towers/fire-tower.png"},
 		{TowerType::Leaf, "Leaf Tower", "Slows down enemies", 60, "assets/sprites/towers/leaf-tower.png"},
 		{TowerType::Thunder, "Thunder Tower", "Fast attack speed", 80, "assets/sprites/towers/thunder-tower.png"}};
 
 	UISystem::UISystem()
 		: window(nullptr), renderer(nullptr), initialized(false),
-		  selectedTower(TowerType::Canon), towerSelected(false)
+		  selectedTower(TowerType::Magic), towerSelected(false)
 	{
 	}
 
@@ -29,17 +28,14 @@ namespace Game
 		this->window = window;
 		this->renderer = renderer;
 
-		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGuiIO &io = ImGui::GetIO();
 		(void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
 
-		// Setup Platform/Renderer backends
 		if (!ImGui_ImplSDL2_InitForSDLRenderer(window, renderer))
 		{
 			std::cerr << "Failed to initialize ImGui SDL2 backend!" << std::endl;
@@ -72,7 +68,6 @@ namespace Game
 		if (!initialized)
 			return;
 
-		// Start the Dear ImGui frame
 		ImGui_ImplSDLRenderer2_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
@@ -83,7 +78,6 @@ namespace Game
 		if (!initialized)
 			return;
 
-		// Rendering
 		ImGui::Render();
 		ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
 	}
@@ -93,15 +87,12 @@ namespace Game
 		if (!initialized)
 			return;
 
-		// Calculate menu dimensions (1/5 of screen width)
 		float menuWidth = screenWidth / 5.0f;
 		float menuHeight = screenHeight;
 
-		// Set window position and size
 		ImGui::SetNextWindowPos(ImVec2(screenWidth - menuWidth, 0), ImGuiCond_Always);
 		ImGui::SetNextWindowSize(ImVec2(menuWidth, menuHeight), ImGuiCond_Always);
 
-		// Create the tower menu window
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoResize |
 									   ImGuiWindowFlags_NoMove |
 									   ImGuiWindowFlags_NoCollapse |
@@ -109,13 +100,11 @@ namespace Game
 
 		ImGui::Begin("Tower Menu", nullptr, windowFlags);
 
-		// Title
 		ImGui::Text("Tower Selection");
 		ImGui::Separator();
 		ImGui::Spacing();
 
-		// Tower buttons
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < 4; i++)
 		{
 			const TowerInfo &tower = towerInfos[i];
 			bool isSelected = (selectedTower == tower.type && towerSelected);
@@ -127,7 +116,6 @@ namespace Game
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.6f, 0.3f, 1.0f));
 			}
 
-			// Create button with tower name and cost
 			std::string buttonText = std::string(tower.name) + "\n$" + std::to_string(tower.cost);
 
 			if (ImGui::Button(buttonText.c_str(), ImVec2(menuWidth - 20, 60)))
@@ -146,7 +134,6 @@ namespace Game
 				ImGui::PopStyleColor(3);
 			}
 
-			// Show tooltip with description
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::BeginTooltip();
@@ -160,13 +147,11 @@ namespace Game
 		ImGui::Separator();
 		ImGui::Spacing();
 
-		// Clear selection button
 		if (ImGui::Button("Clear Selection", ImVec2(menuWidth - 20, 30)))
 		{
 			clearTowerSelection();
 		}
 
-		// Display current selection
 		ImGui::Spacing();
 		if (towerSelected)
 		{

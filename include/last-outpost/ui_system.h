@@ -9,13 +9,11 @@ namespace Game
 {
 	enum class TowerType
 	{
-		Canon,
-		Fire,
 		Magic,
+		Fire,
 		Leaf,
 		Thunder
 	};
-
 	struct TowerInfo
 	{
 		TowerType type;
@@ -40,7 +38,6 @@ namespace Game
 		void renderTowerMenu(int screenWidth, int screenHeight);
 		void handleEvent(const SDL_Event &event);
 
-		// Callbacks
 		void setOnTowerSelected(std::function<void(TowerType)> callback);
 		TowerType getSelectedTower() const { return selectedTower; }
 		bool isTowerSelected() const { return towerSelected; }
@@ -51,14 +48,11 @@ namespace Game
 		SDL_Renderer *renderer;
 		bool initialized;
 
-		// Tower selection
 		TowerType selectedTower;
 		bool towerSelected;
 		std::function<void(TowerType)> onTowerSelectedCallback;
 
-		// Tower information
-		static const TowerInfo towerInfos[5];
-
+		static const TowerInfo towerInfos[4];
 		void renderTowerButton(const TowerInfo &tower, bool isSelected);
 	};
 }
