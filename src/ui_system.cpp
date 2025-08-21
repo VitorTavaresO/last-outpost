@@ -109,10 +109,23 @@ namespace Game
 		ImGuiWindowFlags statsFlags = ImGuiWindowFlags_NoResize |
 									  ImGuiWindowFlags_NoMove |
 									  ImGuiWindowFlags_NoCollapse |
-									  ImGuiWindowFlags_NoTitleBar |
-									  ImGuiWindowFlags_NoBackground;
+									  ImGuiWindowFlags_NoTitleBar;
+
+		// Cor de fundo madeira forte
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.2f, 0.13f, 0.08f, 0.95f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.3f, 0.2f, 1.0f));
 
 		ImGui::Begin("Game Stats", nullptr, statsFlags);
+
+		// Fundo pergaminho para o conteúdo
+		ImGui::GetWindowDrawList()->AddRectFilled(
+			ImVec2(ImGui::GetWindowPos().x + 8, ImGui::GetWindowPos().y + 8),
+			ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowWidth() - 8, ImGui::GetWindowPos().y + ImGui::GetWindowHeight() - 8),
+			IM_COL32(235, 217, 178, 220),
+			4.0f);
+
+		ImGui::SetCursorPosY(20);
+		ImGui::SetCursorPosX(20);
 
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.3f, 1.0f));
 		ImGui::Text("GOLD: %d", gold);
@@ -125,6 +138,7 @@ namespace Game
 		ImGui::Text("LIFE: %d", playerLife);
 		ImGui::PopStyleColor();
 
+		ImGui::PopStyleColor(2);
 		ImGui::End();
 	}
 
