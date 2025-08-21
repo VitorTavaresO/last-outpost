@@ -188,7 +188,7 @@ namespace Game
 		{
 			if (towerSelected && selectedTowerIndex == static_cast<int>(i))
 			{
-				this->towers[i].renderWithOverlay(this->graphics, deltaTime, {255, 255, 0, 100});
+				this->towers[i].renderWithOverlay(this->graphics, deltaTime, {255, 0, 0, 180});
 			}
 			else
 			{
