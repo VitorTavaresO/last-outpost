@@ -207,7 +207,6 @@ namespace Game
 		{
 			uiSystem->beginFrame();
 
-			// Get selected tower info if any tower is selected
 			SelectedTowerInfo *selectedInfo = nullptr;
 			SelectedTowerInfo towerInfo;
 			if (towerSelected && selectedTowerIndex >= 0 && selectedTowerIndex < static_cast<int>(towers.size()))

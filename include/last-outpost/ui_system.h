@@ -80,6 +80,7 @@ namespace Game
 		void renderTowerSelectionMenu();
 		void renderSelectedTowerMenu(const SelectedTowerInfo &towerInfo);
 		void renderGameStats(int gold, int playerLife);
+		void setupWoodParchmentTheme();
 	};
 }
 

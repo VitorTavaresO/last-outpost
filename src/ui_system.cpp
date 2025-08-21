@@ -35,6 +35,7 @@ namespace Game
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
 		ImGui::StyleColorsDark();
+		setupWoodParchmentTheme();
 
 		if (!ImGui_ImplSDL2_InitForSDLRenderer(window, renderer))
 		{
@@ -113,14 +114,14 @@ namespace Game
 
 		ImGui::Begin("Game Stats", nullptr, statsFlags);
 
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.84f, 0.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.3f, 1.0f));
 		ImGui::Text("GOLD: %d", gold);
 		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(150);
 
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.3f, 0.2f, 1.0f));
 		ImGui::Text("LIFE: %d", playerLife);
 		ImGui::PopStyleColor();
 
@@ -164,9 +165,9 @@ namespace Game
 
 			if (isSelected)
 			{
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.4f, 0.7f, 0.4f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.5f, 0.8f, 0.5f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.6f, 0.3f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.5f, 0.2f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.6f, 0.3f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.6f, 0.4f, 0.15f, 1.0f));
 			}
 
 			std::string buttonText = std::string(tower.name) + "\n$" + std::to_string(tower.cost);
@@ -253,7 +254,7 @@ namespace Game
 
 		ImGui::Begin("Tower Info", nullptr, windowFlags);
 
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.6f, 0.2f, 1.0f));
 		ImGui::Text("SELECTED TOWER");
 		ImGui::PopStyleColor();
 		ImGui::Separator();
@@ -276,9 +277,9 @@ namespace Game
 		ImGui::Text("Actions:");
 		ImGui::Spacing();
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.3f, 0.3f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.1f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.3f, 0.2f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.4f, 0.3f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.2f, 0.15f, 1.0f));
 
 		std::string sellText = "Sell Tower\n$" + std::to_string(towerInfo.sellValue);
 		if (ImGui::Button(sellText.c_str(), ImVec2(menuWidth - 20, 50)))
@@ -292,9 +293,9 @@ namespace Game
 		ImGui::PopStyleColor(3);
 		ImGui::Spacing();
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.6f, 0.8f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.7f, 0.9f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.5f, 0.7f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.45f, 0.6f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.55f, 0.7f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.25f, 0.35f, 0.5f, 1.0f));
 
 		std::string upgradeText = "Upgrade Tower\n$" + std::to_string(towerInfo.upgradeValue);
 		if (ImGui::Button(upgradeText.c_str(), ImVec2(menuWidth - 20, 50)))
@@ -353,5 +354,89 @@ namespace Game
 	void UISystem::clearTowerSelection()
 	{
 		towerSelected = false;
+	}
+
+	void UISystem::setupWoodParchmentTheme()
+	{
+		ImGuiStyle &style = ImGui::GetStyle();
+		ImVec4 *colors = style.Colors;
+
+		// Cores base - tons de madeira e pergaminho
+		ImVec4 darkBrown = ImVec4(0.25f, 0.17f, 0.12f, 1.0f);	// Madeira escura
+		ImVec4 mediumBrown = ImVec4(0.4f, 0.3f, 0.2f, 1.0f);	// Madeira média
+		ImVec4 lightBrown = ImVec4(0.6f, 0.45f, 0.3f, 1.0f);	// Madeira clara
+		ImVec4 parchment = ImVec4(0.92f, 0.85f, 0.7f, 1.0f);	// Pergaminho
+		ImVec4 darkParchment = ImVec4(0.8f, 0.7f, 0.55f, 1.0f); // Pergaminho escuro
+		ImVec4 gold = ImVec4(0.9f, 0.7f, 0.3f, 1.0f);			// Dourado
+		ImVec4 darkGold = ImVec4(0.7f, 0.5f, 0.2f, 1.0f);		// Dourado escuro
+
+		// Configurações básicas
+		colors[ImGuiCol_Text] = parchment;
+		colors[ImGuiCol_TextDisabled] = darkParchment;
+		colors[ImGuiCol_WindowBg] = ImVec4(darkBrown.x, darkBrown.y, darkBrown.z, 0.95f);
+		colors[ImGuiCol_ChildBg] = ImVec4(mediumBrown.x, mediumBrown.y, mediumBrown.z, 0.8f);
+		colors[ImGuiCol_PopupBg] = ImVec4(darkBrown.x, darkBrown.y, darkBrown.z, 0.98f);
+		colors[ImGuiCol_Border] = lightBrown;
+		colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+		colors[ImGuiCol_FrameBg] = mediumBrown;
+		colors[ImGuiCol_FrameBgHovered] = lightBrown;
+		colors[ImGuiCol_FrameBgActive] = darkParchment;
+		colors[ImGuiCol_TitleBg] = darkBrown;
+		colors[ImGuiCol_TitleBgActive] = mediumBrown;
+		colors[ImGuiCol_TitleBgCollapsed] = ImVec4(darkBrown.x, darkBrown.y, darkBrown.z, 0.75f);
+		colors[ImGuiCol_MenuBarBg] = mediumBrown;
+		colors[ImGuiCol_ScrollbarBg] = ImVec4(darkBrown.x, darkBrown.y, darkBrown.z, 0.6f);
+		colors[ImGuiCol_ScrollbarGrab] = lightBrown;
+		colors[ImGuiCol_ScrollbarGrabHovered] = darkParchment;
+		colors[ImGuiCol_ScrollbarGrabActive] = parchment;
+		colors[ImGuiCol_CheckMark] = gold;
+		colors[ImGuiCol_SliderGrab] = lightBrown;
+		colors[ImGuiCol_SliderGrabActive] = darkParchment;
+		colors[ImGuiCol_Button] = lightBrown;
+		colors[ImGuiCol_ButtonHovered] = darkParchment;
+		colors[ImGuiCol_ButtonActive] = darkGold;
+		colors[ImGuiCol_Header] = mediumBrown;
+		colors[ImGuiCol_HeaderHovered] = lightBrown;
+		colors[ImGuiCol_HeaderActive] = darkParchment;
+		colors[ImGuiCol_Separator] = lightBrown;
+		colors[ImGuiCol_SeparatorHovered] = darkParchment;
+		colors[ImGuiCol_SeparatorActive] = gold;
+		colors[ImGuiCol_ResizeGrip] = lightBrown;
+		colors[ImGuiCol_ResizeGripHovered] = darkParchment;
+		colors[ImGuiCol_ResizeGripActive] = gold;
+		colors[ImGuiCol_Tab] = mediumBrown;
+		colors[ImGuiCol_TabHovered] = lightBrown;
+		colors[ImGuiCol_TabActive] = darkParchment;
+		colors[ImGuiCol_TabUnfocused] = darkBrown;
+		colors[ImGuiCol_TabUnfocusedActive] = mediumBrown;
+		colors[ImGuiCol_PlotLines] = gold;
+		colors[ImGuiCol_PlotLinesHovered] = parchment;
+		colors[ImGuiCol_PlotHistogram] = gold;
+		colors[ImGuiCol_PlotHistogramHovered] = parchment;
+		colors[ImGuiCol_TextSelectedBg] = ImVec4(darkParchment.x, darkParchment.y, darkParchment.z, 0.5f);
+		colors[ImGuiCol_DragDropTarget] = gold;
+		colors[ImGuiCol_NavHighlight] = gold;
+		colors[ImGuiCol_NavWindowingHighlight] = parchment;
+		colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.7f);
+		colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.6f);
+
+		// Ajustes de estilo
+		style.WindowRounding = 8.0f;
+		style.ChildRounding = 6.0f;
+		style.FrameRounding = 4.0f;
+		style.PopupRounding = 6.0f;
+		style.ScrollbarRounding = 8.0f;
+		style.GrabRounding = 4.0f;
+		style.TabRounding = 4.0f;
+		style.WindowBorderSize = 2.0f;
+		style.FrameBorderSize = 1.0f;
+		style.PopupBorderSize = 2.0f;
+		style.WindowPadding = ImVec2(12.0f, 12.0f);
+		style.FramePadding = ImVec2(8.0f, 4.0f);
+		style.ItemSpacing = ImVec2(8.0f, 6.0f);
+		style.ItemInnerSpacing = ImVec2(6.0f, 4.0f);
+		style.IndentSpacing = 20.0f;
+		style.ScrollbarSize = 16.0f;
+		style.GrabMinSize = 12.0f;
 	}
 }
