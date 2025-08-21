@@ -34,16 +34,24 @@ namespace Game
 		  playerLife(100)
 	{
 		this->initializeEnemyTypes();
-		/*if (audioSystem)
+
+		// Setup UI callbacks
+		if (uiSystem)
 		{
-			std::cout << "\n=== AUDIO SYSTEM CONTROLS ===" << std::endl;
-			std::cout << "M - Toggle music on/off" << std::endl;
-			std::cout << "S - Toggle sound effects on/off" << std::endl;
-			std::cout << "+ or = - Increase master volume" << std::endl;
-			std::cout << "- - Decrease master volume" << std::endl;
-			std::cout << "===========================\n"
-					  << std::endl;
-		}*/
+			uiSystem->setOnTowerSelected([this](TowerType towerType)
+										 {
+											 // Tower type selected for placement
+										 });
+
+			uiSystem->setOnTowerSell([this]()
+									 { sellSelectedTower(); });
+
+			uiSystem->setOnTowerUpgrade([this]()
+										{ upgradeSelectedTower(); });
+
+			uiSystem->setOnPlacementCancel([this]()
+										   { clearSelection(); });
+		}
 	}
 
 	bool GameWorld::run()
@@ -103,63 +111,6 @@ namespace Game
 					if (event.button.x < gameAreaWidth)
 					{
 						handleTowerSelection(event.button.x, event.button.y);
-					}
-				}
-			}
-			else if (event.type == SDL_KEYDOWN)
-			{
-				if (event.key.keysym.sym == SDLK_1)
-				{
-					handleTowerPlacement(1);
-				}
-				else if (event.key.keysym.sym == SDLK_2)
-				{
-					handleTowerPlacement(2);
-				}
-				else if (event.key.keysym.sym == SDLK_DELETE)
-				{
-					deleteTower();
-				}
-				else if (event.key.keysym.sym == SDLK_v)
-				{
-					sellTower();
-				}
-				else if (event.key.keysym.sym == SDLK_ESCAPE)
-				{
-					tileSelected = false;
-					selectedRow = -1;
-					selectedCol = -1;
-					towerSelected = false;
-					selectedTowerIndex = -1;
-				}
-				else if (event.key.keysym.sym == SDLK_m)
-				{
-					if (audioSystem)
-					{
-						audioSystem->setMusicEnabled(!audioSystem->isMusicEnabled());
-					}
-				}
-				else if (event.key.keysym.sym == SDLK_s)
-				{
-					if (audioSystem)
-					{
-						audioSystem->setSoundEnabled(!audioSystem->isSoundEnabled());
-					}
-				}
-				else if (event.key.keysym.sym == SDLK_PLUS || event.key.keysym.sym == SDLK_EQUALS)
-				{
-					if (audioSystem)
-					{
-						float currentVolume = audioSystem->getMasterVolume();
-						audioSystem->setMasterVolume(std::min(1.0f, currentVolume + 0.1f));
-					}
-				}
-				else if (event.key.keysym.sym == SDLK_MINUS)
-				{
-					if (audioSystem)
-					{
-						float currentVolume = audioSystem->getMasterVolume();
-						audioSystem->setMasterVolume(std::max(0.0f, currentVolume - 0.1f));
 					}
 				}
 			}
@@ -235,12 +186,13 @@ namespace Game
 
 		for (size_t i = 0; i < this->towers.size(); ++i)
 		{
-			this->towers[i].render(this->graphics, deltaTime);
-
 			if (towerSelected && selectedTowerIndex == static_cast<int>(i))
 			{
-				Vector towerPos = this->towers[i].getPosition();
-				graphics.drawRect(towerPos, {1, 1}, {255, 0, 0, 150});
+				this->towers[i].renderWithOverlay(this->graphics, deltaTime, {255, 255, 0, 100});
+			}
+			else
+			{
+				this->towers[i].render(this->graphics, deltaTime);
 			}
 		}
 
@@ -249,14 +201,22 @@ namespace Game
 			projectil->render(this->graphics, deltaTime);
 		}
 
-		this->renderUI();
-
 		SDL_RenderSetViewport(this->renderer, nullptr);
 
 		if (uiSystem)
 		{
 			uiSystem->beginFrame();
-			uiSystem->renderTowerMenu(screenWidth, screenHeight);
+
+			// Get selected tower info if any tower is selected
+			SelectedTowerInfo *selectedInfo = nullptr;
+			SelectedTowerInfo towerInfo;
+			if (towerSelected && selectedTowerIndex >= 0 && selectedTowerIndex < static_cast<int>(towers.size()))
+			{
+				towerInfo = getSelectedTowerInfo();
+				selectedInfo = &towerInfo;
+			}
+
+			uiSystem->renderUI(screenWidth, screenHeight, gold, playerLife, selectedInfo);
 			uiSystem->endFrame();
 		}
 
@@ -475,6 +435,21 @@ namespace Game
 
 		if (row >= 0 && row < map.getHeight() && col >= 0 && col < map.getWidth())
 		{
+			// Check if there's a tower at this position first
+			int towerIndex = getTowerAtPosition(row, col);
+			if (towerIndex >= 0)
+			{
+				// Select the tower
+				towerSelected = true;
+				selectedTowerIndex = towerIndex;
+
+				tileSelected = false;
+				selectedRow = -1;
+				selectedCol = -1;
+				return;
+			}
+
+			// If no tower and tile is valid for placement
 			if (isTileValidForTower(row, col))
 			{
 				tileSelected = true;
@@ -707,61 +682,27 @@ namespace Game
 			}
 		}
 
-		int col = mouseX / tileWidth;
-		int row = mouseY / tileHeight;
-
-		if (row >= 0 && row < map.getHeight() && col >= 0 && col < map.getWidth())
-		{
-			int towerIndex = getTowerAtPosition(row, col);
-			if (towerIndex >= 0)
-			{
-				towerSelected = true;
-				selectedTowerIndex = towerIndex;
-
-				tileSelected = false;
-				selectedRow = -1;
-				selectedCol = -1;
-			}
-		}
+		// If no tower was clicked, clear selection
+		clearSelection();
 	}
 
-	void GameWorld::deleteTower()
-	{
-		if (towerSelected && selectedTowerIndex >= 0 && selectedTowerIndex < static_cast<int>(towers.size()))
-		{
-			towers.erase(towers.begin() + selectedTowerIndex);
-
-			towerSelected = false;
-			selectedTowerIndex = -1;
-		}
-	}
-
-	void GameWorld::sellTower()
+	void GameWorld::sellSelectedTower()
 	{
 		if (towerSelected && selectedTowerIndex >= 0 && selectedTowerIndex < static_cast<int>(towers.size()))
 		{
 			const Tower &tower = towers[selectedTowerIndex];
-			Vector towerPos = tower.getPosition();
 
-			int towerType = 1;
 			int projectilDamage = tower.getProjectil().getDamage();
+			int towerType = 1;
 
 			if (projectilDamage == 50)
-			{
-				towerType = 1;
-			}
+				towerType = 1; // Magic Tower
 			else if (projectilDamage == 60)
-			{
-				towerType = 2;
-			}
+				towerType = 2; // Fire Tower
 			else if (projectilDamage == 30)
-			{
-				towerType = 3;
-			}
+				towerType = 3; // Leaf Tower
 			else if (projectilDamage == 40)
-			{
 				towerType = 4; // Thunder Tower
-			}
 
 			int originalCost = getTowerCost(towerType);
 			int sellValue = originalCost / 2;
@@ -770,9 +711,72 @@ namespace Game
 
 			towers.erase(towers.begin() + selectedTowerIndex);
 
-			towerSelected = false;
-			selectedTowerIndex = -1;
+			clearSelection();
+
+			if (audioSystem)
+			{
+				audioSystem->playSound(SoundType::TowerPlace); // Use same sound for sell
+			}
 		}
+	}
+
+	void GameWorld::upgradeSelectedTower()
+	{
+		if (towerSelected && selectedTowerIndex >= 0 && selectedTowerIndex < static_cast<int>(towers.size()))
+		{
+			// For now, just show that upgrade was attempted
+			// This can be expanded later with actual upgrade logic
+			std::cout << "Tower upgrade requested!" << std::endl;
+		}
+	}
+
+	void GameWorld::clearSelection()
+	{
+		tileSelected = false;
+		selectedRow = -1;
+		selectedCol = -1;
+		towerSelected = false;
+		selectedTowerIndex = -1;
+
+		if (uiSystem)
+		{
+			uiSystem->clearTowerSelection();
+		}
+	}
+
+	SelectedTowerInfo GameWorld::getSelectedTowerInfo() const
+	{
+		SelectedTowerInfo info;
+
+		if (towerSelected && selectedTowerIndex >= 0 && selectedTowerIndex < static_cast<int>(towers.size()))
+		{
+			const Tower &tower = towers[selectedTowerIndex];
+
+			info.index = selectedTowerIndex;
+			info.position = tower.getPosition();
+			info.damage = tower.getProjectil().getDamage();
+			info.range = tower.getRange();
+			info.fireRate = tower.getFireRate();
+
+			// Determine tower type based on damage (this is a simple way to identify type)
+			if (info.damage == 50)
+				info.type = TowerType::Magic;
+			else if (info.damage == 60)
+				info.type = TowerType::Fire;
+			else if (info.damage == 30)
+				info.type = TowerType::Leaf;
+			else if (info.damage == 40)
+				info.type = TowerType::Thunder;
+			else
+				info.type = TowerType::Magic; // Default
+
+			int towerTypeInt = static_cast<int>(info.type) + 1;
+			int originalCost = getTowerCost(towerTypeInt);
+			info.sellValue = originalCost / 2;
+			info.upgradeValue = originalCost; // Same cost as original for upgrade
+		}
+
+		return info;
 	}
 
 	int GameWorld::getTowerAtPosition(int row, int col) const
@@ -812,189 +816,6 @@ namespace Game
 			return 80;
 		default:
 			return 0;
-		}
-	}
-
-	void GameWorld::renderUI()
-	{
-		SDL_Rect goldBackground = {10, 10, 150, 30};
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200);
-		SDL_RenderFillRect(renderer, &goldBackground);
-
-		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
-		SDL_RenderDrawRect(renderer, &goldBackground);
-
-		renderSimpleText("GOLD:", 15, 18);
-		renderNumber(gold, 80, 18);
-
-		SDL_Rect lifeBackground = {170, 10, 150, 30};
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200);
-		SDL_RenderFillRect(renderer, &lifeBackground);
-
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-		SDL_RenderDrawRect(renderer, &lifeBackground);
-
-		renderSimpleText("LIFE:", 175, 18);
-		renderNumber(playerLife, 240, 18);
-	}
-
-	void GameWorld::renderSimpleText(const std::string &text, int x, int y)
-	{
-		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
-
-		int charWidth = 8;
-
-		for (size_t i = 0; i < text.length(); ++i)
-		{
-			char c = text[i];
-			int charX = x + (i * charWidth);
-
-			if (c == 'G')
-			{
-				SDL_Rect rects[5] = {
-					{charX, y, 6, 2}, {charX, y + 2, 2, 8}, {charX, y + 10, 6, 2}, {charX + 4, y + 6, 2, 4}, {charX + 3, y + 6, 3, 2}};
-				SDL_RenderFillRects(renderer, rects, 5);
-			}
-			else if (c == 'O')
-			{
-				SDL_Rect rects[4] = {
-					{charX, y, 6, 2}, {charX, y + 2, 2, 8}, {charX, y + 10, 6, 2}, {charX + 4, y + 2, 2, 8}};
-				SDL_RenderFillRects(renderer, rects, 4);
-			}
-			else if (c == 'L')
-			{
-				SDL_Rect rects[2] = {
-					{charX, y, 2, 12}, {charX, y + 10, 6, 2}};
-				SDL_RenderFillRects(renderer, rects, 2);
-			}
-			else if (c == 'D')
-			{
-				SDL_Rect rects[4] = {
-					{charX, y, 2, 12}, {charX, y, 4, 2}, {charX, y + 10, 4, 2}, {charX + 4, y + 2, 2, 8}};
-				SDL_RenderFillRects(renderer, rects, 4);
-			}
-			else if (c == 'I')
-			{
-				SDL_Rect rects[3] = {
-					{charX, y, 6, 2}, {charX + 2, y + 2, 2, 8}, {charX, y + 10, 6, 2}};
-				SDL_RenderFillRects(renderer, rects, 3);
-			}
-			else if (c == 'F')
-			{
-				SDL_Rect rects[3] = {
-					{charX, y, 2, 12}, {charX, y, 6, 2}, {charX, y + 6, 4, 2}};
-				SDL_RenderFillRects(renderer, rects, 3);
-			}
-			else if (c == 'E')
-			{
-				SDL_Rect rects[4] = {
-					{charX, y, 2, 12}, {charX, y, 6, 2}, {charX, y + 6, 4, 2}, {charX, y + 10, 6, 2}};
-				SDL_RenderFillRects(renderer, rects, 4);
-			}
-			else if (c == 'T')
-			{
-				SDL_Rect rects[2] = {
-					{charX, y, 6, 2}, {charX + 2, y + 2, 2, 10}};
-				SDL_RenderFillRects(renderer, rects, 2);
-			}
-			else if (c == 'W')
-			{
-				SDL_Rect rects[3] = {
-					{charX, y, 2, 12}, {charX + 2, y + 8, 2, 4}, {charX + 4, y, 2, 12}};
-				SDL_RenderFillRects(renderer, rects, 3);
-			}
-			else if (c == 'R')
-			{
-				SDL_Rect rects[5] = {
-					{charX, y, 2, 12}, {charX, y, 4, 2}, {charX, y + 6, 4, 2}, {charX + 4, y + 2, 2, 4}, {charX + 2, y + 8, 4, 4}};
-				SDL_RenderFillRects(renderer, rects, 5);
-			}
-			else if (c == 'S')
-			{
-				SDL_Rect rects[5] = {
-					{charX, y, 6, 2}, {charX, y + 2, 2, 4}, {charX, y + 6, 6, 2}, {charX + 4, y + 8, 2, 2}, {charX, y + 10, 6, 2}};
-				SDL_RenderFillRects(renderer, rects, 5);
-			}
-			else if (c == ':')
-			{
-				SDL_Rect rects[2] = {
-					{charX + 2, y + 3, 2, 2}, {charX + 2, y + 7, 2, 2}};
-				SDL_RenderFillRects(renderer, rects, 2);
-			}
-		}
-	}
-
-	void GameWorld::renderNumber(int number, int x, int y)
-	{
-		std::string numStr = std::to_string(number);
-		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
-		int digitWidth = 8;
-
-		for (size_t i = 0; i < numStr.length(); ++i)
-		{
-			char digit = numStr[i];
-			int digitX = x + (i * digitWidth);
-
-			if (digit == '0')
-			{
-				SDL_Rect rects[4] = {
-					{digitX, y, 6, 2}, {digitX, y + 2, 2, 8}, {digitX, y + 10, 6, 2}, {digitX + 4, y + 2, 2, 8}};
-				SDL_RenderFillRects(renderer, rects, 4);
-			}
-			else if (digit == '1')
-			{
-				SDL_Rect rects[1] = {{digitX + 2, y, 2, 12}};
-				SDL_RenderFillRects(renderer, rects, 1);
-			}
-			else if (digit == '2')
-			{
-				SDL_Rect rects[5] = {
-					{digitX, y, 6, 2}, {digitX + 4, y + 2, 2, 4}, {digitX, y + 6, 6, 2}, {digitX, y + 8, 2, 2}, {digitX, y + 10, 6, 2}};
-				SDL_RenderFillRects(renderer, rects, 5);
-			}
-			else if (digit == '3')
-			{
-				SDL_Rect rects[5] = {
-					{digitX, y, 6, 2}, {digitX + 4, y + 2, 2, 3}, {digitX + 2, y + 5, 4, 2}, {digitX + 4, y + 7, 2, 3}, {digitX, y + 10, 6, 2}};
-				SDL_RenderFillRects(renderer, rects, 5);
-			}
-			else if (digit == '4')
-			{
-				SDL_Rect rects[3] = {
-					{digitX, y, 2, 6}, {digitX + 4, y, 2, 12}, {digitX, y + 6, 6, 2}};
-				SDL_RenderFillRects(renderer, rects, 3);
-			}
-			else if (digit == '5')
-			{
-				SDL_Rect rects[5] = {
-					{digitX, y, 6, 2}, {digitX, y + 2, 2, 4}, {digitX, y + 6, 6, 2}, {digitX + 4, y + 8, 2, 2}, {digitX, y + 10, 6, 2}};
-				SDL_RenderFillRects(renderer, rects, 5);
-			}
-			else if (digit == '6')
-			{
-				SDL_Rect rects[5] = {
-					{digitX, y, 6, 2}, {digitX, y + 2, 2, 8}, {digitX, y + 6, 6, 2}, {digitX + 4, y + 8, 2, 2}, {digitX, y + 10, 6, 2}};
-				SDL_RenderFillRects(renderer, rects, 5);
-			}
-			else if (digit == '7')
-			{
-				SDL_Rect rects[2] = {
-					{digitX, y, 6, 2}, {digitX + 4, y + 2, 2, 10}};
-				SDL_RenderFillRects(renderer, rects, 2);
-			}
-			else if (digit == '8')
-			{
-				SDL_Rect rects[7] = {
-					{digitX, y, 6, 2}, {digitX, y + 2, 2, 3}, {digitX + 4, y + 2, 2, 3}, {digitX, y + 5, 6, 2}, {digitX, y + 7, 2, 3}, {digitX + 4, y + 7, 2, 3}, {digitX, y + 10, 6, 2}};
-				SDL_RenderFillRects(renderer, rects, 7);
-			}
-			else if (digit == '9')
-			{
-				SDL_Rect rects[5] = {
-					{digitX, y, 6, 2}, {digitX, y + 2, 2, 4}, {digitX + 4, y + 2, 2, 8}, {digitX, y + 6, 6, 2}, {digitX, y + 10, 6, 2}};
-				SDL_RenderFillRects(renderer, rects, 5);
-			}
 		}
 	}
 

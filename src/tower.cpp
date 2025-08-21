@@ -37,6 +37,21 @@ namespace Game
 		graphics.drawCircle(this->getPosition(), this->range, {163, 163, 163, 40});
 	}
 
+	void Tower::renderWithOverlay(Graphics &graphics, float deltaTime, const SDL_Color &overlayColor) const
+	{
+		if (this->animation)
+		{
+			this->animation->renderWithOverlay(graphics, overlayColor);
+		}
+		else
+		{
+			Object::render(graphics, deltaTime);
+			graphics.drawRect(this->getPosition(), {1, 1}, overlayColor);
+		}
+
+		graphics.drawCircle(this->getPosition(), this->range, {163, 163, 163, 40});
+	}
+
 	bool Tower::isWithinRange(const Vector &targetPosition) const
 	{
 		float distanceSquared = (this->getPosition() - targetPosition).length_squared();

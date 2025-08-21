@@ -89,9 +89,11 @@ namespace Game
 		bool isTileValidForTower(int row, int col) const;
 
 		void handleTowerSelection(int mouseX, int mouseY);
-		void deleteTower();
-		void sellTower();
+		void sellSelectedTower();
+		void upgradeSelectedTower();
+		void clearSelection();
 		int getTowerAtPosition(int row, int col) const;
+		SelectedTowerInfo getSelectedTowerInfo() const;
 
 		int getGold() const { return gold; }
 		void addGold(int amount) { gold += amount; }
@@ -102,11 +104,7 @@ namespace Game
 		void takeDamage(int damage);
 		bool isGameOver() const { return playerLife <= 0; }
 
-		void renderUI();
 		int getTowerCost(int towerType) const;
-
-		void renderSimpleText(const std::string &text, int x, int y);
-		void renderNumber(int number, int x, int y);
 	};
 }
 

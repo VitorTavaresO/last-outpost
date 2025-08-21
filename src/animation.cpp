@@ -1,5 +1,6 @@
 #include <last-outpost/animation.h>
 #include <iostream>
+#include <algorithm>
 
 namespace Game
 {
@@ -146,5 +147,26 @@ namespace Game
 	void Animation::render(Graphics &graphics) const
 	{
 		this->sprite->render(graphics);
+	}
+
+	void Animation::renderWithOverlay(Graphics &graphics, const SDL_Color &overlayColor) const
+	{
+		if (!this->sprite)
+			return;
+
+		SDL_Color originalColor = this->sprite->getColor();
+
+		this->sprite->render(graphics);
+
+		SDL_Color overlayTinted;
+		overlayTinted.r = static_cast<Uint8>(std::min(255, (originalColor.r + overlayColor.r) / 2));
+		overlayTinted.g = static_cast<Uint8>(std::min(255, (originalColor.g + overlayColor.g) / 2));
+		overlayTinted.b = static_cast<Uint8>(std::min(255, (originalColor.b + overlayColor.b) / 2));
+		overlayTinted.a = overlayColor.a;
+
+		this->sprite->setColor(overlayTinted);
+		this->sprite->render(graphics);
+
+		this->sprite->setColor(originalColor);
 	}
 }

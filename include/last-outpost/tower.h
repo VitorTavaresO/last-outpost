@@ -146,6 +146,7 @@ namespace Game
 
 		void update(float deltaTime) override;
 		void render(Graphics &graphics, float deltaTime) const override;
+		void renderWithOverlay(Graphics &graphics, float deltaTime, const SDL_Color &overlayColor) const;
 	};
 }
 

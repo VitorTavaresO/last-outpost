@@ -50,6 +50,7 @@ namespace Game
 
 		void update(float deltaTime);
 		void render(Graphics &graphics) const;
+		void renderWithOverlay(Graphics &graphics, const SDL_Color &overlayColor) const;
 
 		void setFrameTime(float time)
 		{
