@@ -6,7 +6,6 @@
 #include <my-lib/matrix.h>
 #include <functional>
 
-// Forward declaration para ImFont
 struct ImFont;
 
 namespace Game

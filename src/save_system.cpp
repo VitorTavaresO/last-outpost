@@ -1,25 +1,29 @@
-// Métodos adicionais para o sistema de saves
+#includ < last - float b if (gumelaFon if (avai for (s sele ImGui::SetCursorPosY(ImG if (!s available currentSaveName = saveName; s = sa return false; Manager->getAllSaves();
 
-#include <last-outpost/game_control.h>
+currentLevelIndex = 0;
+
+currentSaveName = saveName;->createSave(saveName, 0))::GetCursorPosY() + 20.0f);
+edSaveIndex = i;
+e_t i = 0;
+i < availableSaves.size(); i++)bleSaves.empty())arge)tonWidth = 300.0f;
+float buttonHeight = 60.0f;
+float buttonX = (500.0f - buttonWidth) * 0.5f;
+ost / game_control.h >
 #include <imgui/imgui.h>
 
-namespace Game
+	namespace Game
 {
 	void GameControl::renderCreateSaveMenu()
 	{
-		// Não é necessário recriar o componente aqui pois ele já está implementado
-		// na função renderMainMenu com a variável isNewGameMenuOpen
 	}
 
 	void GameControl::renderLoadSaveMenu()
 	{
-		// Parte do menu para carregar um jogo salvo
 		float buttonWidth = 300.0f;
 		float buttonHeight = 60.0f;
-		float buttonX = (500.0f - buttonWidth) * 0.5f; // 500.0f é a largura do menu
+		float buttonX = (500.0f - buttonWidth) * 0.5f;
 		ImVec2 buttonSize(buttonWidth, buttonHeight);
 
-		// Usar fonte grande para o título
 		if (gumelaFontLarge)
 		{
 			ImGui::PushFont(gumelaFontLarge);
@@ -33,7 +37,6 @@ namespace Game
 			ImGui::PopFont();
 		}
 
-		// Verificar se há saves disponíveis
 		if (availableSaves.empty())
 		{
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
@@ -42,16 +45,13 @@ namespace Game
 		}
 		else
 		{
-			// Listar os saves disponíveis
 			for (size_t i = 0; i < availableSaves.size(); i++)
 			{
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
 				ImGui::SetCursorPosX(buttonX);
 
-				// Criar um botão para cada save
 				if (ImGui::Button(availableSaves[i].name.c_str(), buttonSize))
 				{
-					// Carregar o save selecionado
 					selectedSaveIndex = i;
 					loadGame(availableSaves[i].name);
 					showLoadSaveMenu = false;
@@ -59,7 +59,6 @@ namespace Game
 			}
 		}
 
-		// Botão de voltar
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
 		ImGui::SetCursorPosX(buttonX);
 
@@ -84,23 +83,13 @@ namespace Game
 		if (saveName.empty())
 			return false;
 
-		// Criar um novo save
-		if (!saveManager->createSave(saveName, 0)) // 0 = índice do primeiro nível
-		{
-			std::cerr << "Failed to create save: " << saveName << std::endl;
-			return false;
-		}
-
-		// Recarregar a lista de saves disponíveis
+		saveManager->createSave(saveName, 0);
 		availableSaves = saveManager->getAllSaves();
 
-		// Configurar o nível inicial
 		currentLevelIndex = 0;
 
-		// Salvar o nome do save atual
 		currentSaveName = saveName;
 
-		// Iniciar o jogo
 		changeState(GameState::Playing);
 
 		return true;
@@ -111,24 +100,15 @@ namespace Game
 		SaveData saveData;
 		if (!saveManager->loadSave(saveName, saveData))
 		{
-			std::cerr << "Failed to load save: " << saveName << std::endl;
 			return false;
 		}
-
-		// Configurar o nível a partir do save
 		currentLevelIndex = saveData.levelIndex;
-
-		// Verificar se o índice do nível é válido
 		if (currentLevelIndex < 0 || currentLevelIndex >= static_cast<int>(levels.size()))
 		{
-			std::cerr << "Invalid level index in save: " << currentLevelIndex << std::endl;
-			currentLevelIndex = 0; // Fallback para o primeiro nível
+			currentLevelIndex = 0;
 		}
-
-		// Salvar o nome do save atual
 		currentSaveName = saveName;
 
-		// Iniciar o jogo
 		changeState(GameState::Playing);
 
 		return true;
@@ -136,14 +116,12 @@ namespace Game
 
 	bool GameControl::updateCurrentSaveProgress(int levelIndex)
 	{
-		// Verifica se temos um save atual
 		if (currentSaveName.empty())
 		{
 			std::cerr << "No current save to update progress" << std::endl;
 			return false;
 		}
 
-		// Atualiza o progresso no save atual
 		return saveManager->updateSaveProgress(currentSaveName, levelIndex);
 	}
 

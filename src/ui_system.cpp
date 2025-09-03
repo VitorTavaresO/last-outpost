@@ -117,7 +117,6 @@ namespace Game
 
 		ImGui::Begin("Game Stats", nullptr, statsFlags);
 
-		// Usar fonte customizada para o UI do jogo
 		if (customNormalFont)
 		{
 			ImGui::PushFont(customNormalFont);
@@ -178,7 +177,6 @@ namespace Game
 
 		ImGui::Begin("Tower Menu", nullptr, windowFlags);
 
-		// Usar fonte customizada para o menu de torres
 		if (customNormalFont)
 		{
 			ImGui::PushFont(customNormalFont);
@@ -255,7 +253,6 @@ namespace Game
 			ImGui::TextWrapped("Select a tower type and click on the map to place it");
 		}
 
-		// Encerrar fonte customizada
 		if (customNormalFont)
 		{
 			ImGui::PopFont();
@@ -290,7 +287,6 @@ namespace Game
 
 		ImGui::Begin("Tower Info", nullptr, windowFlags);
 
-		// Usar fonte customizada para o menu de torre selecionada
 		if (customNormalFont)
 		{
 			ImGui::PushFont(customNormalFont);
@@ -361,9 +357,9 @@ namespace Game
 				onPlacementCancelCallback();
 			}
 		}
+		a
 
-		// Encerrar fonte customizada
-		if (customNormalFont)
+			if (customNormalFont)
 		{
 			ImGui::PopFont();
 		}

@@ -10,8 +10,10 @@
 namespace Game
 {
 	GameControl::GameControl()
-		: window(nullptr), renderer(nullptr), gameWorld(nullptr), audioSystem(nullptr), uiSystem(nullptr),
-		  currentState(GameState::MainMenu), currentLevelIndex(0), menuBackgroundTexture(nullptr),
+		: window(nullptr), renderer(nullptr), gameW updateCurrentSaveProgress(currentLevelIndex);
+	(nullptr), audioSystem(nullptr), uiSystem(nullptr),
+		currentState(GameState::MainMenu), ImGui::ImD drawL ImGui::SetCurso ImGui::SetCursorPosX(availab ImGui::SetCur if (s ImGui::SetCursor renderLoadSaveMenu(); sY(ImGui::ImGui::PopStyleVar(); ImGui::PopStyleColor(4); CursorPosY() + 10.0f); len(saveNameBuffer) > 0) rPosX(buttonX); Saves = saveManager->getAllSaves(); ttonX);
+	osY(80.0f);>AddRectFilled(wList *drawList = ImGui::GetWindowDrawList();shStyleColor(ImGuiCol_WindowBg, darkBrown);urrentLevelIndex(0), menuBackgroundTexture(nullptr),
 		  gameTitleTexture(nullptr), screenWidth(1024), screenHeight(768),
 		  gumelaFont(nullptr), gumelaFontLarge(nullptr), gumelaFontTitle(nullptr),
 		  showCreateSaveMenu(false), isNewGameMenuOpen(false), showLoadSaveMenu(false),
@@ -27,15 +29,10 @@ namespace Game
 
 	bool GameControl::initialize()
 	{
-		if (!initializeSDL())
-			return false;
+		initializeSDL();
 
 		audioSystem = std::make_unique<Audio>();
-		if (!audioSystem->initialize())
-		{
-			std::cerr << "Failed to initialize audio system!" << std::endl;
-			return false;
-		}
+		audioSystem->initialize();
 
 		audioSystem->loadGameSounds();
 		audioSystem->loadGameMusic();
@@ -45,41 +42,17 @@ namespace Game
 		audioSystem->setMusicVolume(0.6f);
 
 		uiSystem = std::make_unique<UISystem>();
-		if (!uiSystem->initialize(window, renderer))
-		{
-			std::cerr << "Failed to initialize UI system!" << std::endl;
-			return false;
-		}
+		uiSystem->initialize(window, renderer);
 
-		uiSystem->setOnTowerSelected([this](TowerType towerType)
-									 { std::cout << "Tower selected: " << static_cast<int>(towerType) << std::endl; });
+		uiSystem->setOnTowerSelected([this](TowerType towerType) {});
 
-		if (!loadMenuAssets())
-		{
-			std::cerr << "Failed to load menu assets!" << std::endl;
-			return false;
-		}
+		loadMenuAssets();
+		loadCustomFonts();
 
-		if (!loadCustomFonts())
-		{
-			std::cerr << "Failed to load custom fonts!" << std::endl;
-			return false;
-		}
-
-		// Definir fontes customizadas no UISystem
 		uiSystem->setCustomFonts(gumelaFont, gumelaFontLarge, gumelaFontTitle);
 
-		// Inicializar o sistema de saves
-		if (!saveManager->initialize())
-		{
-			std::cerr << "Falha ao inicializar o sistema de saves!" << std::endl;
-			// Não retornar false aqui, pois o sistema ainda pode funcionar sem saves
-		}
-		else
-		{
-			// Carregar os saves disponíveis
-			availableSaves = saveManager->getAllSaves();
-		}
+		saveManager->initialize();
+		availableSaves = saveManager->getAllSaves();
 
 		createLevels();
 		return true;
@@ -157,23 +130,9 @@ namespace Game
 
 	bool GameControl::initializeSDL()
 	{
-		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
-		{
-			std::cerr << "Error on start SDL: " << SDL_GetError() << std::endl;
-			return false;
-		}
-
-		if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
-		{
-			std::cerr << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
-			return false;
-		}
-
-		if (Mix_Init(MIX_INIT_MP3) == 0)
-		{
-			std::cerr << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << std::endl;
-			return false;
-		}
+		SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+		IMG_Init(IMG_INIT_PNG);
+		Mix_Init(MIX_INIT_MP3);
 
 		window = SDL_CreateWindow("Last Outpost",
 								  SDL_WINDOWPOS_UNDEFINED,
@@ -181,22 +140,7 @@ namespace Game
 								  SCREEN_WIDTH, SCREEN_HEIGHT,
 								  SDL_WINDOW_SHOWN);
 
-		if (window == nullptr)
-		{
-			std::cerr << "Error on Window Creation " << SDL_GetError() << std::endl;
-			SDL_Quit();
-			return false;
-		}
-
 		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-		if (renderer == nullptr)
-		{
-			std::cerr << "Error on render creation: " << SDL_GetError() << std::endl;
-			SDL_DestroyWindow(window);
-			SDL_Quit();
-			return false;
-		}
-
 		return true;
 	}
 
@@ -227,12 +171,10 @@ namespace Game
 	{
 		if (audioSystem)
 		{
-			// Se não houver música tocando ou a música atual não for a música do menu,
-			// inicie a música do menu
 			if (!audioSystem->isMusicPlaying() ||
 				audioSystem->getCurrentMusicType() != MusicType::MainMenu)
 			{
-				audioSystem->stopMusic(); // Garante que a música anterior seja interrompida
+				audioSystem->stopMusic();
 				audioSystem->playMusic(MusicType::MainMenu);
 			}
 		}
@@ -251,19 +193,14 @@ namespace Game
 				audioSystem->playMusic(MusicType::GamePlay);
 			}
 
-			std::cout << "Criando GameWorld com nível inicial: " << currentLevelIndex << std::endl;
-			std::cout << "Nome do save atual: " << currentSaveName << std::endl;
-
-			// Não podemos copiar os níveis devido à restrição de Enemy, então vamos usar diretamente
 			gameWorld = std::make_unique<GameWorld>(
 				renderer,
 				SCREEN_WIDTH, SCREEN_HEIGHT,
 				std::move(levels),
-				currentLevelIndex, // Usar o nível atual do save
+				currentLevelIndex,
 				audioSystem.get(),
 				uiSystem.get());
 
-			// Recriar os níveis depois que eles são movidos para o GameWorld
 			createLevels();
 		}
 
@@ -280,12 +217,10 @@ namespace Game
 			{
 				audioSystem->fadeOutMusic(1000);
 
-				// Certifique-se de parar completamente a música atual antes de reproduzir a música do menu
 				audioSystem->stopMusic();
 				audioSystem->playMusic(MusicType::MainMenu);
 			}
 
-			// Resetar estado do menu para o estado padrão
 			isNewGameMenuOpen = false;
 			changeState(GameState::MainMenu);
 			break;
@@ -293,19 +228,7 @@ namespace Game
 			gameWorld.reset();
 			if (++currentLevelIndex < static_cast<int>(levels.size()))
 			{
-				std::cout << "Level completado! Avançando para nivel " << currentLevelIndex << std::endl;
-				std::cout << "Nome do save atual: " << currentSaveName << std::endl;
-
-				// Atualizar o progresso do save atual com o novo nível
-				bool updated = updateCurrentSaveProgress(currentLevelIndex);
-				if (updated)
-				{
-					std::cout << "Save atualizado com sucesso!" << std::endl;
-				}
-				else
-				{
-					std::cerr << "ERRO AO ATUALIZAR SAVE!" << std::endl;
-				}
+				updateCurrentSaveProgress(currentLevelIndex);
 
 				changeState(GameState::LevelComplete);
 			}
@@ -338,10 +261,8 @@ namespace Game
 
 	void GameControl::handleLevelComplete()
 	{
-		// Atualizar o progresso do save atual com o novo nível
 		updateCurrentSaveProgress(currentLevelIndex);
 
-		// Continuar para o próximo nível
 		changeState(GameState::Playing);
 	}
 
@@ -360,25 +281,14 @@ namespace Game
 		return levels[currentLevelIndex];
 	}
 
-	bool GameControl::loadMenuAssets()
+	void GameControl::loadMenuAssets()
 	{
 		SDL_Surface *menuSurface = IMG_Load("assets/Menu.png");
-		if (!menuSurface)
+		if (menuSurface)
 		{
-			std::cerr << "Failed to load menu background: " << IMG_GetError() << std::endl;
-			return false;
+			menuBackgroundTexture = SDL_CreateTextureFromSurface(renderer, menuSurface);
+			SDL_FreeSurface(menuSurface);
 		}
-
-		menuBackgroundTexture = SDL_CreateTextureFromSurface(renderer, menuSurface);
-		SDL_FreeSurface(menuSurface);
-
-		if (!menuBackgroundTexture)
-		{
-			std::cerr << "Failed to create menu background texture: " << SDL_GetError() << std::endl;
-			return false;
-		}
-
-		return true;
 	}
 
 	void GameControl::handleMainMenuEvents()
@@ -445,7 +355,6 @@ namespace Game
 		{
 			ImGui::PushStyleColor(ImGuiCol_Text, titleRed);
 
-			// Usar fonte customizada para o título
 			if (gumelaFontTitle)
 			{
 				ImGui::PushFont(gumelaFontTitle);
@@ -476,7 +385,6 @@ namespace Game
 									   ImGuiWindowFlags_NoTitleBar |
 									   ImGuiWindowFlags_NoScrollbar;
 
-		// Estilo da janela
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, darkBrown);
 		ImGui::PushStyleColor(ImGuiCol_Border, lightBrown);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
@@ -484,22 +392,18 @@ namespace Game
 
 		if (ImGui::Begin("Main Menu", nullptr, windowFlags))
 		{
-			// Fundo decorativo
 			ImDrawList *drawList = ImGui::GetWindowDrawList();
 			ImVec2 windowPos = ImGui::GetWindowPos();
 			ImVec2 windowSize = ImGui::GetWindowSize();
 
-			// Fundo pergaminho interno
 			drawList->AddRectFilled(
 				ImVec2(windowPos.x + 10, windowPos.y + 10),
 				ImVec2(windowPos.x + windowSize.x - 10, windowPos.y + windowSize.y - 10),
 				IM_COL32(235, 217, 178, 180),
 				8.0f);
 
-			// Espaçamento do topo
 			ImGui::SetCursorPosY(80.0f);
 
-			// Configuração dos botões
 			ImGui::PushStyleColor(ImGuiCol_Button, mediumBrown);
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverBrown);
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, lightBrown);
@@ -513,7 +417,6 @@ namespace Game
 
 			if (!isNewGameMenuOpen && !showLoadSaveMenu)
 			{
-				// Botão Novo Jogo
 				ImGui::SetCursorPosX(buttonX);
 				if (gumelaFontLarge)
 				{
@@ -537,7 +440,6 @@ namespace Game
 				}
 				if (ImGui::Button("Continuar Jogo", buttonSize))
 				{
-					// Atualizar a lista de saves disponíveis
 					availableSaves = saveManager->getAllSaves();
 					showLoadSaveMenu = true;
 				}
@@ -548,7 +450,6 @@ namespace Game
 			}
 			else if (isNewGameMenuOpen)
 			{
-				// Interface de criação de novo jogo
 				ImGui::SetCursorPosX(buttonX);
 				if (gumelaFontLarge)
 				{
@@ -564,7 +465,6 @@ namespace Game
 				ImGui::SetCursorPosX(buttonX);
 				if (ImGui::Button("Criar", buttonSize))
 				{
-					// Criar o novo jogo com o nome fornecido
 					if (strlen(saveNameBuffer) > 0)
 					{
 						startNewGame(saveNameBuffer);
@@ -573,7 +473,6 @@ namespace Game
 					}
 					else
 					{
-						// Feedback visual para quando não houver nome
 						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
 						ImGui::SetCursorPosX(buttonX);
 						ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Digite um nome para o save!");
@@ -594,7 +493,6 @@ namespace Game
 			}
 			else if (showLoadSaveMenu)
 			{
-				// Exibir o menu de carregamento de saves
 				renderLoadSaveMenu();
 			}
 
@@ -606,7 +504,6 @@ namespace Game
 			}
 			if (ImGui::Button("Configurações", buttonSize))
 			{
-				// TODO: Implementar tela de configurações
 			}
 			if (gumelaFontLarge)
 			{
@@ -628,41 +525,27 @@ namespace Game
 				ImGui::PopFont();
 			}
 
-			// Limpar estilos dos botões
-			ImGui::PopStyleVar();	 // FrameRounding
-			ImGui::PopStyleColor(4); // Button colors
+			ImGui::PopStyleVar();
+			ImGui::PopStyleColor(4);
 		}
 		ImGui::End();
 
-		// Limpar estilos da janela
-		ImGui::PopStyleVar(2);	 // WindowBorderSize, WindowRounding
-		ImGui::PopStyleColor(2); // WindowBg, Border
-
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(2);
 		uiSystem->endFrame();
 		SDL_RenderPresent(renderer);
 	}
 
-	bool GameControl::loadCustomFonts()
+	void GameControl::loadCustomFonts()
 	{
 		ImGuiIO &io = ImGui::GetIO();
 
-		// Carregar diferentes tamanhos da fonte Gumela
 		gumelaFont = io.Fonts->AddFontFromFileTTF("assets/fonts/Gumela.ttf", 18.0f);
 		gumelaFontLarge = io.Fonts->AddFontFromFileTTF("assets/fonts/Gumela.ttf", 24.0f);
 		gumelaFontTitle = io.Fonts->AddFontFromFileTTF("assets/fonts/Gumela.ttf", 72.0f);
 
-		if (!gumelaFont || !gumelaFontLarge || !gumelaFontTitle)
-		{
-			std::cerr << "Failed to load Gumela font!" << std::endl;
-			return false;
-		}
-
-		// Rebuild do atlas de fontes
 		io.Fonts->Build();
 
-		// Definir fonte padrão
 		io.FontDefault = gumelaFont;
-
-		return true;
 	}
 }

@@ -953,15 +953,10 @@ namespace Game
 		if (!levelCompleted && this->activeEnemies.empty() && this->spawnedEnemyCount >= this->level.getEnemyCount())
 		{
 			levelCompleted = true;
-
-			// Definir o resultado como LevelComplete para notificar o GameControl
 			exitResult = GameWorldResult::LevelComplete;
 			running = false;
 
 			std::cout << "Nível completado! Retornando com GameWorldResult::LevelComplete" << std::endl;
-
-			// Não vamos mais carregar o próximo nível automaticamente aqui
-			// Deixaremos o GameControl lidar com isso e salvar o progresso
 		}
 	}
 

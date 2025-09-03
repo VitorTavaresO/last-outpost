@@ -73,8 +73,8 @@ namespace Game
 
 		void renderMainMenu();
 		void handleMainMenuEvents();
-		bool loadMenuAssets();
-		bool loadCustomFonts();
+		void loadMenuAssets();
+		void loadCustomFonts();
 		void renderCreateSaveMenu();
 		void renderLoadSaveMenu();
 		bool startNewGame(const std::string &saveName);
