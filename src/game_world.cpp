@@ -11,11 +11,11 @@
 
 namespace Game
 {
-	GameWorld::GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, std::vector<Level> &&levels, Audio *audioSystem, UISystem *uiSystem)
+	GameWorld::GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, std::vector<Level> &&levels, int startLevelIndex, Audio *audioSystem, UISystem *uiSystem)
 		: renderer(renderer),
 		  graphics(screenWidth, screenHeight, TILES_X, TILES_Y, renderer),
-		  map(TILES_X, TILES_Y, levels.empty() ? "" : levels[0].getMapData(), renderer),
-		  level(levels.empty() ? Level("", {}, 0) : std::move(levels[0])),
+		  map(TILES_X, TILES_Y, levels.empty() ? "" : (startLevelIndex < static_cast<int>(levels.size()) ? levels[startLevelIndex].getMapData() : levels[0].getMapData()), renderer),
+		  level(levels.empty() ? Level("", {}, 0) : (startLevelIndex < static_cast<int>(levels.size()) ? std::move(levels[startLevelIndex]) : std::move(levels[0]))),
 		  allLevels(std::move(levels)),
 		  audioSystem(audioSystem),
 		  uiSystem(uiSystem),
@@ -35,7 +35,7 @@ namespace Game
 		  selectedTowerIndex(-1),
 		  gold(100),
 		  playerLife(100),
-		  currentLevel(0),
+		  currentLevel(startLevelIndex),
 		  levelCompleted(false),
 		  gamePaused(false),
 		  showPauseMenu(false)
@@ -954,15 +954,14 @@ namespace Game
 		{
 			levelCompleted = true;
 
-			if (currentLevel + 1 < allLevels.size())
-			{
-				loadNextLevel();
-			}
-			else
-			{
-				std::cout << "Parabéns! Você completou todos os níveis!" << std::endl;
-				running = false;
-			}
+			// Definir o resultado como LevelComplete para notificar o GameControl
+			exitResult = GameWorldResult::LevelComplete;
+			running = false;
+
+			std::cout << "Nível completado! Retornando com GameWorldResult::LevelComplete" << std::endl;
+
+			// Não vamos mais carregar o próximo nível automaticamente aqui
+			// Deixaremos o GameControl lidar com isso e salvar o progresso
 		}
 	}
 

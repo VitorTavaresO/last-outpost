@@ -14,7 +14,8 @@ namespace Game
 		  currentState(GameState::MainMenu), currentLevelIndex(0), menuBackgroundTexture(nullptr),
 		  gameTitleTexture(nullptr), screenWidth(1024), screenHeight(768),
 		  gumelaFont(nullptr), gumelaFontLarge(nullptr), gumelaFontTitle(nullptr),
-		  showCreateSaveMenu(false), isNewGameMenuOpen(false)
+		  showCreateSaveMenu(false), isNewGameMenuOpen(false), showLoadSaveMenu(false),
+		  saveManager(std::make_unique<SaveManager>()), selectedSaveIndex(-1), currentSaveName("")
 	{
 		memset(saveNameBuffer, 0, sizeof(saveNameBuffer));
 	}
@@ -67,6 +68,18 @@ namespace Game
 
 		// Definir fontes customizadas no UISystem
 		uiSystem->setCustomFonts(gumelaFont, gumelaFontLarge, gumelaFontTitle);
+
+		// Inicializar o sistema de saves
+		if (!saveManager->initialize())
+		{
+			std::cerr << "Falha ao inicializar o sistema de saves!" << std::endl;
+			// Não retornar false aqui, pois o sistema ainda pode funcionar sem saves
+		}
+		else
+		{
+			// Carregar os saves disponíveis
+			availableSaves = saveManager->getAllSaves();
+		}
 
 		createLevels();
 		return true;
@@ -238,12 +251,20 @@ namespace Game
 				audioSystem->playMusic(MusicType::GamePlay);
 			}
 
+			std::cout << "Criando GameWorld com nível inicial: " << currentLevelIndex << std::endl;
+			std::cout << "Nome do save atual: " << currentSaveName << std::endl;
+
+			// Não podemos copiar os níveis devido à restrição de Enemy, então vamos usar diretamente
 			gameWorld = std::make_unique<GameWorld>(
 				renderer,
 				SCREEN_WIDTH, SCREEN_HEIGHT,
 				std::move(levels),
+				currentLevelIndex, // Usar o nível atual do save
 				audioSystem.get(),
 				uiSystem.get());
+
+			// Recriar os níveis depois que eles são movidos para o GameWorld
+			createLevels();
 		}
 
 		GameWorldResult gameResult = gameWorld->run();
@@ -272,6 +293,20 @@ namespace Game
 			gameWorld.reset();
 			if (++currentLevelIndex < static_cast<int>(levels.size()))
 			{
+				std::cout << "Level completado! Avançando para nivel " << currentLevelIndex << std::endl;
+				std::cout << "Nome do save atual: " << currentSaveName << std::endl;
+
+				// Atualizar o progresso do save atual com o novo nível
+				bool updated = updateCurrentSaveProgress(currentLevelIndex);
+				if (updated)
+				{
+					std::cout << "Save atualizado com sucesso!" << std::endl;
+				}
+				else
+				{
+					std::cerr << "ERRO AO ATUALIZAR SAVE!" << std::endl;
+				}
+
 				changeState(GameState::LevelComplete);
 			}
 			else
@@ -303,6 +338,10 @@ namespace Game
 
 	void GameControl::handleLevelComplete()
 	{
+		// Atualizar o progresso do save atual com o novo nível
+		updateCurrentSaveProgress(currentLevelIndex);
+
+		// Continuar para o próximo nível
 		changeState(GameState::Playing);
 	}
 
@@ -472,7 +511,7 @@ namespace Game
 			float buttonX = (menuWidth - buttonWidth) * 0.5f;
 			ImVec2 buttonSize(buttonWidth, buttonHeight);
 
-			if (!isNewGameMenuOpen)
+			if (!isNewGameMenuOpen && !showLoadSaveMenu)
 			{
 				// Botão Novo Jogo
 				ImGui::SetCursorPosX(buttonX);
@@ -498,14 +537,16 @@ namespace Game
 				}
 				if (ImGui::Button("Continuar Jogo", buttonSize))
 				{
-					// TODO: Implementar carregamento de save
+					// Atualizar a lista de saves disponíveis
+					availableSaves = saveManager->getAllSaves();
+					showLoadSaveMenu = true;
 				}
 				if (gumelaFontLarge)
 				{
 					ImGui::PopFont();
 				}
 			}
-			else
+			else if (isNewGameMenuOpen)
 			{
 				// Interface de criação de novo jogo
 				ImGui::SetCursorPosX(buttonX);
@@ -523,9 +564,20 @@ namespace Game
 				ImGui::SetCursorPosX(buttonX);
 				if (ImGui::Button("Criar", buttonSize))
 				{
-					// TODO: Implementar lógica de criação de save
-					showCreateSaveMenu = true;
-					isNewGameMenuOpen = false;
+					// Criar o novo jogo com o nome fornecido
+					if (strlen(saveNameBuffer) > 0)
+					{
+						startNewGame(saveNameBuffer);
+						showCreateSaveMenu = true;
+						isNewGameMenuOpen = false;
+					}
+					else
+					{
+						// Feedback visual para quando não houver nome
+						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+						ImGui::SetCursorPosX(buttonX);
+						ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Digite um nome para o save!");
+					}
 				}
 
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
@@ -539,6 +591,11 @@ namespace Game
 				{
 					ImGui::PopFont();
 				}
+			}
+			else if (showLoadSaveMenu)
+			{
+				// Exibir o menu de carregamento de saves
+				renderLoadSaveMenu();
 			}
 
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);

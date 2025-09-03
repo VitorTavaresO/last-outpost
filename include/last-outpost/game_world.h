@@ -46,7 +46,7 @@ namespace Game
 	class GameWorld
 	{
 	public:
-		GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, std::vector<Level> &&levels, Audio *audioSystem = nullptr, UISystem *uiSystem = nullptr);
+		GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, std::vector<Level> &&levels, int startLevelIndex = 0, Audio *audioSystem = nullptr, UISystem *uiSystem = nullptr);
 		GameWorldResult run();
 
 	private:

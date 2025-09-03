@@ -8,8 +8,8 @@
 #include <last-outpost/level.h>
 #include <last-outpost/audio.h>
 #include <last-outpost/ui_system.h>
+#include <last-outpost/save_manager.h>
 
-// Forward declaration para ImFont
 struct ImFont;
 
 namespace Game
@@ -56,6 +56,12 @@ namespace Game
 		bool showCreateSaveMenu;
 		char saveNameBuffer[256];
 		bool isNewGameMenuOpen;
+		bool showLoadSaveMenu;
+
+		std::unique_ptr<SaveManager> saveManager;
+		std::vector<SaveData> availableSaves;
+		int selectedSaveIndex;
+		std::string currentSaveName;
 
 		bool initializeSDL();
 		void createLevels();
@@ -69,6 +75,12 @@ namespace Game
 		void handleMainMenuEvents();
 		bool loadMenuAssets();
 		bool loadCustomFonts();
+		void renderCreateSaveMenu();
+		void renderLoadSaveMenu();
+		bool startNewGame(const std::string &saveName);
+		bool loadGame(const std::string &saveName);
+		bool updateCurrentSaveProgress(int levelIndex);
+		std::string getCurrentSaveName() const;
 
 		void changeState(GameState newState);
 		Level &getCurrentLevel();
