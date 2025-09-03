@@ -20,6 +20,7 @@ namespace Game
 		  audioSystem(audioSystem),
 		  uiSystem(uiSystem),
 		  running(true),
+		  exitResult(GameWorldResult::Quit),
 		  lastSpawnTime(getTimeInSeconds()),
 		  lastUpdateTime(getTimeInSeconds()),
 		  spawnedEnemyCount(0),
@@ -56,7 +57,7 @@ namespace Game
 		}
 	}
 
-	bool GameWorld::run()
+	GameWorldResult GameWorld::run()
 	{
 		this->lastUpdateTime = getTimeInSeconds();
 
@@ -69,7 +70,8 @@ namespace Game
 
 			if (!this->handleEvents())
 			{
-				return false;
+				exitResult = GameWorldResult::Quit;
+				break;
 			}
 
 			this->update(deltaTime);
@@ -78,7 +80,7 @@ namespace Game
 			this->checkLevelCompletion();
 		}
 
-		return false;
+		return exitResult;
 	}
 
 	bool GameWorld::handleEvents()
@@ -874,6 +876,7 @@ namespace Game
 
 	void GameWorld::goToMainMenu()
 	{
+		exitResult = GameWorldResult::ReturnToMainMenu;
 		running = false;
 	}
 

@@ -237,12 +237,28 @@ namespace Game
 				uiSystem.get());
 		}
 
-		bool gameCompleted = gameWorld->run();
+		GameWorldResult gameResult = gameWorld->run();
 
-		if (!gameCompleted)
+		switch (gameResult)
 		{
+		case GameWorldResult::Quit:
 			changeState(GameState::Quitting);
-			return;
+			break;
+		case GameWorldResult::ReturnToMainMenu:
+			gameWorld.reset();
+			changeState(GameState::MainMenu);
+			break;
+		case GameWorldResult::LevelComplete:
+			gameWorld.reset();
+			if (++currentLevelIndex < static_cast<int>(levels.size()))
+			{
+				changeState(GameState::LevelComplete);
+			}
+			else
+			{
+				changeState(GameState::GameOver);
+			}
+			break;
 		}
 
 		/*if (gameCompleted)

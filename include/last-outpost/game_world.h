@@ -15,6 +15,13 @@
 
 namespace Game
 {
+	enum class GameWorldResult
+	{
+		Quit,
+		ReturnToMainMenu,
+		LevelComplete
+	};
+
 	struct EnemyType
 	{
 		int life;
@@ -40,7 +47,7 @@ namespace Game
 	{
 	public:
 		GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, std::vector<Level> &&levels, Audio *audioSystem = nullptr, UISystem *uiSystem = nullptr);
-		bool run();
+		GameWorldResult run();
 
 	private:
 		SDL_Renderer *renderer;
@@ -52,6 +59,7 @@ namespace Game
 		Audio *audioSystem;
 		UISystem *uiSystem;
 		bool running;
+		GameWorldResult exitResult;
 		float lastSpawnTime;
 		float lastUpdateTime;
 		int spawnedEnemyCount;
