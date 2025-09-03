@@ -1,17 +1,7 @@
-#includ < last - float b if (gumelaFon if (avai for (s sele ImGui::SetCursorPosY(ImG if (!s available currentSaveName = saveName; s = sa return false; Manager->getAllSaves();
-
-currentLevelIndex = 0;
-
-currentSaveName = saveName;->createSave(saveName, 0))::GetCursorPosY() + 20.0f);
-edSaveIndex = i;
-e_t i = 0;
-i < availableSaves.size(); i++)bleSaves.empty())arge)tonWidth = 300.0f;
-float buttonHeight = 60.0f;
-float buttonX = (500.0f - buttonWidth) * 0.5f;
-ost / game_control.h >
+#include <last-outpost/game_control.h>
 #include <imgui/imgui.h>
 
-	namespace Game
+namespace Game
 {
 	void GameControl::renderCreateSaveMenu()
 	{

@@ -10,10 +10,8 @@
 namespace Game
 {
 	GameControl::GameControl()
-		: window(nullptr), renderer(nullptr), gameW updateCurrentSaveProgress(currentLevelIndex);
-	(nullptr), audioSystem(nullptr), uiSystem(nullptr),
-		currentState(GameState::MainMenu), ImGui::ImD drawL ImGui::SetCurso ImGui::SetCursorPosX(availab ImGui::SetCur if (s ImGui::SetCursor renderLoadSaveMenu(); sY(ImGui::ImGui::PopStyleVar(); ImGui::PopStyleColor(4); CursorPosY() + 10.0f); len(saveNameBuffer) > 0) rPosX(buttonX); Saves = saveManager->getAllSaves(); ttonX);
-	osY(80.0f);>AddRectFilled(wList *drawList = ImGui::GetWindowDrawList();shStyleColor(ImGuiCol_WindowBg, darkBrown);urrentLevelIndex(0), menuBackgroundTexture(nullptr),
+		: window(nullptr), renderer(nullptr), gameWorld(nullptr), audioSystem(nullptr), uiSystem(nullptr),
+		  currentState(GameState::MainMenu), currentLevelIndex(0), menuBackgroundTexture(nullptr),
 		  gameTitleTexture(nullptr), screenWidth(1024), screenHeight(768),
 		  gumelaFont(nullptr), gumelaFontLarge(nullptr), gumelaFontTitle(nullptr),
 		  showCreateSaveMenu(false), isNewGameMenuOpen(false), showLoadSaveMenu(false),

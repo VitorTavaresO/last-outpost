@@ -1,15 +1,10 @@
-#include <last	saveToD	if (!std::filesystem::exi		for (const				if (std::getline(file, name))uto	if (saveExists(save		if (		for (co		for (const auto &save : saves)t auto &entry : std::filesystem::dire		it->levelIndex = newLevelIndex;y_iterator(savesPath))td::filesystem::exists(savesPath))me))
-return false;
-
-SaveData newSave{saveName, levelIndex};
-saves.push_back(newSave); std::filesystem::directory_iterator(savesPath))s(savesPath))k();
-utpost / save_manager.h >
+#include <last-outpost/save_manager.h>
 #include <fstream>
 #include <iostream>
 #include <filesystem>
 #include <algorithm>
 
-	namespace Game
+namespace Game
 {
 	SaveManager::SaveManager() : savesPath("saves")
 	{

@@ -357,9 +357,8 @@ namespace Game
 				onPlacementCancelCallback();
 			}
 		}
-		a
 
-			if (customNormalFont)
+		if (customNormalFont)
 		{
 			ImGui::PopFont();
 		}
