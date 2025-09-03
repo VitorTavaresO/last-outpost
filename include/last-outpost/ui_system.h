@@ -6,6 +6,9 @@
 #include <my-lib/matrix.h>
 #include <functional>
 
+// Forward declaration para ImFont
+struct ImFont;
+
 namespace Game
 {
 	enum class TowerType
@@ -58,6 +61,8 @@ namespace Game
 		void setOnTowerUpgrade(std::function<void()> callback);
 		void setOnPlacementCancel(std::function<void()> callback);
 
+		void setCustomFonts(ImFont *normalFont, ImFont *largeFont, ImFont *titleFont);
+
 		TowerType getSelectedTower() const { return selectedTower; }
 		bool isTowerSelected() const { return towerSelected; }
 		void clearTowerSelection();
@@ -74,6 +79,10 @@ namespace Game
 		std::function<void()> onTowerSellCallback;
 		std::function<void()> onTowerUpgradeCallback;
 		std::function<void()> onPlacementCancelCallback;
+
+		ImFont *customNormalFont;
+		ImFont *customLargeFont;
+		ImFont *customTitleFont;
 
 		static const TowerInfo towerInfos[4];
 

@@ -9,6 +9,9 @@
 #include <last-outpost/audio.h>
 #include <last-outpost/ui_system.h>
 
+// Forward declaration para ImFont
+struct ImFont;
+
 namespace Game
 {
 	enum class GameState
@@ -41,6 +44,15 @@ namespace Game
 		std::vector<Level> levels;
 		int currentLevelIndex;
 
+		SDL_Texture *menuBackgroundTexture;
+		SDL_Texture *gameTitleTexture;
+		int screenWidth;
+		int screenHeight;
+
+		ImFont *gumelaFont;
+		ImFont *gumelaFontLarge;
+		ImFont *gumelaFontTitle;
+
 		bool initializeSDL();
 		void createLevels();
 		void handleMainMenu();
@@ -48,6 +60,11 @@ namespace Game
 		void handlePauseMenu();
 		void handleLevelComplete();
 		void handleGameOver();
+
+		void renderMainMenu();
+		void handleMainMenuEvents();
+		bool loadMenuAssets();
+		bool loadCustomFonts();
 
 		void changeState(GameState newState);
 		Level &getCurrentLevel();

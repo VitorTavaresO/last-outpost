@@ -14,7 +14,8 @@ namespace Game
 
 	UISystem::UISystem()
 		: window(nullptr), renderer(nullptr), initialized(false),
-		  selectedTower(TowerType::Magic), towerSelected(false)
+		  selectedTower(TowerType::Magic), towerSelected(false),
+		  customNormalFont(nullptr), customLargeFont(nullptr), customTitleFont(nullptr)
 	{
 	}
 
@@ -116,6 +117,12 @@ namespace Game
 
 		ImGui::Begin("Game Stats", nullptr, statsFlags);
 
+		// Usar fonte customizada para o UI do jogo
+		if (customNormalFont)
+		{
+			ImGui::PushFont(customNormalFont);
+		}
+
 		ImGui::GetWindowDrawList()->AddRectFilled(
 			ImVec2(ImGui::GetWindowPos().x + 8, ImGui::GetWindowPos().y + 8),
 			ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowWidth() - 8, ImGui::GetWindowPos().y + ImGui::GetWindowHeight() - 8),
@@ -135,6 +142,11 @@ namespace Game
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.3f, 0.2f, 1.0f));
 		ImGui::Text("LIFE: %d", playerLife);
 		ImGui::PopStyleColor();
+
+		if (customNormalFont)
+		{
+			ImGui::PopFont();
+		}
 
 		ImGui::PopStyleColor(2);
 		ImGui::End();
@@ -165,6 +177,12 @@ namespace Game
 									   ImGuiWindowFlags_NoTitleBar;
 
 		ImGui::Begin("Tower Menu", nullptr, windowFlags);
+
+		// Usar fonte customizada para o menu de torres
+		if (customNormalFont)
+		{
+			ImGui::PushFont(customNormalFont);
+		}
 
 		ImGui::Text("Tower Selection");
 		ImGui::Separator();
@@ -237,6 +255,12 @@ namespace Game
 			ImGui::TextWrapped("Select a tower type and click on the map to place it");
 		}
 
+		// Encerrar fonte customizada
+		if (customNormalFont)
+		{
+			ImGui::PopFont();
+		}
+
 		ImGui::End();
 	}
 
@@ -265,6 +289,12 @@ namespace Game
 									   ImGuiWindowFlags_NoTitleBar;
 
 		ImGui::Begin("Tower Info", nullptr, windowFlags);
+
+		// Usar fonte customizada para o menu de torre selecionada
+		if (customNormalFont)
+		{
+			ImGui::PushFont(customNormalFont);
+		}
 
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.6f, 0.2f, 1.0f));
 		ImGui::Text("SELECTED TOWER");
@@ -330,6 +360,12 @@ namespace Game
 			{
 				onPlacementCancelCallback();
 			}
+		}
+
+		// Encerrar fonte customizada
+		if (customNormalFont)
+		{
+			ImGui::PopFont();
 		}
 
 		ImGui::End();
@@ -447,5 +483,12 @@ namespace Game
 		style.IndentSpacing = 20.0f;
 		style.ScrollbarSize = 16.0f;
 		style.GrabMinSize = 12.0f;
+	}
+
+	void UISystem::setCustomFonts(ImFont *normalFont, ImFont *largeFont, ImFont *titleFont)
+	{
+		customNormalFont = normalFont;
+		customLargeFont = largeFont;
+		customTitleFont = titleFont;
 	}
 }
