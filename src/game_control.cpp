@@ -216,7 +216,7 @@ namespace Game
 		{
 			// Se não houver música tocando ou a música atual não for a música do menu,
 			// inicie a música do menu
-			if (!audioSystem->isMusicPlaying() || 
+			if (!audioSystem->isMusicPlaying() ||
 				audioSystem->getCurrentMusicType() != MusicType::MainMenu)
 			{
 				audioSystem->stopMusic(); // Garante que a música anterior seja interrompida
@@ -258,12 +258,12 @@ namespace Game
 			if (audioSystem)
 			{
 				audioSystem->fadeOutMusic(1000);
-				
+
 				// Certifique-se de parar completamente a música atual antes de reproduzir a música do menu
 				audioSystem->stopMusic();
 				audioSystem->playMusic(MusicType::MainMenu);
 			}
-			
+
 			// Resetar estado do menu para o estado padrão
 			isNewGameMenuOpen = false;
 			changeState(GameState::MainMenu);
@@ -513,12 +513,12 @@ namespace Game
 				{
 					ImGui::PushFont(gumelaFontLarge);
 				}
-				
+
 				ImGui::Text("Nome do Save:");
 				ImGui::SetCursorPosX(buttonX);
 				ImGui::SetNextItemWidth(buttonWidth);
 				ImGui::InputText("##SaveName", saveNameBuffer, sizeof(saveNameBuffer));
-				
+
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
 				ImGui::SetCursorPosX(buttonX);
 				if (ImGui::Button("Criar", buttonSize))
@@ -527,14 +527,14 @@ namespace Game
 					showCreateSaveMenu = true;
 					isNewGameMenuOpen = false;
 				}
-				
+
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
 				ImGui::SetCursorPosX(buttonX);
 				if (ImGui::Button("Cancelar", buttonSize))
 				{
 					isNewGameMenuOpen = false;
 				}
-				
+
 				if (gumelaFontLarge)
 				{
 					ImGui::PopFont();
