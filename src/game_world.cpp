@@ -86,7 +86,7 @@ namespace Game
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
-			if (uiSystem && !showPauseMenu)
+			if (uiSystem)
 			{
 				uiSystem->handleEvent(event);
 			}
