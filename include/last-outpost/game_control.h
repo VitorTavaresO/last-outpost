@@ -53,6 +53,10 @@ namespace Game
 		ImFont *gumelaFontLarge;
 		ImFont *gumelaFontTitle;
 
+		bool showCreateSaveMenu;
+		char saveNameBuffer[256];
+		bool isNewGameMenuOpen;
+
 		bool initializeSDL();
 		void createLevels();
 		void handleMainMenu();

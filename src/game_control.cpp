@@ -13,8 +13,10 @@ namespace Game
 		: window(nullptr), renderer(nullptr), gameWorld(nullptr), audioSystem(nullptr), uiSystem(nullptr),
 		  currentState(GameState::MainMenu), currentLevelIndex(0), menuBackgroundTexture(nullptr),
 		  gameTitleTexture(nullptr), screenWidth(1024), screenHeight(768),
-		  gumelaFont(nullptr), gumelaFontLarge(nullptr), gumelaFontTitle(nullptr)
+		  gumelaFont(nullptr), gumelaFontLarge(nullptr), gumelaFontTitle(nullptr),
+		  showCreateSaveMenu(false), isNewGameMenuOpen(false)
 	{
+		memset(saveNameBuffer, 0, sizeof(saveNameBuffer));
 	}
 
 	GameControl::~GameControl()
@@ -210,9 +212,16 @@ namespace Game
 
 	void GameControl::handleMainMenu()
 	{
-		if (audioSystem && !audioSystem->isMusicPlaying())
+		if (audioSystem)
 		{
-			audioSystem->playMusic(MusicType::MainMenu);
+			// Se não houver música tocando ou a música atual não for a música do menu,
+			// inicie a música do menu
+			if (!audioSystem->isMusicPlaying() || 
+				audioSystem->getCurrentMusicType() != MusicType::MainMenu)
+			{
+				audioSystem->stopMusic(); // Garante que a música anterior seja interrompida
+				audioSystem->playMusic(MusicType::MainMenu);
+			}
 		}
 
 		handleMainMenuEvents();
@@ -246,6 +255,17 @@ namespace Game
 			break;
 		case GameWorldResult::ReturnToMainMenu:
 			gameWorld.reset();
+			if (audioSystem)
+			{
+				audioSystem->fadeOutMusic(1000);
+				
+				// Certifique-se de parar completamente a música atual antes de reproduzir a música do menu
+				audioSystem->stopMusic();
+				audioSystem->playMusic(MusicType::MainMenu);
+			}
+			
+			// Resetar estado do menu para o estado padrão
+			isNewGameMenuOpen = false;
 			changeState(GameState::MainMenu);
 			break;
 		case GameWorldResult::LevelComplete:
@@ -452,35 +472,73 @@ namespace Game
 			float buttonX = (menuWidth - buttonWidth) * 0.5f;
 			ImVec2 buttonSize(buttonWidth, buttonHeight);
 
-			// Botão Novo Jogo
-			ImGui::SetCursorPosX(buttonX);
-			if (gumelaFontLarge)
+			if (!isNewGameMenuOpen)
 			{
-				ImGui::PushFont(gumelaFontLarge);
-			}
-			if (ImGui::Button("Novo Jogo", buttonSize))
-			{
-				currentLevelIndex = 0;
-				changeState(GameState::Playing);
-			}
-			if (gumelaFontLarge)
-			{
-				ImGui::PopFont();
-			}
+				// Botão Novo Jogo
+				ImGui::SetCursorPosX(buttonX);
+				if (gumelaFontLarge)
+				{
+					ImGui::PushFont(gumelaFontLarge);
+				}
+				if (ImGui::Button("Novo Jogo", buttonSize))
+				{
+					isNewGameMenuOpen = true;
+					memset(saveNameBuffer, 0, sizeof(saveNameBuffer));
+				}
+				if (gumelaFontLarge)
+				{
+					ImGui::PopFont();
+				}
 
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
-			ImGui::SetCursorPosX(buttonX);
-			if (gumelaFontLarge)
-			{
-				ImGui::PushFont(gumelaFontLarge);
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
+				ImGui::SetCursorPosX(buttonX);
+				if (gumelaFontLarge)
+				{
+					ImGui::PushFont(gumelaFontLarge);
+				}
+				if (ImGui::Button("Continuar Jogo", buttonSize))
+				{
+					// TODO: Implementar carregamento de save
+				}
+				if (gumelaFontLarge)
+				{
+					ImGui::PopFont();
+				}
 			}
-			if (ImGui::Button("Continuar Jogo", buttonSize))
+			else
 			{
-				// TODO: Implementar carregamento de save
-			}
-			if (gumelaFontLarge)
-			{
-				ImGui::PopFont();
+				// Interface de criação de novo jogo
+				ImGui::SetCursorPosX(buttonX);
+				if (gumelaFontLarge)
+				{
+					ImGui::PushFont(gumelaFontLarge);
+				}
+				
+				ImGui::Text("Nome do Save:");
+				ImGui::SetCursorPosX(buttonX);
+				ImGui::SetNextItemWidth(buttonWidth);
+				ImGui::InputText("##SaveName", saveNameBuffer, sizeof(saveNameBuffer));
+				
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
+				ImGui::SetCursorPosX(buttonX);
+				if (ImGui::Button("Criar", buttonSize))
+				{
+					// TODO: Implementar lógica de criação de save
+					showCreateSaveMenu = true;
+					isNewGameMenuOpen = false;
+				}
+				
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+				ImGui::SetCursorPosX(buttonX);
+				if (ImGui::Button("Cancelar", buttonSize))
+				{
+					isNewGameMenuOpen = false;
+				}
+				
+				if (gumelaFontLarge)
+				{
+					ImGui::PopFont();
+				}
 			}
 
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
