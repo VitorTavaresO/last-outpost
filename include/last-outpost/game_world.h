@@ -73,6 +73,9 @@ namespace Game
 		bool towerSelected;
 		int selectedTowerIndex;
 
+		bool gamePaused;
+		bool showPauseMenu;
+
 		bool handleEvents();
 		void update(float deltaTime);
 		void render(float deltaTime);
@@ -94,6 +97,13 @@ namespace Game
 		void clearSelection();
 		int getTowerAtPosition(int row, int col) const;
 		SelectedTowerInfo getSelectedTowerInfo() const;
+
+		void togglePause();
+		void resumeGame();
+		void restartLevel();
+		void goToMainMenu();
+		void showSettings();
+		void renderPauseMenu();
 
 		int getGold() const { return gold; }
 		void addGold(int amount) { gold += amount; }

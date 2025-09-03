@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cstdlib>
+#include <imgui/imgui.h>
 #include <last-outpost/game_world.h>
 #include <last-outpost/tower.h>
 #include <last-outpost/globals.h>
@@ -31,7 +32,9 @@ namespace Game
 		  towerSelected(false),
 		  selectedTowerIndex(-1),
 		  gold(100),
-		  playerLife(100)
+		  playerLife(100),
+		  gamePaused(false),
+		  showPauseMenu(false)
 	{
 		this->initializeEnemyTypes();
 
@@ -83,7 +86,7 @@ namespace Game
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
-			if (uiSystem)
+			if (uiSystem && !showPauseMenu)
 			{
 				uiSystem->handleEvent(event);
 			}
@@ -93,7 +96,14 @@ namespace Game
 				this->running = false;
 				return false;
 			}
-			else if (event.type == SDL_MOUSEBUTTONDOWN)
+			else if (event.type == SDL_KEYDOWN)
+			{
+				if (event.key.keysym.sym == SDLK_ESCAPE)
+				{
+					togglePause();
+				}
+			}
+			else if (event.type == SDL_MOUSEBUTTONDOWN && !gamePaused)
 			{
 				if (event.button.button == SDL_BUTTON_LEFT)
 				{
@@ -115,6 +125,11 @@ namespace Game
 	}
 	void GameWorld::update(float deltaTime)
 	{
+		if (gamePaused)
+		{
+			return;
+		}
+
 		auto enemyIt = this->activeEnemies.begin();
 		while (enemyIt != this->activeEnemies.end())
 		{
@@ -212,6 +227,12 @@ namespace Game
 			}
 
 			uiSystem->renderUI(screenWidth, screenHeight, gold, playerLife, selectedInfo);
+
+			if (showPauseMenu)
+			{
+				renderPauseMenu();
+			}
+
 			uiSystem->endFrame();
 		}
 
@@ -819,5 +840,108 @@ namespace Game
 		{
 			audioSystem->playSound(SoundType::GameOver);
 		}
+	}
+
+	void GameWorld::togglePause()
+	{
+		gamePaused = !gamePaused;
+		showPauseMenu = gamePaused;
+	}
+
+	void GameWorld::resumeGame()
+	{
+		gamePaused = false;
+		showPauseMenu = false;
+	}
+
+	void GameWorld::restartLevel()
+	{
+		activeEnemies.clear();
+		activeProjectils.clear();
+		towers.clear();
+		gold = 100;
+		playerLife = 100;
+		spawnedEnemyCount = 0;
+		enemyTypeIndex = 0;
+		lastSpawnTime = getTimeInSeconds();
+		tileSelected = false;
+		towerSelected = false;
+		selectedRow = -1;
+		selectedCol = -1;
+		selectedTowerIndex = -1;
+		resumeGame();
+	}
+
+	void GameWorld::goToMainMenu()
+	{
+		running = false;
+	}
+
+	void GameWorld::showSettings()
+	{
+	}
+
+	void GameWorld::renderPauseMenu()
+	{
+		ImGui::SetNextWindowPos(ImVec2(screenWidth * 0.5f, screenHeight * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+		ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_Always);
+
+		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoResize |
+									   ImGuiWindowFlags_NoMove |
+									   ImGuiWindowFlags_NoCollapse |
+									   ImGuiWindowFlags_NoScrollbar |
+									   ImGuiWindowFlags_NoTitleBar;
+
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.15f, 0.1f, 0.05f, 0.95f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.3f, 0.2f, 1.0f));
+
+		if (ImGui::Begin("Pause Menu", nullptr, windowFlags))
+		{
+			ImGui::GetWindowDrawList()->AddRectFilled(
+				ImVec2(ImGui::GetWindowPos().x + 8, ImGui::GetWindowPos().y + 8),
+				ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowWidth() - 8, ImGui::GetWindowPos().y + ImGui::GetWindowHeight() - 8),
+				IM_COL32(235, 217, 178, 220),
+				4.0f);
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20);
+
+			ImGui::PushFont(nullptr);
+
+			float buttonWidth = 300;
+			float buttonHeight = 40;
+			ImVec2 buttonSize(buttonWidth, buttonHeight);
+
+			ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) * 0.5f);
+			if (ImGui::Button("Continuar", buttonSize))
+			{
+				resumeGame();
+			}
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10);
+			ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) * 0.5f);
+			if (ImGui::Button("Reiniciar Fase", buttonSize))
+			{
+				restartLevel();
+			}
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10);
+			ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) * 0.5f);
+			if (ImGui::Button("Configurações", buttonSize))
+			{
+				showSettings();
+			}
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10);
+			ImGui::SetCursorPosX((ImGui::GetWindowWidth() - buttonWidth) * 0.5f);
+			if (ImGui::Button("Voltar ao Menu Principal", buttonSize))
+			{
+				goToMainMenu();
+			}
+
+			ImGui::PopFont();
+		}
+		ImGui::End();
+
+		ImGui::PopStyleColor(2);
 	}
 }
