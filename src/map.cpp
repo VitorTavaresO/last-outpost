@@ -237,4 +237,24 @@ namespace Game
 		"        D    S                  "
 		"        D                       "
 		"        E                       ";
+
+	const char rawStringMap2[] =
+		"                                "
+		"    S                  S        "
+		"                                "
+		"FRRRRRRRRRRRRRRD    S           "
+		"               D                "
+		"    S          D                "
+		"               D    S           "
+		"               RRRRRRRRRD       "
+		"                        D       "
+		"    S                   D   S   "
+		"                        D       "
+		"                    S   D       "
+		"                        D       "
+		"                        D       "
+		"                        D       "
+		"            S           D       "
+		"    ELLLLLLLLLLLLLLLLLLLL       "
+		"                                ";
 }

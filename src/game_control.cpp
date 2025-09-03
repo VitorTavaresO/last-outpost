@@ -157,17 +157,25 @@ namespace Game
 
 	void GameControl::createLevels()
 	{
-		Map map(TILES_X, TILES_Y, rawStringMap);
-		auto path = map.extractPath();
+		Map map1(TILES_X, TILES_Y, rawStringMap);
+		auto path1 = map1.extractPath();
 
-		std::vector<Enemy> enemyTypes;
-		enemyTypes.reserve(3);
+		std::vector<Enemy> enemyTypes1;
+		enemyTypes1.reserve(3);
+		enemyTypes1.emplace_back(100, 20, 5.0f, "Fireball", path1);
+		enemyTypes1.emplace_back(150, 30, 0.8f, "Ice Spike", path1);
+		enemyTypes1.emplace_back(200, 40, 0.5f, "Lightning Bolt", path1);
+		levels.emplace_back(rawStringMap, std::move(enemyTypes1), 15);
 
-		enemyTypes.emplace_back(100, 20, 5.0f, "Fireball", path);
-		enemyTypes.emplace_back(150, 30, 0.8f, "Ice Spike", path);
-		enemyTypes.emplace_back(200, 40, 0.5f, "Lightning Bolt", path);
+		Map map2(TILES_X, TILES_Y, rawStringMap2);
+		auto path2 = map2.extractPath();
 
-		levels.emplace_back(rawStringMap, std::move(enemyTypes), 20);
+		std::vector<Enemy> enemyTypes2;
+		enemyTypes2.reserve(3);
+		enemyTypes2.emplace_back(120, 25, 6.0f, "Fireball", path2);
+		enemyTypes2.emplace_back(180, 35, 1.0f, "Ice Spike", path2);
+		enemyTypes2.emplace_back(250, 50, 0.6f, "Lightning Bolt", path2);
+		levels.emplace_back(rawStringMap2, std::move(enemyTypes2), 25);
 	}
 
 	void GameControl::handleMainMenu()
@@ -193,7 +201,7 @@ namespace Game
 			gameWorld = std::make_unique<GameWorld>(
 				renderer,
 				SCREEN_WIDTH, SCREEN_HEIGHT,
-				std::move(getCurrentLevel()),
+				std::move(levels),
 				audioSystem.get(),
 				uiSystem.get());
 		}

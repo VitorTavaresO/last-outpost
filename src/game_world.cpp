@@ -11,11 +11,12 @@
 
 namespace Game
 {
-	GameWorld::GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, Level &&level, Audio *audioSystem, UISystem *uiSystem)
+	GameWorld::GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, std::vector<Level> &&levels, Audio *audioSystem, UISystem *uiSystem)
 		: renderer(renderer),
 		  graphics(screenWidth, screenHeight, TILES_X, TILES_Y, renderer),
-		  map(TILES_X, TILES_Y, level.getMapData(), renderer),
-		  level(std::move(level)),
+		  map(TILES_X, TILES_Y, levels.empty() ? "" : levels[0].getMapData(), renderer),
+		  level(levels.empty() ? Level("", {}, 0) : std::move(levels[0])),
+		  allLevels(std::move(levels)),
 		  audioSystem(audioSystem),
 		  uiSystem(uiSystem),
 		  running(true),
@@ -33,6 +34,8 @@ namespace Game
 		  selectedTowerIndex(-1),
 		  gold(100),
 		  playerLife(100),
+		  currentLevel(0),
+		  levelCompleted(false),
 		  gamePaused(false),
 		  showPauseMenu(false)
 	{
@@ -72,10 +75,7 @@ namespace Game
 			this->update(deltaTime);
 			this->render(deltaTime);
 
-			/*if (this->activeEnemies.empty() && this->spawnedEnemyCount >= this->level.getEnemyCount())
-			{
-				return true;
-			}*/
+			this->checkLevelCompletion();
 		}
 
 		return false;
@@ -943,5 +943,66 @@ namespace Game
 		ImGui::End();
 
 		ImGui::PopStyleColor(2);
+	}
+
+	void GameWorld::checkLevelCompletion()
+	{
+		if (!levelCompleted && this->activeEnemies.empty() && this->spawnedEnemyCount >= this->level.getEnemyCount())
+		{
+			levelCompleted = true;
+
+			if (currentLevel + 1 < allLevels.size())
+			{
+				loadNextLevel();
+			}
+			else
+			{
+				std::cout << "Parabéns! Você completou todos os níveis!" << std::endl;
+				running = false;
+			}
+		}
+	}
+
+	void GameWorld::loadNextLevel()
+	{
+		currentLevel++;
+		if (currentLevel < allLevels.size())
+		{
+			level = std::move(allLevels[currentLevel]);
+
+			map = Map(TILES_X, TILES_Y, level.getMapData(), renderer);
+
+			resetLevel();
+
+			std::cout << "Nível " << (currentLevel + 1) << " carregado!" << std::endl;
+		}
+	}
+
+	void GameWorld::resetLevel()
+	{
+		activeEnemies.clear();
+		activeProjectils.clear();
+		towers.clear();
+
+		gold += 50;
+
+		if (playerLife < 100)
+		{
+			playerLife = std::min(100, playerLife + 25);
+		}
+
+		spawnedEnemyCount = 0;
+		enemyTypeIndex = 0;
+		lastSpawnTime = getTimeInSeconds();
+
+		tileSelected = false;
+		towerSelected = false;
+		selectedRow = -1;
+		selectedCol = -1;
+		selectedTowerIndex = -1;
+
+		levelCompleted = false;
+
+		initializeEnemyTypes();
 	}
 }

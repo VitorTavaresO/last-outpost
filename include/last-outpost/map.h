@@ -86,6 +86,7 @@ namespace Game
 	};
 
 	extern const char rawStringMap[];
+	extern const char rawStringMap2[];
 }
 
 #endif

@@ -39,7 +39,7 @@ namespace Game
 	class GameWorld
 	{
 	public:
-		GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, Level &&level, Audio *audioSystem = nullptr, UISystem *uiSystem = nullptr);
+		GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, std::vector<Level> &&levels, Audio *audioSystem = nullptr, UISystem *uiSystem = nullptr);
 		bool run();
 
 	private:
@@ -75,6 +75,10 @@ namespace Game
 
 		bool gamePaused;
 		bool showPauseMenu;
+
+		int currentLevel;
+		std::vector<Level> allLevels;
+		bool levelCompleted;
 
 		bool handleEvents();
 		void update(float deltaTime);
@@ -115,6 +119,10 @@ namespace Game
 		bool isGameOver() const { return playerLife <= 0; }
 
 		int getTowerCost(int towerType) const;
+
+		void checkLevelCompletion();
+		void loadNextLevel();
+		void resetLevel();
 	};
 }
 
