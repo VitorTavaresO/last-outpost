@@ -5,8 +5,8 @@
 
 namespace Game
 {
-	inline int SCREEN_WIDTH = 1280;
-	inline int SCREEN_HEIGHT = 720;
+	inline int SCREEN_WIDTH = 1920;
+	inline int SCREEN_HEIGHT = 1080;
 	inline int TILES_X = 32;
 	inline int TILES_Y = 18;
 

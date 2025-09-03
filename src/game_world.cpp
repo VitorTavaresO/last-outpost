@@ -346,7 +346,7 @@ namespace Game
 		basicEnemy.walkFrameEnd = 3;
 		basicEnemy.idleFrameStart = 0;
 		basicEnemy.idleFrameEnd = 1;
-		basicEnemy.scale = 0.1f;
+		basicEnemy.scale = 0.2f;
 		basicEnemy.goldReward = 10;
 
 		this->enemyTypes.push_back(basicEnemy);
@@ -367,7 +367,7 @@ namespace Game
 		fastEnemy.walkFrameEnd = 3;
 		fastEnemy.idleFrameStart = 0;
 		fastEnemy.idleFrameEnd = 1;
-		fastEnemy.scale = 0.08f;
+		fastEnemy.scale = 0.18f;
 		fastEnemy.goldReward = 5;
 
 		this->enemyTypes.push_back(fastEnemy);
@@ -388,7 +388,7 @@ namespace Game
 		strongEnemy.walkFrameEnd = 3;
 		strongEnemy.idleFrameStart = 0;
 		strongEnemy.idleFrameEnd = 1;
-		strongEnemy.scale = 0.12f;
+		strongEnemy.scale = 0.22f;
 		strongEnemy.goldReward = 50;
 
 		this->enemyTypes.push_back(strongEnemy);
@@ -434,11 +434,9 @@ namespace Game
 
 		if (row >= 0 && row < map.getHeight() && col >= 0 && col < map.getWidth())
 		{
-			// Check if there's a tower at this position first
 			int towerIndex = getTowerAtPosition(row, col);
 			if (towerIndex >= 0)
 			{
-				// Select the tower
 				towerSelected = true;
 				selectedTowerIndex = towerIndex;
 
@@ -448,7 +446,6 @@ namespace Game
 				return;
 			}
 
-			// If no tower and tile is valid for placement
 			if (isTileValidForTower(row, col))
 			{
 				tileSelected = true;
@@ -507,7 +504,7 @@ namespace Game
 			if (towerAnimation->isValid())
 			{
 				towerAnimation->setFrameTime(0.2f);
-				towerAnimation->setScale(0.2f, 0.2f);
+				towerAnimation->setScale(0.35f, 0.35f);
 				towerAnimation->setPosition(col, row);
 				towerAnimation->setFrame(0, 0);
 				towerAnimation->pause();
@@ -537,7 +534,7 @@ namespace Game
 			if (towerAnimation->isValid())
 			{
 				towerAnimation->setFrameTime(0.2f);
-				towerAnimation->setScale(0.25f, 0.25f);
+				towerAnimation->setScale(0.4f, 0.4f);
 				towerAnimation->setPosition(col, row);
 				towerAnimation->setFrame(0, 0);
 				towerAnimation->pause();
@@ -567,7 +564,7 @@ namespace Game
 			if (towerAnimation->isValid())
 			{
 				towerAnimation->setFrameTime(0.2f);
-				towerAnimation->setScale(0.25f, 0.25f);
+				towerAnimation->setScale(0.4f, 0.4f);
 				towerAnimation->setPosition(col, row);
 				towerAnimation->setFrame(0, 0);
 				towerAnimation->pause();
@@ -597,7 +594,7 @@ namespace Game
 			if (towerAnimation->isValid())
 			{
 				towerAnimation->setFrameTime(0.2f);
-				towerAnimation->setScale(0.25f, 0.25f);
+				towerAnimation->setScale(0.4f, 0.4f);
 				towerAnimation->setPosition(col, row);
 				towerAnimation->setFrame(0, 0);
 				towerAnimation->pause();
