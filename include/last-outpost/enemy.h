@@ -21,9 +21,8 @@ namespace Game
 		std::vector<PathPoint> path;
 		uint32_t lastMoveTime;
 		size_t currentStep;
-		int goldReward; // Quantidade de ouro que este inimigo dá ao morrer
+		int goldReward;
 
-		// Animation support
 		std::unique_ptr<Animation> walkAnimation;
 		std::unique_ptr<Animation> idleAnimation;
 		Animation *currentAnimation;
@@ -109,11 +108,9 @@ namespace Game
 		void setGoldReward(int reward) { goldReward = reward; }
 		int getGoldReward() const { return goldReward; }
 
-		// Path management
 		size_t getCurrentStep() const { return currentStep; }
 		const std::vector<PathPoint> &getPath() const { return path; }
 
-		// Animation methods
 		bool loadAnimations(SDL_Renderer *renderer);
 		bool loadAnimations(SDL_Renderer *renderer, const std::string &spriteAsset,
 							int spriteWidth, int spriteHeight, int spriteCols, int spriteRows,

@@ -111,13 +111,11 @@ namespace Game
 									  ImGuiWindowFlags_NoCollapse |
 									  ImGuiWindowFlags_NoTitleBar;
 
-		// Cor de fundo madeira forte
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.2f, 0.13f, 0.08f, 0.95f));
 		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.3f, 0.2f, 1.0f));
 
 		ImGui::Begin("Game Stats", nullptr, statsFlags);
 
-		// Fundo pergaminho para o conteúdo
 		ImGui::GetWindowDrawList()->AddRectFilled(
 			ImVec2(ImGui::GetWindowPos().x + 8, ImGui::GetWindowPos().y + 8),
 			ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowWidth() - 8, ImGui::GetWindowPos().y + ImGui::GetWindowHeight() - 8),
@@ -375,16 +373,14 @@ namespace Game
 		ImGuiStyle &style = ImGui::GetStyle();
 		ImVec4 *colors = style.Colors;
 
-		// Cores base - tons de madeira e pergaminho
-		ImVec4 darkBrown = ImVec4(0.25f, 0.17f, 0.12f, 1.0f);	// Madeira escura
-		ImVec4 mediumBrown = ImVec4(0.4f, 0.3f, 0.2f, 1.0f);	// Madeira média
-		ImVec4 lightBrown = ImVec4(0.6f, 0.45f, 0.3f, 1.0f);	// Madeira clara
-		ImVec4 parchment = ImVec4(0.92f, 0.85f, 0.7f, 1.0f);	// Pergaminho
-		ImVec4 darkParchment = ImVec4(0.8f, 0.7f, 0.55f, 1.0f); // Pergaminho escuro
-		ImVec4 gold = ImVec4(0.9f, 0.7f, 0.3f, 1.0f);			// Dourado
-		ImVec4 darkGold = ImVec4(0.7f, 0.5f, 0.2f, 1.0f);		// Dourado escuro
+		ImVec4 darkBrown = ImVec4(0.25f, 0.17f, 0.12f, 1.0f);
+		ImVec4 mediumBrown = ImVec4(0.4f, 0.3f, 0.2f, 1.0f);
+		ImVec4 lightBrown = ImVec4(0.6f, 0.45f, 0.3f, 1.0f);
+		ImVec4 parchment = ImVec4(0.92f, 0.85f, 0.7f, 1.0f);
+		ImVec4 darkParchment = ImVec4(0.8f, 0.7f, 0.55f, 1.0f);
+		ImVec4 gold = ImVec4(0.9f, 0.7f, 0.3f, 1.0f);
+		ImVec4 darkGold = ImVec4(0.7f, 0.5f, 0.2f, 1.0f);
 
-		// Configurações básicas
 		colors[ImGuiCol_Text] = parchment;
 		colors[ImGuiCol_TextDisabled] = darkParchment;
 		colors[ImGuiCol_WindowBg] = ImVec4(darkBrown.x, darkBrown.y, darkBrown.z, 0.95f);
@@ -434,7 +430,6 @@ namespace Game
 		colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.7f);
 		colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.6f);
 
-		// Ajustes de estilo
 		style.WindowRounding = 8.0f;
 		style.ChildRounding = 6.0f;
 		style.FrameRounding = 4.0f;

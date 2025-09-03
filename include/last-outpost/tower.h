@@ -104,7 +104,6 @@ namespace Game
 			return this->projectil;
 		}
 
-		// Method to configure projectile with sprite
 		void setProjectileSprite(const std::string &spritePath)
 		{
 			if (renderer)

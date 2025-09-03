@@ -35,13 +35,9 @@ namespace Game
 	{
 		this->initializeEnemyTypes();
 
-		// Setup UI callbacks
 		if (uiSystem)
 		{
-			uiSystem->setOnTowerSelected([this](TowerType towerType)
-										 {
-											 // Tower type selected for placement
-										 });
+			uiSystem->setOnTowerSelected([this](TowerType towerType) {});
 
 			uiSystem->setOnTowerSell([this]()
 									 { sellSelectedTower(); });
@@ -678,7 +674,6 @@ namespace Game
 			}
 		}
 
-		// If no tower was clicked, clear selection
 		clearSelection();
 	}
 
@@ -692,13 +687,13 @@ namespace Game
 			int towerType = 1;
 
 			if (projectilDamage == 50)
-				towerType = 1; // Magic Tower
+				towerType = 1;
 			else if (projectilDamage == 60)
-				towerType = 2; // Fire Tower
+				towerType = 2;
 			else if (projectilDamage == 30)
-				towerType = 3; // Leaf Tower
+				towerType = 3;
 			else if (projectilDamage == 40)
-				towerType = 4; // Thunder Tower
+				towerType = 4;
 
 			int originalCost = getTowerCost(towerType);
 			int sellValue = originalCost / 2;
@@ -711,7 +706,7 @@ namespace Game
 
 			if (audioSystem)
 			{
-				audioSystem->playSound(SoundType::TowerPlace); // Use same sound for sell
+				audioSystem->playSound(SoundType::TowerPlace);
 			}
 		}
 	}
@@ -720,8 +715,6 @@ namespace Game
 	{
 		if (towerSelected && selectedTowerIndex >= 0 && selectedTowerIndex < static_cast<int>(towers.size()))
 		{
-			// For now, just show that upgrade was attempted
-			// This can be expanded later with actual upgrade logic
 			std::cout << "Tower upgrade requested!" << std::endl;
 		}
 	}
@@ -754,7 +747,6 @@ namespace Game
 			info.range = tower.getRange();
 			info.fireRate = tower.getFireRate();
 
-			// Determine tower type based on damage (this is a simple way to identify type)
 			if (info.damage == 50)
 				info.type = TowerType::Magic;
 			else if (info.damage == 60)
@@ -764,12 +756,12 @@ namespace Game
 			else if (info.damage == 40)
 				info.type = TowerType::Thunder;
 			else
-				info.type = TowerType::Magic; // Default
+				info.type = TowerType::Magic;
 
 			int towerTypeInt = static_cast<int>(info.type) + 1;
 			int originalCost = getTowerCost(towerTypeInt);
 			info.sellValue = originalCost / 2;
-			info.upgradeValue = originalCost; // Same cost as original for upgrade
+			info.upgradeValue = originalCost;
 		}
 
 		return info;
@@ -802,13 +794,13 @@ namespace Game
 	{
 		switch (towerType)
 		{
-		case 1: // Magic Tower
+		case 1:
 			return 50;
-		case 2: // Fire Tower
+		case 2:
 			return 75;
-		case 3: // Leaf Tower
+		case 3:
 			return 60;
-		case 4: // Thunder Tower
+		case 4:
 			return 80;
 		default:
 			return 0;

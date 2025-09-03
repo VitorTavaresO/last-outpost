@@ -16,8 +16,6 @@ namespace Game
 	}
 }
 
-//--------------------- end namespace Game ---------------------
-
 int main(int argc, char **argv)
 {
 	return Game::main(argc, argv);

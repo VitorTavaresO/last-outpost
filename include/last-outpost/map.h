@@ -52,7 +52,6 @@ namespace Game
 		int height;
 		Mylib::Matrix<Tile> terrain;
 
-		// Sprites para os tiles
 		std::unique_ptr<Sprite> grassSprite;
 		std::unique_ptr<Sprite> pathSprite;
 		SDL_Renderer *renderer;

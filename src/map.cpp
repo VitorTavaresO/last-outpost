@@ -29,12 +29,12 @@ namespace Game
 				switch (tileChar)
 				{
 				case ' ':
-					tileObject.setColor({0, 100, 0, 255}); // Verde escuro
+					tileObject.setColor({0, 100, 0, 255});
 					tileObject.setType(ObjectType::Unknown);
 					break;
 
 				case 'F':
-					tileObject.setColor({194, 178, 128, 255}); // Areia
+					tileObject.setColor({194, 178, 128, 255});
 					tileObject.setType(ObjectType::First);
 					break;
 
@@ -42,22 +42,22 @@ namespace Game
 				case 'L':
 				case 'D':
 				case 'U':
-					tileObject.setColor({194, 178, 128, 255}); // Areia
+					tileObject.setColor({194, 178, 128, 255});
 					tileObject.setType(ObjectType::Path);
 					break;
 
 				case 'E':
-					tileObject.setColor({194, 178, 128, 255}); // Areia
+					tileObject.setColor({194, 178, 128, 255});
 					tileObject.setType(ObjectType::End);
 					break;
 
 				case 'S':
-					tileObject.setColor({139, 69, 19, 255}); // Marrom
+					tileObject.setColor({139, 69, 19, 255});
 					tileObject.setType(ObjectType::Space);
 					break;
 
 				default:
-					tileObject.setColor({0, 0, 0, 255}); // Preto
+					tileObject.setColor({0, 0, 0, 255});
 					tileObject.setType(ObjectType::Unknown);
 					break;
 				}
@@ -180,12 +180,12 @@ namespace Game
 					case ' ':
 						spriteToRender = grassSprite.get();
 						break;
-					case 'F': // First
-					case 'R': // Right
-					case 'L': // Left
-					case 'D': // Down
-					case 'U': // Up
-					case 'E': // End
+					case 'F':
+					case 'R':
+					case 'L':
+					case 'D':
+					case 'U':
+					case 'E':
 						spriteToRender = pathSprite.get();
 						break;
 					case 'S':
