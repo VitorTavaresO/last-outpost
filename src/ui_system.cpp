@@ -13,67 +13,142 @@ namespace Game
 		if (!initialized)
 			return;
 
-		// Obter dimensões da tela
 		int screenWidth = 0, screenHeight = 0;
 		if (window)
 		{
 			SDL_GetWindowSize(window, &screenWidth, &screenHeight);
 		}
 
-		// Calcular posição central
-		float windowWidth = 500.0f;
-		float windowHeight = 600.0f;
+		float windowWidth = 600.0f;
+		float windowHeight = 700.0f;
 		float posX = (screenWidth - windowWidth) * 0.5f;
 		float posY = (screenHeight - windowHeight) * 0.5f;
 
 		ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_Always);
 		ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight), ImGuiCond_Always);
+
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.25f, 0.17f, 0.12f, 0.95f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.6f, 0.45f, 0.3f, 1.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.0f);
+
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar;
 
 		if (ImGui::Begin("Scoreboard", nullptr, flags))
 		{
+			ImDrawList *drawList = ImGui::GetWindowDrawList();
+			ImVec2 windowPos = ImGui::GetWindowPos();
+			ImVec2 windowSize = ImGui::GetWindowSize();
+
+			drawList->AddRectFilled(
+				ImVec2(windowPos.x + 10, windowPos.y + 10),
+				ImVec2(windowPos.x + windowSize.x - 10, windowPos.y + windowSize.y - 10),
+				IM_COL32(235, 217, 178, 180),
+				8.0f);
+
 			if (customTitleFont)
 				ImGui::PushFont(customTitleFont);
-			ImGui::SetCursorPosY(30.0f);
-			ImGui::SetCursorPosX((windowWidth - ImGui::CalcTextSize("Placar de Pontuação").x) * 0.5f);
-			ImGui::Text("Placar de Pontuação");
+
+			ImGui::SetCursorPosY(40.0f);
+			ImVec2 titleSize = ImGui::CalcTextSize("PLACAR");
+			ImGui::SetCursorPosX((windowWidth - titleSize.x) * 0.5f);
+
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.2f, 0.1f, 1.0f));
+			ImGui::Text("PLACAR");
+			ImGui::PopStyleColor();
+
 			if (customTitleFont)
 				ImGui::PopFont();
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
+			ImGui::SetCursorPosX(50.0f);
+			ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.6f, 0.45f, 0.3f, 1.0f));
+			ImGui::Separator();
+			ImGui::PopStyleColor();
+
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
 
-			// Ordena os saves por pontuação decrescente
 			std::vector<SaveData> ordered = saves;
 			std::sort(ordered.begin(), ordered.end(), [](const SaveData &a, const SaveData &b)
 					  { return a.totalScore > b.totalScore; });
 
+			if (customLargeFont)
+				ImGui::PushFont(customLargeFont);
+
 			int pos = 1;
 			for (const auto &save : ordered)
 			{
-				ImVec4 color = ImVec4(1, 1, 1, 1); // Branco
+				ImVec4 color = ImVec4(0.92f, 0.85f, 0.7f, 1.0f);
+				ImVec4 bgColor = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+
 				if (!highlightSave.empty() && save.name == highlightSave)
-					color = ImVec4(1.0f, 0.85f, 0.2f, 1.0f); // Amarelo
+				{
+					color = ImVec4(1.0f, 0.85f, 0.2f, 1.0f);
+					bgColor = ImVec4(0.7f, 0.5f, 0.2f, 0.3f);
+				}
+
+				if (bgColor.w > 0)
+				{
+					ImVec2 itemPos = ImGui::GetCursorScreenPos();
+					drawList->AddRectFilled(
+						ImVec2(itemPos.x - 10, itemPos.y - 5),
+						ImVec2(itemPos.x + windowWidth - 50, itemPos.y + 35),
+						ImGui::ColorConvertFloat4ToU32(bgColor),
+						4.0f);
+				}
 
 				ImGui::PushStyleColor(ImGuiCol_Text, color);
-				ImGui::SetCursorPosX(60.0f);
-				ImGui::Text("%d. %s - %d pontos", pos, save.name.c_str(), save.totalScore);
+				ImGui::SetCursorPosX(80.0f);
+
+				if (pos == 1)
+					ImGui::Text("%d. %s - %d pontos", pos, save.name.c_str(), save.totalScore);
+				else if (pos == 2)
+					ImGui::Text("%d. %s - %d pontos", pos, save.name.c_str(), save.totalScore);
+				else if (pos == 3)
+					ImGui::Text("%d. %s - %d pontos", pos, save.name.c_str(), save.totalScore);
+				else
+					ImGui::Text("   %d. %s - %d pontos", pos, save.name.c_str(), save.totalScore);
+
 				ImGui::PopStyleColor();
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
 				pos++;
 			}
 
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
+			if (customLargeFont)
+				ImGui::PopFont();
+
 			if (showReturnButton)
 			{
-				ImGui::SetCursorPosX((windowWidth - 200.0f) * 0.5f);
-				if (ImGui::Button("Menu Principal", ImVec2(200, 50)))
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 40.0f);
+				ImGui::SetCursorPosX((windowWidth - 250.0f) * 0.5f);
+
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.45f, 0.3f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.55f, 0.4f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.35f, 0.25f, 1.0f));
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f);
+
+				if (customLargeFont)
+					ImGui::PushFont(customLargeFont);
+
+				if (ImGui::Button("Menu Principal", ImVec2(250, 60)))
 				{
 					if (onScoreboardReturnCallback)
 					{
 						onScoreboardReturnCallback();
 					}
 				}
+
+				if (customLargeFont)
+					ImGui::PopFont();
+
+				ImGui::PopStyleVar();
+				ImGui::PopStyleColor(3);
 			}
 		}
 		ImGui::End();
+
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(2);
 	}
 
 	const TowerInfo UISystem::towerInfos[4] = {

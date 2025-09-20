@@ -356,7 +356,6 @@ namespace Game
 
 		uiSystem->beginFrame();
 
-		// Mostrar apenas o placar centralizado com destaque para o save atual
 		availableSaves = saveManager->getAllSaves();
 		uiSystem->renderScoreboard(availableSaves, currentSaveName, true);
 
