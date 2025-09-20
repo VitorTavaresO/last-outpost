@@ -16,6 +16,7 @@ namespace Game
 		  gameTitleTexture(nullptr), screenWidth(1024), screenHeight(768),
 		  gumelaFont(nullptr), gumelaFontLarge(nullptr), gumelaFontTitle(nullptr),
 		  showCreateSaveMenu(false), isNewGameMenuOpen(false), showLoadSaveMenu(false),
+		  showScoreboard(false),
 		  saveManager(std::make_unique<SaveManager>()), selectedSaveIndex(-1), currentSaveName(""),
 		  goldCollected(0), goldSpent(0), levelStartGold(0), currentGold(100), finalTotalScoreToShow(0)
 	{
@@ -45,7 +46,22 @@ namespace Game
 		uiSystem->initialize(window, renderer);
 
 		uiSystem->setOnTowerSelected([this](TowerType towerType) {});
-
+		uiSystem->setOnScoreboardReturn([this]()
+										{
+		if (currentState == GameState::Victory)
+		{
+			if (audioSystem)
+			{
+				audioSystem->fadeOutMusic(500);
+				audioSystem->stopMusic();
+				audioSystem->playMusic(MusicType::MainMenu);
+			}
+			changeState(GameState::MainMenu);
+		}
+		else
+		{
+			showScoreboard = false;
+		} });
 		loadMenuAssets();
 		loadCustomFonts();
 
@@ -340,63 +356,9 @@ namespace Game
 
 		uiSystem->beginFrame();
 
-		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH, SCREEN_HEIGHT));
-		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar;
-
-		if (ImGui::Begin("Victory", nullptr, flags))
-		{
-			if (gumelaFontTitle)
-				ImGui::PushFont(gumelaFontTitle);
-
-			ImGui::SetCursorPosY(120.0f);
-			ImGui::SetCursorPosX((SCREEN_WIDTH - ImGui::CalcTextSize("Victory").x) * 0.5f);
-			ImGui::Text("Victory");
-
-			if (gumelaFontTitle)
-				ImGui::PopFont();
-
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 40.0f);
-
-			int totalScore = finalTotalScoreToShow;
-			if (totalScore == 0)
-			{
-				auto saves = saveManager->getAllSaves();
-				for (const auto &s : saves)
-				{
-					if (s.name == currentSaveName)
-					{
-						totalScore = s.totalScore;
-						break;
-					}
-				}
-			}
-
-			if (gumelaFontLarge)
-				ImGui::PushFont(gumelaFontLarge);
-
-			ImGui::SetCursorPosX((SCREEN_WIDTH - 300.0f) * 0.5f);
-			ImGui::Text("Total Score: %d", totalScore);
-
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
-			ImGui::SetCursorPosX((SCREEN_WIDTH - 200.0f) * 0.5f);
-			ImVec2 btnSize(200.0f, 60.0f);
-			if (ImGui::Button("Menu Principal", btnSize))
-			{
-				if (audioSystem)
-				{
-					audioSystem->fadeOutMusic(500);
-					audioSystem->stopMusic();
-					audioSystem->playMusic(MusicType::MainMenu);
-				}
-
-				changeState(GameState::MainMenu);
-			}
-
-			if (gumelaFontLarge)
-				ImGui::PopFont();
-		}
-		ImGui::End();
+		// Mostrar apenas o placar centralizado com destaque para o save atual
+		availableSaves = saveManager->getAllSaves();
+		uiSystem->renderScoreboard(availableSaves, currentSaveName, true);
 
 		uiSystem->endFrame();
 		SDL_RenderPresent(renderer);
@@ -551,7 +513,7 @@ namespace Game
 			float buttonX = (menuWidth - buttonWidth) * 0.5f;
 			ImVec2 buttonSize(buttonWidth, buttonHeight);
 
-			if (!isNewGameMenuOpen && !showLoadSaveMenu)
+			if (!isNewGameMenuOpen && !showLoadSaveMenu && !showScoreboard)
 			{
 				ImGui::SetCursorPosX(buttonX);
 				if (gumelaFontLarge)
@@ -578,6 +540,22 @@ namespace Game
 				{
 					availableSaves = saveManager->getAllSaves();
 					showLoadSaveMenu = true;
+				}
+				if (gumelaFontLarge)
+				{
+					ImGui::PopFont();
+				}
+
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
+				ImGui::SetCursorPosX(buttonX);
+				if (gumelaFontLarge)
+				{
+					ImGui::PushFont(gumelaFontLarge);
+				}
+				if (ImGui::Button("Placar", buttonSize))
+				{
+					availableSaves = saveManager->getAllSaves();
+					showScoreboard = true;
 				}
 				if (gumelaFontLarge)
 				{
@@ -630,6 +608,10 @@ namespace Game
 			else if (showLoadSaveMenu)
 			{
 				renderLoadSaveMenu();
+			}
+			else if (showScoreboard)
+			{
+				uiSystem->renderScoreboard(availableSaves, "");
 			}
 
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);

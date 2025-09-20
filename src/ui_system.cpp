@@ -3,9 +3,79 @@
 #include <backends/imgui_impl_sdl2.h>
 #include <backends/imgui_impl_sdlrenderer2.h>
 #include <iostream>
+#include <algorithm>
 
 namespace Game
 {
+
+	void UISystem::renderScoreboard(const std::vector<SaveData> &saves, const std::string &highlightSave, bool showReturnButton)
+	{
+		if (!initialized)
+			return;
+
+		// Obter dimensões da tela
+		int screenWidth = 0, screenHeight = 0;
+		if (window)
+		{
+			SDL_GetWindowSize(window, &screenWidth, &screenHeight);
+		}
+
+		// Calcular posição central
+		float windowWidth = 500.0f;
+		float windowHeight = 600.0f;
+		float posX = (screenWidth - windowWidth) * 0.5f;
+		float posY = (screenHeight - windowHeight) * 0.5f;
+
+		ImGui::SetNextWindowPos(ImVec2(posX, posY), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight), ImGuiCond_Always);
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar;
+
+		if (ImGui::Begin("Scoreboard", nullptr, flags))
+		{
+			if (customTitleFont)
+				ImGui::PushFont(customTitleFont);
+			ImGui::SetCursorPosY(30.0f);
+			ImGui::SetCursorPosX((windowWidth - ImGui::CalcTextSize("Placar de Pontuação").x) * 0.5f);
+			ImGui::Text("Placar de Pontuação");
+			if (customTitleFont)
+				ImGui::PopFont();
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
+
+			// Ordena os saves por pontuação decrescente
+			std::vector<SaveData> ordered = saves;
+			std::sort(ordered.begin(), ordered.end(), [](const SaveData &a, const SaveData &b)
+					  { return a.totalScore > b.totalScore; });
+
+			int pos = 1;
+			for (const auto &save : ordered)
+			{
+				ImVec4 color = ImVec4(1, 1, 1, 1); // Branco
+				if (!highlightSave.empty() && save.name == highlightSave)
+					color = ImVec4(1.0f, 0.85f, 0.2f, 1.0f); // Amarelo
+
+				ImGui::PushStyleColor(ImGuiCol_Text, color);
+				ImGui::SetCursorPosX(60.0f);
+				ImGui::Text("%d. %s - %d pontos", pos, save.name.c_str(), save.totalScore);
+				ImGui::PopStyleColor();
+				pos++;
+			}
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
+			if (showReturnButton)
+			{
+				ImGui::SetCursorPosX((windowWidth - 200.0f) * 0.5f);
+				if (ImGui::Button("Menu Principal", ImVec2(200, 50)))
+				{
+					if (onScoreboardReturnCallback)
+					{
+						onScoreboardReturnCallback();
+					}
+				}
+			}
+		}
+		ImGui::End();
+	}
+
 	const TowerInfo UISystem::towerInfos[4] = {
 		{TowerType::Magic, "Magic Tower", "High damage projectiles", 50, "assets/sprites/towers/magic-tower.png"},
 		{TowerType::Fire, "Fire Tower", "Area damage with fireballs", 75, "assets/sprites/towers/fire-tower.png"},
@@ -392,6 +462,11 @@ namespace Game
 	void UISystem::setOnPlacementCancel(std::function<void()> callback)
 	{
 		onPlacementCancelCallback = callback;
+	}
+
+	void UISystem::setOnScoreboardReturn(std::function<void()> callback)
+	{
+		onScoreboardReturnCallback = callback;
 	}
 
 	void UISystem::clearTowerSelection()

@@ -58,7 +58,7 @@ namespace Game
 		char saveNameBuffer[256];
 		bool isNewGameMenuOpen;
 		bool showLoadSaveMenu;
-
+		bool showScoreboard;
 		std::unique_ptr<SaveManager> saveManager;
 		std::vector<SaveData> availableSaves;
 		int selectedSaveIndex;

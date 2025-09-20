@@ -3,8 +3,11 @@
 
 #include <SDL.h>
 #include <last-outpost/types.h>
+#include <last-outpost/save_manager.h>
 #include <my-lib/matrix.h>
 #include <functional>
+#include <vector>
+#include <string>
 
 struct ImFont;
 
@@ -59,12 +62,14 @@ namespace Game
 		void setOnTowerSell(std::function<void()> callback);
 		void setOnTowerUpgrade(std::function<void()> callback);
 		void setOnPlacementCancel(std::function<void()> callback);
-
+		void setOnScoreboardReturn(std::function<void()> callback);
 		void setCustomFonts(ImFont *normalFont, ImFont *largeFont, ImFont *titleFont);
 
 		TowerType getSelectedTower() const { return selectedTower; }
 		bool isTowerSelected() const { return towerSelected; }
 		void clearTowerSelection();
+
+		void renderScoreboard(const std::vector<SaveData> &saves, const std::string &highlightSave = "", bool showReturnButton = true);
 
 	private:
 		SDL_Window *window;
@@ -78,7 +83,7 @@ namespace Game
 		std::function<void()> onTowerSellCallback;
 		std::function<void()> onTowerUpgradeCallback;
 		std::function<void()> onPlacementCancelCallback;
-
+		std::function<void()> onScoreboardReturnCallback;
 		ImFont *customNormalFont;
 		ImFont *customLargeFont;
 		ImFont *customTitleFont;
