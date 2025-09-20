@@ -16,7 +16,7 @@ namespace Game
 		  gameTitleTexture(nullptr), screenWidth(1024), screenHeight(768),
 		  gumelaFont(nullptr), gumelaFontLarge(nullptr), gumelaFontTitle(nullptr),
 		  showCreateSaveMenu(false), isNewGameMenuOpen(false), showLoadSaveMenu(false),
-		  showScoreboard(false),
+		  showScoreboard(false), showCredits(false),
 		  saveManager(std::make_unique<SaveManager>()), selectedSaveIndex(-1), currentSaveName(""),
 		  goldCollected(0), goldSpent(0), levelStartGold(0), currentGold(100), finalTotalScoreToShow(0)
 	{
@@ -199,7 +199,15 @@ namespace Game
 		}
 
 		handleMainMenuEvents();
-		renderMainMenu();
+
+		if (showCredits)
+		{
+			renderCredits();
+		}
+		else
+		{
+			renderMainMenu();
+		}
 	}
 
 	void GameControl::handleGamePlay()
@@ -363,11 +371,194 @@ namespace Game
 		SDL_RenderPresent(renderer);
 	}
 
+	void GameControl::renderCredits()
+	{
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
+
+		if (menuBackgroundTexture)
+		{
+			SDL_RenderCopy(renderer, menuBackgroundTexture, nullptr, nullptr);
+		}
+
+		uiSystem->beginFrame();
+
+		// Cores do tema
+		ImVec4 darkBrown = ImVec4(0.25f, 0.17f, 0.12f, 1.0f);
+		ImVec4 lightBrown = ImVec4(0.6f, 0.45f, 0.3f, 1.0f);
+		ImVec4 parchment = ImVec4(0.92f, 0.85f, 0.7f, 1.0f);
+		ImVec4 titleRed = ImVec4(0.8f, 0.2f, 0.1f, 1.0f);
+
+		float windowWidth = 600.0f;
+		float windowHeight = 650.0f;
+		float windowX = (SCREEN_WIDTH - windowWidth) * 0.5f;
+		float windowY = (SCREEN_HEIGHT - windowHeight) * 0.5f;
+
+		ImGui::SetNextWindowPos(ImVec2(windowX, windowY), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight), ImGuiCond_Always);
+
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, darkBrown);
+		ImGui::PushStyleColor(ImGuiCol_Border, lightBrown);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.0f);
+
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+								 ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar;
+
+		if (ImGui::Begin("Credits", nullptr, flags))
+		{
+			// Fundo decorativo
+			ImDrawList *drawList = ImGui::GetWindowDrawList();
+			ImVec2 windowPos = ImGui::GetWindowPos();
+			ImVec2 windowSize = ImGui::GetWindowSize();
+
+			drawList->AddRectFilled(
+				ImVec2(windowPos.x + 10, windowPos.y + 10),
+				ImVec2(windowPos.x + windowSize.x - 10, windowPos.y + windowSize.y - 10),
+				IM_COL32(235, 217, 178, 180),
+				8.0f);
+
+			// Título principal
+			if (gumelaFontTitle)
+				ImGui::PushFont(gumelaFontTitle);
+
+			ImGui::SetCursorPosY(40.0f);
+			ImVec2 titleSize = ImGui::CalcTextSize("CRÉDITOS");
+			ImGui::SetCursorPosX((windowWidth - titleSize.x) * 0.5f);
+			ImGui::PushStyleColor(ImGuiCol_Text, titleRed);
+			ImGui::Text("CRÉDITOS");
+			ImGui::PopStyleColor();
+
+			if (gumelaFontTitle)
+				ImGui::PopFont();
+
+			// Separador
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
+			ImGui::SetCursorPosX(50.0f);
+			ImGui::PushStyleColor(ImGuiCol_Separator, lightBrown);
+			ImGui::Separator();
+			ImGui::PopStyleColor();
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
+
+			// Orientador
+			if (gumelaFontLarge)
+				ImGui::PushFont(gumelaFontLarge);
+
+			ImGui::PushStyleColor(ImGuiCol_Text, titleRed);
+			ImVec2 orientadorSize = ImGui::CalcTextSize("Orientador");
+			ImGui::SetCursorPosX((windowWidth - orientadorSize.x) * 0.5f);
+			ImGui::Text("Orientador");
+			ImGui::PopStyleColor();
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+			ImGui::PushStyleColor(ImGuiCol_Text, parchment);
+			ImVec2 profSize = ImGui::CalcTextSize("Professor Dr. Eduardo Henrique Molina Cruz");
+			ImGui::SetCursorPosX((windowWidth - profSize.x) * 0.5f);
+			ImGui::Text("Professor Dr. Eduardo Henrique Molina Cruz");
+			ImGui::PopStyleColor();
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
+
+			// Desenvolvedores
+			ImGui::PushStyleColor(ImGuiCol_Text, titleRed);
+			ImVec2 devSize = ImGui::CalcTextSize("Desenvolvedores");
+			ImGui::SetCursorPosX((windowWidth - devSize.x) * 0.5f);
+			ImGui::Text("Desenvolvedores");
+			ImGui::PopStyleColor();
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+			ImGui::PushStyleColor(ImGuiCol_Text, parchment);
+
+			ImVec2 eduSize = ImGui::CalcTextSize("Eduardo Albuquerque");
+			ImGui::SetCursorPosX((windowWidth - eduSize.x) * 0.5f);
+			ImGui::Text("Eduardo Albuquerque");
+
+			ImVec2 alineSize = ImGui::CalcTextSize("Aline Yuka Noguti");
+			ImGui::SetCursorPosX((windowWidth - alineSize.x) * 0.5f);
+			ImGui::Text("Aline Yuka Noguti");
+
+			ImVec2 vitorSize = ImGui::CalcTextSize("Vitor Tavares");
+			ImGui::SetCursorPosX((windowWidth - vitorSize.x) * 0.5f);
+			ImGui::Text("Vitor Tavares");
+			ImGui::PopStyleColor();
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
+
+			// Artes
+			ImGui::PushStyleColor(ImGuiCol_Text, titleRed);
+			ImVec2 artSize = ImGui::CalcTextSize("Artes");
+			ImGui::SetCursorPosX((windowWidth - artSize.x) * 0.5f);
+			ImGui::Text("Artes");
+			ImGui::PopStyleColor();
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+			ImGui::PushStyleColor(ImGuiCol_Text, parchment);
+
+			ImVec2 eduArtSize = ImGui::CalcTextSize("Eduardo Albuquerque");
+			ImGui::SetCursorPosX((windowWidth - eduArtSize.x) * 0.5f);
+			ImGui::Text("Eduardo Albuquerque");
+
+			ImVec2 alineArtSize = ImGui::CalcTextSize("Aline Yuka");
+			ImGui::SetCursorPosX((windowWidth - alineArtSize.x) * 0.5f);
+			ImGui::Text("Aline Yuka");
+			ImGui::PopStyleColor();
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
+
+			// Áudios
+			ImGui::PushStyleColor(ImGuiCol_Text, titleRed);
+			ImVec2 audioSize = ImGui::CalcTextSize("Áudios");
+			ImGui::SetCursorPosX((windowWidth - audioSize.x) * 0.5f);
+			ImGui::Text("Áudios");
+			ImGui::PopStyleColor();
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+			ImGui::PushStyleColor(ImGuiCol_Text, parchment);
+			ImVec2 eduAudioSize = ImGui::CalcTextSize("Eduardo Albuquerque");
+			ImGui::SetCursorPosX((windowWidth - eduAudioSize.x) * 0.5f);
+			ImGui::Text("Eduardo Albuquerque");
+			ImGui::PopStyleColor();
+
+			if (gumelaFontLarge)
+				ImGui::PopFont();
+
+			// Botão voltar
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 40.0f);
+			ImGui::SetCursorPosX((windowWidth - 200.0f) * 0.5f);
+
+			ImGui::PushStyleColor(ImGuiCol_Button, lightBrown);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.55f, 0.4f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.35f, 0.25f, 1.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f);
+
+			if (gumelaFontLarge)
+				ImGui::PushFont(gumelaFontLarge);
+
+			if (ImGui::Button("Menu Principal", ImVec2(200, 50)))
+			{
+				showCredits = false;
+			}
+
+			if (gumelaFontLarge)
+				ImGui::PopFont();
+
+			ImGui::PopStyleVar();
+			ImGui::PopStyleColor(3);
+		}
+		ImGui::End();
+
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(2);
+
+		uiSystem->endFrame();
+		SDL_RenderPresent(renderer);
+	}
+
 	void GameControl::handleGameOver()
 	{
 		changeState(GameState::Quitting);
 	}
-
 	void GameControl::changeState(GameState newState)
 	{
 		currentState = newState;
@@ -512,7 +703,7 @@ namespace Game
 			float buttonX = (menuWidth - buttonWidth) * 0.5f;
 			ImVec2 buttonSize(buttonWidth, buttonHeight);
 
-			if (!isNewGameMenuOpen && !showLoadSaveMenu && !showScoreboard)
+			if (!isNewGameMenuOpen && !showLoadSaveMenu && !showScoreboard && !showCredits)
 			{
 				ImGui::SetCursorPosX(buttonX);
 				if (gumelaFontLarge)
@@ -555,6 +746,21 @@ namespace Game
 				{
 					availableSaves = saveManager->getAllSaves();
 					showScoreboard = true;
+				}
+				if (gumelaFontLarge)
+				{
+					ImGui::PopFont();
+				}
+
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
+				ImGui::SetCursorPosX(buttonX);
+				if (gumelaFontLarge)
+				{
+					ImGui::PushFont(gumelaFontLarge);
+				}
+				if (ImGui::Button("Créditos", buttonSize))
+				{
+					showCredits = true;
 				}
 				if (gumelaFontLarge)
 				{

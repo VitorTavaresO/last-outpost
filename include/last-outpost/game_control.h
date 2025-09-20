@@ -59,6 +59,7 @@ namespace Game
 		bool isNewGameMenuOpen;
 		bool showLoadSaveMenu;
 		bool showScoreboard;
+		bool showCredits;
 		std::unique_ptr<SaveManager> saveManager;
 		std::vector<SaveData> availableSaves;
 		int selectedSaveIndex;
@@ -82,6 +83,7 @@ namespace Game
 
 		void renderMainMenu();
 		void renderVictoryScreen();
+		void renderCredits();
 		void handleMainMenuEvents();
 		void loadMenuAssets();
 		void loadCustomFonts();
