@@ -15,7 +15,8 @@ namespace Game
 		  gameTitleTexture(nullptr), screenWidth(1024), screenHeight(768),
 		  gumelaFont(nullptr), gumelaFontLarge(nullptr), gumelaFontTitle(nullptr),
 		  showCreateSaveMenu(false), isNewGameMenuOpen(false), showLoadSaveMenu(false),
-		  saveManager(std::make_unique<SaveManager>()), selectedSaveIndex(-1), currentSaveName("")
+		  saveManager(std::make_unique<SaveManager>()), selectedSaveIndex(-1), currentSaveName(""),
+		  goldCollected(0), goldSpent(0), levelStartGold(0)
 	{
 		memset(saveNameBuffer, 0, sizeof(saveNameBuffer));
 	}
@@ -199,6 +200,8 @@ namespace Game
 				audioSystem.get(),
 				uiSystem.get());
 
+			levelStartGold = gameWorld->getGold();
+
 			createLevels();
 		}
 
@@ -223,10 +226,21 @@ namespace Game
 			changeState(GameState::MainMenu);
 			break;
 		case GameWorldResult::LevelComplete:
+		{
+			int earnedGold = 0;
+			if (gameWorld)
+			{
+				int endGold = gameWorld->getGold();
+				earnedGold = endGold - levelStartGold;
+				if (earnedGold < 0)
+					earnedGold = 0;
+			}
+
 			gameWorld.reset();
+
 			if (++currentLevelIndex < static_cast<int>(levels.size()))
 			{
-				updateCurrentSaveProgress(currentLevelIndex);
+				saveManager->updateSaveProgress(currentSaveName, currentLevelIndex, earnedGold);
 
 				changeState(GameState::LevelComplete);
 			}
@@ -235,6 +249,7 @@ namespace Game
 				changeState(GameState::GameOver);
 			}
 			break;
+		}
 		}
 
 		/*if (gameCompleted)
@@ -259,7 +274,6 @@ namespace Game
 
 	void GameControl::handleLevelComplete()
 	{
-		updateCurrentSaveProgress(currentLevelIndex);
 
 		changeState(GameState::Playing);
 	}

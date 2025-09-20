@@ -53,20 +53,26 @@ namespace Game
 
 					std::string name;
 					int levelIndex;
+					int totalScore = 0;
 
 					if (std::getline(file, name))
 					{
 						std::string levelStr;
 						if (std::getline(file, levelStr))
 						{
-							try
+							std::string totalScoreStr;
+							if (std::getline(file, totalScoreStr))
 							{
-								levelIndex = std::stoi(levelStr);
-								SaveData data{name, levelIndex};
-								saves.push_back(data);
-							}
-							catch (...)
-							{
+								try
+								{
+									levelIndex = std::stoi(levelStr);
+									totalScore = std::stoi(totalScoreStr);
+									SaveData data{name, levelIndex, totalScore};
+									saves.push_back(data);
+								}
+								catch (...)
+								{
+								}
 							}
 						}
 					}
@@ -121,6 +127,7 @@ namespace Game
 				{
 					file << save.name << std::endl;
 					file << save.levelIndex << std::endl;
+					file << save.totalScore << std::endl;
 					file.close();
 				}
 				else
@@ -168,7 +175,7 @@ namespace Game
 		return false;
 	}
 
-	bool SaveManager::updateSaveProgress(const std::string &saveName, int newLevelIndex)
+	bool SaveManager::updateSaveProgress(const std::string &saveName, int newLevelIndex, int newGold)
 	{
 
 		auto it = std::find_if(saves.begin(), saves.end(),
@@ -180,6 +187,7 @@ namespace Game
 		if (it != saves.end())
 		{
 			it->levelIndex = newLevelIndex;
+			it->totalScore += newGold;
 
 			std::string filename = savesPath + "/" + saveName + ".save";
 			std::ofstream file(filename);
@@ -187,6 +195,7 @@ namespace Game
 			{
 				file << saveName << std::endl;
 				file << newLevelIndex << std::endl;
+				file << it->totalScore << std::endl;
 				file.close();
 			}
 			else

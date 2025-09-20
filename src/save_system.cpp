@@ -104,7 +104,7 @@ namespace Game
 		return true;
 	}
 
-	bool GameControl::updateCurrentSaveProgress(int levelIndex)
+	bool GameControl::updateCurrentSaveProgress(int levelIndex, int newGold)
 	{
 		if (currentSaveName.empty())
 		{
@@ -112,7 +112,7 @@ namespace Game
 			return false;
 		}
 
-		return saveManager->updateSaveProgress(currentSaveName, levelIndex);
+		return saveManager->updateSaveProgress(currentSaveName, levelIndex, newGold);
 	}
 
 	std::string GameControl::getCurrentSaveName() const

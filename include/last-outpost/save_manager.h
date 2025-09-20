@@ -10,6 +10,7 @@ namespace Game
 	{
 		std::string name;
 		int levelIndex;
+		int totalScore;
 	};
 
 	class SaveManager
@@ -36,7 +37,7 @@ namespace Game
 
 		bool loadSave(const std::string &saveName, SaveData &outSaveData);
 
-		bool updateSaveProgress(const std::string &saveName, int newLevelIndex);
+		bool updateSaveProgress(const std::string &saveName, int newLevelIndex, int newGold);
 
 		bool deleteSave(const std::string &saveName);
 	};

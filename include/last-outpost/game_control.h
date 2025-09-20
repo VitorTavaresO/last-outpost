@@ -63,6 +63,11 @@ namespace Game
 		int selectedSaveIndex;
 		std::string currentSaveName;
 
+		int goldCollected;
+		int goldSpent;
+		int levelStartGold;
+		int calculateTotalScore() const { return goldCollected + goldSpent; }
+
 		bool initializeSDL();
 		void createLevels();
 		void handleMainMenu();
@@ -79,7 +84,7 @@ namespace Game
 		void renderLoadSaveMenu();
 		bool startNewGame(const std::string &saveName);
 		bool loadGame(const std::string &saveName);
-		bool updateCurrentSaveProgress(int levelIndex);
+		bool updateCurrentSaveProgress(int levelIndex, int newGold);
 		std::string getCurrentSaveName() const;
 
 		void changeState(GameState newState);

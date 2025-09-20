@@ -117,9 +117,12 @@ namespace Game
 		void showSettings();
 		void renderPauseMenu();
 
+	public:
 		int getGold() const { return gold; }
 		void addGold(int amount) { gold += amount; }
 		bool spendGold(int amount);
+
+	private:
 
 		void setPlayerLife(int life) { playerLife = life; }
 		int getPlayerLife() const { return playerLife; }
