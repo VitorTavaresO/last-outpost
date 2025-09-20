@@ -77,6 +77,7 @@ namespace Game
 		availableSaves = saveManager->getAllSaves();
 
 		currentLevelIndex = 0;
+		currentGold = 100;
 
 		currentSaveName = saveName;
 
@@ -98,6 +99,11 @@ namespace Game
 			currentLevelIndex = 0;
 		}
 		currentSaveName = saveName;
+
+		if (currentLevelIndex == 0)
+		{
+			currentGold = 100;
+		}
 
 		changeState(GameState::Playing);
 

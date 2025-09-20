@@ -96,7 +96,7 @@ namespace Game
 		if (saveExists(saveName))
 			return false;
 
-		SaveData newSave{saveName, levelIndex};
+		SaveData newSave{saveName, levelIndex, 0};
 		saves.push_back(newSave);
 
 		return saveToDisk();
@@ -177,7 +177,6 @@ namespace Game
 
 	bool SaveManager::updateSaveProgress(const std::string &saveName, int newLevelIndex, int newGold)
 	{
-
 		auto it = std::find_if(saves.begin(), saves.end(),
 							   [&saveName](const SaveData &save)
 							   {

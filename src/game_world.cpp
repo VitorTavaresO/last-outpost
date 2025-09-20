@@ -11,7 +11,7 @@
 
 namespace Game
 {
-	GameWorld::GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, std::vector<Level> &&levels, int startLevelIndex, Audio *audioSystem, UISystem *uiSystem)
+	GameWorld::GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, std::vector<Level> &&levels, int startLevelIndex, Audio *audioSystem, UISystem *uiSystem, int initialGold)
 		: renderer(renderer),
 		  graphics(screenWidth, screenHeight, TILES_X, TILES_Y, renderer),
 		  map(TILES_X, TILES_Y, levels.empty() ? "" : (startLevelIndex < static_cast<int>(levels.size()) ? levels[startLevelIndex].getMapData() : levels[0].getMapData()), renderer),
@@ -33,7 +33,7 @@ namespace Game
 		  selectedCol(-1),
 		  towerSelected(false),
 		  selectedTowerIndex(-1),
-		  gold(100),
+		  gold(initialGold),
 		  playerLife(100),
 		  currentLevel(startLevelIndex),
 		  levelCompleted(false),

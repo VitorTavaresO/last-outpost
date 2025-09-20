@@ -20,6 +20,7 @@ namespace Game
 		Playing,
 		Paused,
 		LevelComplete,
+		Victory,
 		GameOver,
 		Quitting
 	};
@@ -66,6 +67,8 @@ namespace Game
 		int goldCollected;
 		int goldSpent;
 		int levelStartGold;
+		int currentGold;
+		int finalTotalScoreToShow;
 		int calculateTotalScore() const { return goldCollected + goldSpent; }
 
 		bool initializeSDL();
@@ -74,9 +77,11 @@ namespace Game
 		void handleGamePlay();
 		void handlePauseMenu();
 		void handleLevelComplete();
+		void handleVictory();
 		void handleGameOver();
 
 		void renderMainMenu();
+		void renderVictoryScreen();
 		void handleMainMenuEvents();
 		void loadMenuAssets();
 		void loadCustomFonts();

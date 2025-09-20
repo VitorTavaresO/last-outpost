@@ -10,7 +10,7 @@ namespace Game
 	{
 		std::string name;
 		int levelIndex;
-		int totalScore;
+		int totalScore = 0; // Inicializa explicitamente com 0
 	};
 
 	class SaveManager

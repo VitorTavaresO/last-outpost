@@ -3,6 +3,7 @@
 #include <last-outpost/map.h>
 #include <last-outpost/audio.h>
 #include <iostream>
+#include <fstream>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
 #include <imgui/imgui.h>
@@ -16,7 +17,7 @@ namespace Game
 		  gumelaFont(nullptr), gumelaFontLarge(nullptr), gumelaFontTitle(nullptr),
 		  showCreateSaveMenu(false), isNewGameMenuOpen(false), showLoadSaveMenu(false),
 		  saveManager(std::make_unique<SaveManager>()), selectedSaveIndex(-1), currentSaveName(""),
-		  goldCollected(0), goldSpent(0), levelStartGold(0)
+		  goldCollected(0), goldSpent(0), levelStartGold(0), currentGold(100), finalTotalScoreToShow(0)
 	{
 		memset(saveNameBuffer, 0, sizeof(saveNameBuffer));
 	}
@@ -74,6 +75,9 @@ namespace Game
 				break;
 			case GameState::LevelComplete:
 				handleLevelComplete();
+				break;
+			case GameState::Victory:
+				handleVictory();
 				break;
 			case GameState::GameOver:
 				handleGameOver();
@@ -198,7 +202,8 @@ namespace Game
 				std::move(levels),
 				currentLevelIndex,
 				audioSystem.get(),
-				uiSystem.get());
+				uiSystem.get(),
+				currentGold);
 
 			levelStartGold = gameWorld->getGold();
 
@@ -228,12 +233,15 @@ namespace Game
 		case GameWorldResult::LevelComplete:
 		{
 			int earnedGold = 0;
+			int endGold = 0;
 			if (gameWorld)
 			{
-				int endGold = gameWorld->getGold();
+				endGold = gameWorld->getGold();
 				earnedGold = endGold - levelStartGold;
 				if (earnedGold < 0)
 					earnedGold = 0;
+
+				currentGold = endGold;
 			}
 
 			gameWorld.reset();
@@ -242,11 +250,44 @@ namespace Game
 			{
 				saveManager->updateSaveProgress(currentSaveName, currentLevelIndex, earnedGold);
 
+				{
+					SaveData tmp;
+					saveManager->loadSave(currentSaveName, tmp);
+				}
+
 				changeState(GameState::LevelComplete);
 			}
 			else
 			{
-				changeState(GameState::GameOver);
+				SaveData currentSave;
+				int previousGold = 0;
+				if (saveManager->loadSave(currentSaveName, currentSave))
+				{
+					previousGold = currentSave.totalScore;
+				}
+
+				int totalFinalGold = previousGold + endGold;
+
+				std::string filename = "saves/" + currentSaveName + ".save";
+				std::ofstream file(filename);
+				if (file.is_open())
+				{
+					file << currentSaveName << std::endl;
+					file << currentLevelIndex << std::endl;
+					file << totalFinalGold << std::endl;
+					file.close();
+				}
+
+				SaveData updatedSave;
+				if (saveManager->loadSave(currentSaveName, updatedSave))
+				{
+					updatedSave.totalScore = totalFinalGold;
+					saveManager->loadSaves();
+				}
+
+				finalTotalScoreToShow = totalFinalGold;
+
+				changeState(GameState::Victory);
 			}
 			break;
 		}
@@ -276,6 +317,89 @@ namespace Game
 	{
 
 		changeState(GameState::Playing);
+	}
+
+	void GameControl::handleVictory()
+	{
+		renderVictoryScreen();
+	}
+
+	void GameControl::renderVictoryScreen()
+	{
+		handleMainMenuEvents();
+		if (currentState != GameState::Victory)
+			return;
+
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
+
+		if (menuBackgroundTexture)
+		{
+			SDL_RenderCopy(renderer, menuBackgroundTexture, nullptr, nullptr);
+		}
+
+		uiSystem->beginFrame();
+
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH, SCREEN_HEIGHT));
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar;
+
+		if (ImGui::Begin("Victory", nullptr, flags))
+		{
+			if (gumelaFontTitle)
+				ImGui::PushFont(gumelaFontTitle);
+
+			ImGui::SetCursorPosY(120.0f);
+			ImGui::SetCursorPosX((SCREEN_WIDTH - ImGui::CalcTextSize("Victory").x) * 0.5f);
+			ImGui::Text("Victory");
+
+			if (gumelaFontTitle)
+				ImGui::PopFont();
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 40.0f);
+
+			int totalScore = finalTotalScoreToShow;
+			if (totalScore == 0)
+			{
+				auto saves = saveManager->getAllSaves();
+				for (const auto &s : saves)
+				{
+					if (s.name == currentSaveName)
+					{
+						totalScore = s.totalScore;
+						break;
+					}
+				}
+			}
+
+			if (gumelaFontLarge)
+				ImGui::PushFont(gumelaFontLarge);
+
+			ImGui::SetCursorPosX((SCREEN_WIDTH - 300.0f) * 0.5f);
+			ImGui::Text("Total Score: %d", totalScore);
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
+			ImGui::SetCursorPosX((SCREEN_WIDTH - 200.0f) * 0.5f);
+			ImVec2 btnSize(200.0f, 60.0f);
+			if (ImGui::Button("Menu Principal", btnSize))
+			{
+				if (audioSystem)
+				{
+					audioSystem->fadeOutMusic(500);
+					audioSystem->stopMusic();
+					audioSystem->playMusic(MusicType::MainMenu);
+				}
+
+				changeState(GameState::MainMenu);
+			}
+
+			if (gumelaFontLarge)
+				ImGui::PopFont();
+		}
+		ImGui::End();
+
+		uiSystem->endFrame();
+		SDL_RenderPresent(renderer);
 	}
 
 	void GameControl::handleGameOver()

@@ -46,7 +46,7 @@ namespace Game
 	class GameWorld
 	{
 	public:
-		GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, std::vector<Level> &&levels, int startLevelIndex = 0, Audio *audioSystem = nullptr, UISystem *uiSystem = nullptr);
+		GameWorld(SDL_Renderer *renderer, int screenWidth, int screenHeight, std::vector<Level> &&levels, int startLevelIndex = 0, Audio *audioSystem = nullptr, UISystem *uiSystem = nullptr, int initialGold = 100);
 		GameWorldResult run();
 
 	private:
@@ -123,7 +123,6 @@ namespace Game
 		bool spendGold(int amount);
 
 	private:
-
 		void setPlayerLife(int life) { playerLife = life; }
 		int getPlayerLife() const { return playerLife; }
 		void takeDamage(int damage);

@@ -1,0 +1,6 @@
+Bloco ELSE executado - jogo completado!
+endGold: 430
+previousGold: 0
+totalFinalGold: 430
+Arquivo salvo com sucesso: saves/Teste.save
+finalTotalScoreToShow: 430
